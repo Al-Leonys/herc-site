@@ -1,5 +1,3 @@
-// needham gravity app logic - echoes GSAP staggered menu, Three.js CanvAscii title, & OGL HalftoneReveal background
-
 document.addEventListener('DOMContentLoaded', () => {
     initCleanRouteNavigation();
     initStaggeredMenu();
@@ -8,9 +6,22 @@ document.addEventListener('DOMContentLoaded', () => {
     initTelemetrySimulation();
     initContactForm();
     initScrollUrlUpdater();
+    initButtonClickAnimation();
 });
 
-// route path mapping helper
+function initButtonClickAnimation() {
+    document.addEventListener('click', (e) => {
+        const btn = e.target.closest('.btn, .sm-toggle');
+        if (!btn) return;
+        btn.classList.remove('btn-click-pop');
+        void btn.offsetWidth;
+        btn.classList.add('btn-click-pop');
+        btn.addEventListener('animationend', () => {
+            btn.classList.remove('btn-click-pop');
+        }, { once: true });
+    });
+}
+
 const routeToSectionMap = {
     '/': 'hero',
     '/about': 'about',
@@ -31,7 +42,6 @@ const sectionToRouteMap = {
     'contact': '/contact'
 };
 
-// handle clean route clicks and initial page load route restoration without hashtags
 function initCleanRouteNavigation() {
     let targetPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
     if (targetPath) {
@@ -90,7 +100,6 @@ function initCleanRouteNavigation() {
     });
 }
 
-// echoes staggered top menu logic with GSAP in/out animations & orange sweeper leader
 function initStaggeredMenu() {
     window.isMenuOpen = false;
     let isMenuBusy = false;
@@ -236,7 +245,6 @@ function initStaggeredMenu() {
     });
 }
 
-// Three.js CanvAscii title rendering for NEEDHAM GRAVITY (EXACT ECHOES IMPLEMENTATION)
 const vertexShader = `
 varying vec2 vUv;
 uniform float uTime;
@@ -629,7 +637,6 @@ function initCanvAsciiHeroTitle() {
     });
 }
 
-// OGL Halftone Reveal shader background for hero background
 function initHalftoneRevealBackground() {
     const container = document.getElementById('halftone-bg-container');
     if (!container || typeof OGL === 'undefined') return;
@@ -834,7 +841,7 @@ function initHalftoneRevealBackground() {
         uRevealRadius: { value: 0.45 },
         uEdge: { value: 0.75 },
         uIdleReveal: { value: 0.35 },
-        uTrigger: { value: 2 } // Always active halftone reveal shader background
+        uTrigger: { value: 2 }
     };
 
     const program = new Program(gl, { vertex, fragment, uniforms });
@@ -888,7 +895,6 @@ function initHalftoneRevealBackground() {
     requestAnimationFrame(loop);
 }
 
-// scroll observer that updates the clean URL path as the user scrolls through page sections (without hashtags)
 function initScrollUrlUpdater() {
     const sections = document.querySelectorAll('section[id], footer[id]');
     if (!sections.length || !('IntersectionObserver' in window)) return;
@@ -916,7 +922,6 @@ function initScrollUrlUpdater() {
     sections.forEach(section => observer.observe(section));
 }
 
-// contact form submission handling via Formspree / Web3Forms email service
 function initContactForm() {
     const contactForm = document.getElementById('contact-form');
     if (!contactForm) return;
@@ -961,7 +966,6 @@ function initContactForm() {
     });
 }
 
-// animated light mode telemetry simulation feed
 function initTelemetrySimulation() {
     const rpmVal = document.getElementById('tele-rpm');
     const speedVal = document.getElementById('tele-speed');

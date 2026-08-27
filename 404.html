@@ -7,15 +7,12 @@
     <meta name="description" content="Trajectory error. The requested page or vector could not be located. Return to Needham Gravity Mission Control.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
 
-    <!-- google fonts -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
-    <!-- fontawesome icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <!-- design system stylesheet -->
     <link rel="stylesheet" href="/css/styles.css">
 
     <style>
@@ -89,12 +86,10 @@
     </style>
 
     <script>
-        // Check if GitHub Pages served 404 for clean path routes like /about, /telemetry, /roadmap, /sponsors, /contact
         (function() {
             var path = window.location.pathname.replace(/\/$/, '');
             var validRoutes = ['/about', '/telemetry', '/roadmap', '/sponsors', '/contact', '/team'];
             if (validRoutes.indexOf(path) !== -1) {
-                // Redirect back to root index.html preserving the clean route
                 sessionStorage.setItem('redirect_route', path);
                 window.location.replace('/');
             }
@@ -103,7 +98,6 @@
 </head>
 <body>
 
-    <!-- header overlay: logo on left -->
     <div class="header-overlay-bar">
         <a href="/" class="logo-link">
             <img src="/assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
