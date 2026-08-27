@@ -4,12 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found | Needham Gravity</title>
-    <meta name="description" content="Trajectory error. The requested page or vector could not be located. Return to Needham Gravity Mission Control.">
+    <meta name="description" content="The requested page or route could not be located. Return to Needham Gravity Mission Control.">
     <link rel="icon" type="image/png" href="/assets/logo.png">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -17,6 +17,7 @@
 
     <style>
         .error-page-container {
+            position: relative;
             min-height: 100vh;
             display: flex;
             align-items: center;
@@ -27,49 +28,128 @@
         }
 
         .error-card {
+            position: relative;
+            z-index: 2;
             max-width: 620px;
             width: 100%;
             background: #FFFFFF;
             border: 1px solid var(--border-color);
             border-radius: var(--radius-lg);
-            padding: 48px 36px;
+            padding: 56px 40px;
             box-shadow: var(--shadow-main);
         }
 
-        .error-code {
-            font-family: var(--font-heading);
-            font-size: 84px;
-            font-weight: 800;
-            color: var(--primary-color);
-            line-height: 1;
-            margin-bottom: 12px;
+        /* AUTHENTIC 4-FLAP MECHANICAL SPLIT-FLAP DISPLAY WITH SLASHED ZERO FONT */
+        .split-flap-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin: 10px auto 28px auto;
+            perspective: 1000px;
         }
 
-        .error-status-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            background: rgba(239, 68, 68, 0.1);
-            color: var(--error-color);
-            padding: 6px 16px;
-            border-radius: var(--radius-full);
-            font-family: var(--font-mono);
-            font-size: 12px;
+        .split-flap-tile {
+            position: relative;
+            width: 64px;
+            height: 86px;
+            background-color: #0A1C36;
+            border-radius: 8px;
+            box-shadow: 0 6px 16px rgba(10, 28, 54, 0.25);
+            perspective: 400px;
+            font-family: 'Share Tech Mono', 'IBM Plex Mono', monospace;
+            font-variant-numeric: slashed-zero;
+            font-size: 52px;
             font-weight: 700;
-            margin-bottom: 24px;
-            text-transform: uppercase;
+            color: #F3C319;
+            user-select: none;
+            border: 1px solid rgba(10, 28, 54, 0.35);
+        }
+
+        .flap {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 50%;
+            overflow: hidden;
+            background-color: #0A1C36;
+            backface-visibility: hidden;
+        }
+
+        .flap span {
+            position: absolute;
+            left: 0;
+            width: 100%;
+            height: 86px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-variant-numeric: slashed-zero;
+        }
+
+        .flap.top-static, .flap.flap-top {
+            top: 0;
+            border-top-left-radius: 8px;
+            border-top-right-radius: 8px;
+            transform-origin: bottom center;
+        }
+
+        .flap.top-static span, .flap.flap-top span {
+            top: 0;
+        }
+
+        .flap.bottom-static, .flap.flap-bottom {
+            bottom: 0;
+            border-bottom-left-radius: 8px;
+            border-bottom-right-radius: 8px;
+            transform-origin: top center;
+        }
+
+        .flap.bottom-static span, .flap.flap-bottom span {
+            bottom: 0;
+        }
+
+        .center-line {
+            position: absolute;
+            top: 50%;
+            left: 0;
+            width: 100%;
+            height: 1px;
+            background: rgba(0, 0, 0, 0.35);
+            transform: translateY(-50%);
+            z-index: 25;
+        }
+
+        /* 3D split-flap folding animations */
+        .flap.flap-top.flipping {
+            animation: flipTop 0.12s ease-in forwards;
+        }
+
+        .flap.flap-bottom.flipping {
+            animation: flipBottom 0.12s ease-out 0.05s forwards;
+        }
+
+        @keyframes flipTop {
+            0% { transform: rotateX(0deg); }
+            100% { transform: rotateX(-90deg); }
+        }
+
+        @keyframes flipBottom {
+            0% { transform: rotateX(90deg); }
+            100% { transform: rotateX(0deg); }
         }
 
         .error-title {
-            font-size: 26px;
+            font-size: 28px;
             color: var(--text-primary);
             margin-bottom: 14px;
+            font-weight: 700;
         }
 
         .error-desc {
             font-size: 15px;
             color: var(--text-secondary);
-            margin-bottom: 32px;
+            margin-bottom: 36px;
             line-height: 1.6;
         }
 
@@ -80,11 +160,9 @@
             gap: 16px;
             flex-wrap: wrap;
         }
-
-        /* automatic GitHub Pages client-side path router script */
-        /* If user navigated directly to /about, /telemetry, etc., redirect to index.html with pathname state */
     </style>
 
+    <!-- automatic GitHub Pages client-side path router script -->
     <script>
         (function() {
             var path = window.location.pathname.replace(/\/$/, '');
@@ -111,14 +189,12 @@
 
     <div class="error-page-container">
         <div class="error-card">
-            <div class="error-code">404</div>
-            <div class="error-status-badge">
-                <i class="fa-solid fa-triangle-exclamation"></i> Telemetry Error // Vector Lost
-            </div>
+            <!-- 5-CHARACTER AUTHENTIC 4-FLAP SPLIT-FLAP DISPLAY -->
+            <div class="split-flap-container" id="split-flap-display"></div>
 
             <h1 class="error-title">Trajectory Out of Bounds</h1>
             <p class="error-desc">
-                The orbital vector or page route you are trying to reach does not exist or has been relocated. Return to Mission Control to navigate back on target.
+                The page or vector you are trying to reach does not exist or has been relocated. Return to Mission Control to navigate back on target.
             </p>
 
             <div class="error-actions">
@@ -131,6 +207,129 @@
             </div>
         </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initSplitFlapText();
+        });
+
+        function initSplitFlapText() {
+            const displayEl = document.getElementById('split-flap-display');
+            if (!displayEl) return;
+
+            const words = [" 404 ", "ERROR"];
+            const charset = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ ";
+            const padTo = 5;
+            const flipsPerChar = 8;
+            const stepDelay = 110; // ms
+            const stagger = 60; // ms
+            const cycleDelay = 3400; // ms
+
+            const tileElements = [];
+            displayEl.innerHTML = '';
+
+            // Construct 5 physical 4-flap tile structures
+            for (let i = 0; i < padTo; i++) {
+                const initialChar = words[0][i] || ' ';
+
+                const tile = document.createElement('div');
+                tile.className = 'split-flap-tile';
+
+                tile.innerHTML = `
+                    <div class="flap top-static"><span>${initialChar}</span></div>
+                    <div class="flap bottom-static"><span>${initialChar}</span></div>
+                    <div class="flap flap-top"><span>${initialChar}</span></div>
+                    <div class="flap flap-bottom"><span>${initialChar}</span></div>
+                    <div class="center-line"></div>
+                `;
+
+                displayEl.appendChild(tile);
+
+                tileElements.push({
+                    tile: tile,
+                    topStatic: tile.querySelector('.top-static span'),
+                    bottomStatic: tile.querySelector('.bottom-static span'),
+                    flapTop: tile.querySelector('.flap-top'),
+                    flapTopSpan: tile.querySelector('.flap-top span'),
+                    flapBottom: tile.querySelector('.flap-bottom'),
+                    flapBottomSpan: tile.querySelector('.flap-bottom span'),
+                    currentChar: initialChar
+                });
+            }
+
+            let wordIdx = 0;
+
+            function flipTileToChar(tileObj, targetChar, onComplete) {
+                let flipStep = 0;
+                let currentChar = tileObj.currentChar;
+
+                function doSingleFlip() {
+                    flipStep++;
+                    let nextChar;
+
+                    if (flipStep >= flipsPerChar) {
+                        nextChar = targetChar;
+                    } else {
+                        nextChar = charset[Math.floor(Math.random() * (charset.length - 1))];
+                    }
+
+                    // Prepare 4 flaps for realistic physical flip:
+                    // 1. top-static gets nextChar (revealed under top flap)
+                    // 2. flap-top stays currentChar (folds down)
+                    // 3. bottom-static stays currentChar
+                    // 4. flap-bottom gets nextChar (unfolds down over bottom-static)
+                    tileObj.topStatic.textContent = nextChar;
+                    tileObj.flapTopSpan.textContent = currentChar;
+                    tileObj.bottomStatic.textContent = currentChar;
+                    tileObj.flapBottomSpan.textContent = nextChar;
+
+                    // Trigger CSS 3D rotations
+                    tileObj.flapTop.classList.remove('flipping');
+                    tileObj.flapBottom.classList.remove('flipping');
+                    void tileObj.flapTop.offsetWidth; // reflow
+
+                    tileObj.flapTop.classList.add('flipping');
+                    tileObj.flapBottom.classList.add('flipping');
+
+                    tileObj.currentChar = nextChar;
+
+                    setTimeout(() => {
+                        // Reset flaps to static state
+                        tileObj.bottomStatic.textContent = nextChar;
+                        tileObj.flapTopSpan.textContent = nextChar;
+                        tileObj.flapTop.classList.remove('flipping');
+                        tileObj.flapBottom.classList.remove('flipping');
+
+                        if (flipStep < flipsPerChar) {
+                            setTimeout(doSingleFlip, 20);
+                        } else {
+                            if (onComplete) onComplete();
+                        }
+                    }, stepDelay);
+                }
+
+                doSingleFlip();
+            }
+
+            function animateToNextWord() {
+                const nextWordIdx = (wordIdx + 1) % words.length;
+                const targetWord = words[nextWordIdx].padEnd(padTo, ' ');
+
+                tileElements.forEach((tileObj, colIdx) => {
+                    const targetChar = targetWord[colIdx];
+                    if (tileObj.currentChar === targetChar) return;
+
+                    setTimeout(() => {
+                        flipTileToChar(tileObj, targetChar);
+                    }, colIdx * stagger);
+                });
+
+                wordIdx = nextWordIdx;
+            }
+
+            setInterval(animateToNextWord, cycleDelay);
+        }
+    </script>
 
 </body>
 </html>
