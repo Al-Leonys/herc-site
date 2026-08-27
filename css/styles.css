@@ -795,6 +795,11 @@ ul {
     margin-bottom: 4px;
 }
 
+.timeline-desc {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
 .team-card {
     background: #FFFFFF;
     border: none;
@@ -888,6 +893,85 @@ ul {
     background: var(--accent-color);
     color: #0A1C36;
     --box-shadow-color: var(--accent-dark);
+}
+
+.box-blue .card-icon,
+.box-navy .card-icon,
+.box-blue .member-avatar,
+.box-navy .member-avatar,
+.box-blue .member-placeholder,
+.box-navy .member-placeholder {
+    background: rgba(255, 255, 255, 0.18);
+    color: #FFFFFF;
+}
+
+.box-gold .card-icon,
+.box-gold .member-avatar,
+.box-gold .member-placeholder {
+    background: rgba(10, 28, 54, 0.12);
+    color: #0A1C36;
+}
+
+.box-blue .card-title,
+.box-navy .card-title,
+.box-blue h4,
+.box-navy h4,
+.box-blue .timeline-date,
+.box-navy .timeline-date {
+    color: #FFFFFF;
+}
+
+.box-gold .card-title,
+.box-gold h4,
+.box-gold .timeline-date {
+    color: #0A1C36;
+}
+
+.box-blue .card-text,
+.box-navy .card-text,
+.box-blue .timeline-desc,
+.box-navy .timeline-desc {
+    color: rgba(255, 255, 255, 0.85);
+}
+
+.box-gold .card-text,
+.box-gold .timeline-desc {
+    color: rgba(10, 28, 54, 0.75);
+}
+
+.box-blue .card-subtitle,
+.box-navy .card-subtitle {
+    color: var(--accent-color);
+}
+
+.box-gold .card-subtitle {
+    color: var(--primary-color);
+}
+
+.box-blue .member-photo,
+.box-navy .member-photo,
+.box-gold .member-photo {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+.box-blue .member-email,
+.box-navy .member-email {
+    color: rgba(255, 255, 255, 0.75);
+    border-top-color: rgba(255, 255, 255, 0.25);
+}
+
+.box-blue .member-email a,
+.box-navy .member-email a {
+    color: #FFFFFF;
+}
+
+.box-gold .member-email {
+    color: rgba(10, 28, 54, 0.65);
+    border-top-color: rgba(10, 28, 54, 0.2);
+}
+
+.box-gold .member-email a {
+    color: #0A1C36;
 }
 
 .member-email {
