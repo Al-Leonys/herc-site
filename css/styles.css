@@ -150,6 +150,30 @@ ul {
     object-fit: contain;
 }
 
+.logo-btn {
+    background: #FFFFFF;
+    border: 1px solid var(--border-hover);
+    border-radius: var(--radius-full);
+    padding: 8px 22px 8px 12px;
+    box-shadow: 0 6px 0 0 var(--border-hover);
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.logo-btn:hover {
+    background-color: #E9ECF1;
+    transform: translateY(2px);
+    box-shadow: 0 4px 0 0 var(--border-hover);
+}
+
+.logo-btn:active,
+.logo-btn.btn-click-pop {
+    animation: btn-click-pop 0.28s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+.logo-btn .nav-logo-img {
+    height: 32px;
+}
+
 .logo-title {
     font-family: var(--font-heading);
     font-size: 20px;
