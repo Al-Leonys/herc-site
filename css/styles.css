@@ -9,6 +9,10 @@
     --accent-dark: #D4A30A;
     --accent-rgb: 243, 195, 25;
 
+    --blue-color: #1868DB;
+    --blue-dark: #0F4FAD;
+    --blue-rgb: 24, 104, 219;
+
     --cyan-glow: #0088A3;
 
     --success-color: #10B981;
@@ -528,18 +532,17 @@ ul {
 
 .glass-card {
     background: #FFFFFF;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: var(--radius-md);
     padding: 32px;
-    transition: var(--transition-smooth);
-    box-shadow: var(--shadow-main);
     position: relative;
+    box-shadow: 0 4px 0 0 var(--box-shadow-color, var(--border-hover));
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .glass-card:hover {
-    border-color: var(--border-hover);
-    transform: translateY(-4px);
-    box-shadow: 0 14px 36px rgba(10, 28, 54, 0.12);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 0 var(--box-shadow-color, var(--border-hover));
 }
 
 .card-icon {
@@ -773,10 +776,16 @@ ul {
 
 .timeline-card {
     background: #FFFFFF;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: var(--radius-md);
     padding: 20px;
-    box-shadow: var(--shadow-main);
+    box-shadow: 0 4px 0 0 var(--box-shadow-color, var(--border-hover));
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+}
+
+.timeline-card:hover {
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 0 var(--box-shadow-color, var(--border-hover));
 }
 
 .timeline-date {
@@ -788,17 +797,17 @@ ul {
 
 .team-card {
     background: #FFFFFF;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: var(--radius-md);
     padding: 28px;
     text-align: center;
-    transition: var(--transition-smooth);
-    box-shadow: var(--shadow-main);
+    box-shadow: 0 4px 0 0 var(--box-shadow-color, var(--border-hover));
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .team-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary-color);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 0 var(--box-shadow-color, var(--border-hover));
 }
 
 .member-avatar {
@@ -817,18 +826,17 @@ ul {
 
 .member-card {
     background: #FFFFFF;
-    border: 1px solid var(--border-color);
+    border: none;
     border-radius: var(--radius-md);
     padding: 28px;
     text-align: center;
-    transition: var(--transition-smooth);
-    box-shadow: var(--shadow-main);
+    box-shadow: 0 4px 0 0 var(--box-shadow-color, var(--border-hover));
+    transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
 }
 
 .member-card:hover {
-    transform: translateY(-4px);
-    border-color: var(--primary-color);
-    box-shadow: 0 15px 40px -10px rgba(10, 28, 54, 0.12);
+    transform: translateY(2px);
+    box-shadow: 0 2px 0 0 var(--box-shadow-color, var(--border-hover));
 }
 
 .member-photo {
@@ -856,6 +864,30 @@ ul {
     font-weight: 600;
     color: var(--accent-color);
     margin-bottom: 12px;
+}
+
+.box-white {
+    background: #FFFFFF;
+    color: var(--text-primary);
+    --box-shadow-color: var(--border-hover);
+}
+
+.box-blue {
+    background: var(--blue-color);
+    color: #FFFFFF;
+    --box-shadow-color: var(--blue-dark);
+}
+
+.box-navy {
+    background: var(--primary-color);
+    color: #FFFFFF;
+    --box-shadow-color: var(--primary-dark);
+}
+
+.box-gold {
+    background: var(--accent-color);
+    color: #0A1C36;
+    --box-shadow-color: var(--accent-dark);
 }
 
 .member-email {
