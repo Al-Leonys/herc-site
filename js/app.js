@@ -3,7 +3,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initStaggeredMenu();
     initCanvAsciiHeroTitle();
     initHalftoneRevealBackground();
-    initTelemetrySimulation();
     initContactForm();
     initScrollUrlUpdater();
     initButtonClickAnimation();
@@ -25,7 +24,6 @@ function initButtonClickAnimation() {
 const routeToSectionMap = {
     '/': 'hero',
     '/about': 'about',
-    '/telemetry': 'telemetry',
     '/team': 'team',
     '/roadmap': 'roadmap',
     '/sponsors': 'sponsors',
@@ -35,7 +33,6 @@ const routeToSectionMap = {
 const sectionToRouteMap = {
     'hero': '/',
     'about': '/about',
-    'telemetry': '/telemetry',
     'team': '/team',
     'roadmap': '/roadmap',
     'sponsors': '/sponsors',
@@ -964,42 +961,4 @@ function initContactForm() {
             }
         }
     });
-}
-
-function initTelemetrySimulation() {
-    const rpmVal = document.getElementById('tele-rpm');
-    const speedVal = document.getElementById('tele-speed');
-    const batteryVal = document.getElementById('tele-battery');
-    const inclineVal = document.getElementById('tele-incline');
-    const powerVal = document.getElementById('tele-power');
-    const fillBar = document.getElementById('tele-bar-fill');
-
-    if (!rpmVal) return;
-
-    let barTrendUp = true;
-    let currentBarPct = 65;
-
-    setInterval(() => {
-        const speed = (12.2 + (Math.random() * 1.6 - 0.8)).toFixed(1);
-        const rpm = Math.floor(142 + (Math.random() * 14 - 7));
-        const power = Math.floor(335 + (Math.random() * 26 - 13));
-        const incline = (14.0 + (Math.random() * 1.0 - 0.5)).toFixed(1);
-
-        if (speedVal) speedVal.innerText = speed;
-        if (rpmVal) rpmVal.innerText = rpm;
-        if (powerVal) powerVal.innerText = power;
-        if (inclineVal) inclineVal.innerText = incline;
-
-        if (barTrendUp) {
-            currentBarPct += Math.floor(Math.random() * 6 + 3);
-            if (currentBarPct >= 85) barTrendUp = false;
-        } else {
-            currentBarPct -= Math.floor(Math.random() * 6 + 3);
-            if (currentBarPct <= 45) barTrendUp = true;
-        }
-
-        if (fillBar) {
-            fillBar.style.width = `${currentBarPct}%`;
-        }
-    }, 1800);
 }

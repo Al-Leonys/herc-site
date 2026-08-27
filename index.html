@@ -57,7 +57,6 @@
                         <ul class="sm-col-list">
                             <li><span class="sm-panel-itemWrap"><a href="/" data-target="hero" class="sm-menu-item"><span class="sm-panel-itemLabel">Home</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/about" data-target="about" class="sm-menu-item"><span class="sm-panel-itemLabel">Mission Overview</span></a></span></li>
-                            <li><span class="sm-panel-itemWrap"><a href="/telemetry" data-target="telemetry" class="sm-menu-item"><span class="sm-panel-itemLabel">Vehicle Telemetry</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/team" data-target="team" class="sm-menu-item"><span class="sm-panel-itemLabel">Subsystems</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/meet-team" data-target="meet-team" class="sm-menu-item"><span class="sm-panel-itemLabel">Meet the Team</span></a></span></li>
                         </ul>
@@ -99,9 +98,6 @@
             <div class="hero-actions">
                 <a href="/about" data-target="about" class="btn btn-primary">
                     Explore Our Mission
-                </a>
-                <a href="/telemetry" data-target="telemetry" class="btn btn-secondary">
-                    View Telemetry [Placeholder] <i class="fa-solid fa-microchip"></i>
                 </a>
             </div>
         </div>
@@ -145,73 +141,14 @@
         </div>
     </section>
 
-    <section class="section" id="telemetry" style="background: #FFFFFF;">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">VEHICLE DIAGNOSTICS</span>
-                <h2 class="section-title">Live Telemetry Feed [Placeholder]</h2>
-                <p class="section-desc">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Live sensor feeds stream drive output, RPM, incline angle, and telemetry logs.
-                </p>
-            </div>
-
-            <div class="telemetry-box">
-                <div class="telemetry-header">
-                    <div class="telemetry-title">
-                        <span class="status-indicator"></span>
-                        SYSTEM OK // REAL-TIME TELEMETRY FEED
-                    </div>
-                    <div style="font-size: 12px; color: var(--text-muted);">
-                        FREQ: 100 Hz | PKT LOSS: 0.0%
-                    </div>
-                </div>
-
-                <div class="telemetry-grid">
-                    <div class="tele-metric">
-                        <div class="tele-label">Cadence Speed</div>
-                        <div class="tele-value" id="tele-speed">12.4<span class="tele-unit">km/h</span></div>
-                    </div>
-
-                    <div class="tele-metric">
-                        <div class="tele-label">Drivetrain RPM</div>
-                        <div class="tele-value" id="tele-rpm">146<span class="tele-unit">RPM</span></div>
-                    </div>
-
-                    <div class="tele-metric">
-                        <div class="tele-label">Power Output</div>
-                        <div class="tele-value" id="tele-power">342<span class="tele-unit">W</span></div>
-                    </div>
-
-                    <div class="tele-metric">
-                        <div class="tele-label">Course Incline</div>
-                        <div class="tele-value" id="tele-incline">14.2<span class="tele-unit">°</span></div>
-                    </div>
-
-                    <div class="tele-metric">
-                        <div class="tele-label">Chassis Status</div>
-                        <div class="tele-value" style="color: var(--success-color); font-size: 20px;">NOMINAL</div>
-                    </div>
-
-                    <div class="tele-metric">
-                        <div class="tele-label">Comms Link</div>
-                        <div class="tele-value" style="color: var(--primary-color); font-size: 20px;">ACTIVE</div>
-                    </div>
-                </div>
-
-                <div class="tele-bar-bg">
-                    <div class="tele-bar-fill" id="tele-bar-fill"></div>
-                </div>
-            </div>
-        </div>
-    </section>
-
+    <!-- subsystems section -->
     <section class="section" id="team">
         <div class="container">
             <div class="section-header">
                 <span class="section-subtitle">TEAM DIVISIONS</span>
                 <h2 class="section-title">Engineering Subsystems</h2>
                 <p class="section-desc">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Student leads design, fabricate, and test specialized rover systems.
+                    Students lead design, fabricate, and test specialized rover systems.
                 </p>
             </div>
 
@@ -219,7 +156,7 @@
                 <div class="team-card box-gold">
                     <div class="member-avatar"><i class="fa-solid fa-shield"></i></div>
                     <h3 class="card-title">Chassis & Frame</h3>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Design and stress analysis.</p>
+                    <p class="card-text">Design and stress analysis.</p>
                 </div>
 
                 <div class="team-card box-white">
@@ -229,9 +166,9 @@
                 </div>
 
                 <div class="team-card box-navy">
-                    <div class="member-avatar"><i class="fa-solid fa-dharmachakra"></i></div>
-                    <h3 class="card-title">Wheels & Steering</h3>
-                    <p class="card-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Custom non-pneumatic tires.</p>
+                    <div class="member-avatar"><i class="fa-solid fa-microchip"></i></div>
+                    <h3 class="card-title">Electronics & Task Completion</h3>
+                    <p class="card-text">Control systems, sensors, and autonomous task mechanisms.</p>
                 </div>
             </div>
         </div>
@@ -498,7 +435,6 @@
                 <ul class="footer-links">
                     <li><a href="/" data-target="hero">Home</a></li>
                     <li><a href="/about" data-target="about">Mission</a></li>
-                    <li><a href="/telemetry" data-target="telemetry">Telemetry</a></li>
                     <li><a href="/team" data-target="team">Subsystems</a></li>
                     <li><a href="/meet-team" data-target="meet-team">Team</a></li>
                 </ul>
