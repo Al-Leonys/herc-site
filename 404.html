@@ -1,0 +1,142 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>404 - Page Not Found | Needham Gravity</title>
+    <meta name="description" content="Trajectory error. The requested page or vector could not be located. Return to Needham Gravity Mission Control.">
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+
+    <!-- fontawesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- design system stylesheet -->
+    <link rel="stylesheet" href="/css/styles.css">
+
+    <style>
+        .error-page-container {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 120px 24px 60px 24px;
+            background-color: var(--bg-main);
+            text-align: center;
+        }
+
+        .error-card {
+            max-width: 620px;
+            width: 100%;
+            background: #FFFFFF;
+            border: 1px solid var(--border-color);
+            border-radius: var(--radius-lg);
+            padding: 48px 36px;
+            box-shadow: var(--shadow-main);
+        }
+
+        .error-code {
+            font-family: var(--font-heading);
+            font-size: 84px;
+            font-weight: 800;
+            color: var(--primary-color);
+            line-height: 1;
+            margin-bottom: 12px;
+        }
+
+        .error-status-badge {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--error-color);
+            padding: 6px 16px;
+            border-radius: var(--radius-full);
+            font-family: var(--font-mono);
+            font-size: 12px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+        }
+
+        .error-title {
+            font-size: 26px;
+            color: var(--text-primary);
+            margin-bottom: 14px;
+        }
+
+        .error-desc {
+            font-size: 15px;
+            color: var(--text-secondary);
+            margin-bottom: 32px;
+            line-height: 1.6;
+        }
+
+        .error-actions {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            flex-wrap: wrap;
+        }
+
+        /* automatic GitHub Pages client-side path router script */
+        /* If user navigated directly to /about, /telemetry, etc., redirect to index.html with pathname state */
+    </style>
+
+    <script>
+        // Check if GitHub Pages served 404 for clean path routes like /about, /telemetry, /roadmap, /sponsors, /contact
+        (function() {
+            var path = window.location.pathname.replace(/\/$/, '');
+            var validRoutes = ['/about', '/telemetry', '/roadmap', '/sponsors', '/contact', '/team'];
+            if (validRoutes.indexOf(path) !== -1) {
+                // Redirect back to root index.html preserving the clean route
+                sessionStorage.setItem('redirect_route', path);
+                window.location.replace('/');
+            }
+        })();
+    </script>
+</head>
+<body>
+
+    <!-- header overlay: logo on left -->
+    <div class="header-overlay-bar">
+        <a href="/" class="logo-link">
+            <img src="/assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
+            <span class="logo-title">NEEDHAM GRAVITY</span>
+        </a>
+
+        <a href="/" class="btn btn-primary" style="padding: 9px 20px; font-size: 13px;">
+            <i class="fa-solid fa-house"></i> Home
+        </a>
+    </div>
+
+    <div class="error-page-container">
+        <div class="error-card">
+            <div class="error-code">404</div>
+            <div class="error-status-badge">
+                <i class="fa-solid fa-triangle-exclamation"></i> Telemetry Error // Vector Lost
+            </div>
+
+            <h1 class="error-title">Trajectory Out of Bounds</h1>
+            <p class="error-desc">
+                The orbital vector or page route you are trying to reach does not exist or has been relocated. Return to Mission Control to navigate back on target.
+            </p>
+
+            <div class="error-actions">
+                <a href="/" class="btn btn-primary">
+                    <i class="fa-solid fa-arrow-left"></i> Return to Mission Control
+                </a>
+                <a href="/contact" class="btn btn-secondary">
+                    <i class="fa-regular fa-envelope"></i> Contact Support
+                </a>
+            </div>
+        </div>
+    </div>
+
+</body>
+</html>

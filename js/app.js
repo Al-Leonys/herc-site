@@ -1,6 +1,7 @@
 // needham gravity app logic - echoes GSAP staggered menu, Three.js CanvAscii title, & OGL HalftoneReveal background
 
 document.addEventListener('DOMContentLoaded', () => {
+    initCleanRouteNavigation();
     initStaggeredMenu();
     initCanvAsciiHeroTitle();
     initHalftoneRevealBackground();
@@ -8,6 +9,88 @@ document.addEventListener('DOMContentLoaded', () => {
     initContactForm();
     initScrollUrlUpdater();
 });
+
+// route path mapping helper
+const routeToSectionMap = {
+    '/': 'hero',
+    '/about': 'about',
+    '/telemetry': 'telemetry',
+    '/team': 'team',
+    '/roadmap': 'roadmap',
+    '/sponsors': 'sponsors',
+    '/contact': 'contact'
+};
+
+const sectionToRouteMap = {
+    'hero': '/',
+    'about': '/about',
+    'telemetry': '/telemetry',
+    'team': '/team',
+    'roadmap': '/roadmap',
+    'sponsors': '/sponsors',
+    'contact': '/contact'
+};
+
+// handle clean route clicks and initial page load route restoration without hashtags
+function initCleanRouteNavigation() {
+    // 1. Check for GitHub Pages 404 redirect route or direct pathname navigation
+    let targetPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
+    if (targetPath) {
+        targetPath = targetPath.replace(/\/$/, '') || '/';
+        sessionStorage.removeItem('redirect_route');
+        const targetId = routeToSectionMap[targetPath];
+        if (targetId) {
+            setTimeout(() => {
+                const elem = document.getElementById(targetId);
+                if (elem) {
+                    elem.scrollIntoView({ behavior: 'smooth' });
+                    history.replaceState(null, '', targetPath);
+                }
+            }, 150);
+        }
+    }
+
+    // 2. Wire click handlers for clean route navigation
+    document.body.addEventListener('click', (e) => {
+        const link = e.target.closest('a[data-target], a[href^="/"]');
+        if (!link) return;
+
+        const dataTarget = link.getAttribute('data-target');
+        const href = link.getAttribute('href');
+
+        let targetId = dataTarget;
+        let routePath = href;
+
+        if (!targetId && href) {
+            const cleanHref = href.replace(/\/$/, '') || '/';
+            targetId = routeToSectionMap[cleanHref];
+        }
+
+        if (targetId) {
+            const targetElem = document.getElementById(targetId);
+            if (targetElem) {
+                e.preventDefault();
+                routePath = sectionToRouteMap[targetId] || '/';
+                
+                targetElem.scrollIntoView({ behavior: 'smooth' });
+                history.pushState(null, '', routePath);
+
+                if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
+                    window.closeStaggeredMenu();
+                }
+            }
+        }
+    });
+
+    window.addEventListener('popstate', () => {
+        const path = (window.location.pathname.replace(/\/$/, '') || '/');
+        const targetId = routeToSectionMap[path];
+        if (targetId) {
+            const elem = document.getElementById(targetId);
+            if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+        }
+    });
+}
 
 // echoes staggered top menu logic with GSAP in/out animations & orange sweeper leader
 function initStaggeredMenu() {
@@ -98,7 +181,7 @@ function initStaggeredMenu() {
         }
     }
 
-    function closeStaggeredMenu(callback) {
+    window.closeStaggeredMenu = function(callback) {
         if (!window.isMenuOpen) {
             if (callback) callback();
             return;
@@ -139,13 +222,13 @@ function initStaggeredMenu() {
                 if (callback) callback();
             }
         });
-    }
+    };
 
     if (smToggleEl) {
         smToggleEl.addEventListener('click', (e) => {
             e.stopPropagation();
             if (window.isMenuOpen) {
-                closeStaggeredMenu();
+                window.closeStaggeredMenu();
             } else {
                 openStaggeredMenu();
             }
@@ -154,7 +237,7 @@ function initStaggeredMenu() {
 
     smMenuItems.forEach(item => {
         item.addEventListener('click', () => {
-            closeStaggeredMenu();
+            window.closeStaggeredMenu();
         });
     });
 }
@@ -811,27 +894,29 @@ function initHalftoneRevealBackground() {
     requestAnimationFrame(loop);
 }
 
-// scroll observer that updates the URL anchor as the user scrolls through page sections
+// scroll observer that updates the clean URL path as the user scrolls through page sections (without hashtags)
 function initScrollUrlUpdater() {
     const sections = document.querySelectorAll('section[id], footer[id]');
     if (!sections.length || !('IntersectionObserver' in window)) return;
 
-    let currentSectionId = '';
+    let currentRoutePath = window.location.pathname;
 
     const observer = new IntersectionObserver((entries) => {
         entries.forEach(entry => {
             if (entry.isIntersecting) {
                 const id = entry.target.getAttribute('id');
-                if (id && id !== currentSectionId) {
-                    currentSectionId = id;
-                    history.replaceState(null, '', `#${id}`);
+                const routePath = sectionToRouteMap[id];
+
+                if (routePath && routePath !== currentRoutePath) {
+                    currentRoutePath = routePath;
+                    history.replaceState(null, '', routePath);
                 }
             }
         });
     }, {
         root: null,
         rootMargin: '-20% 0px -40% 0px',
-        threshold: 0.2
+        threshold: 0.25
     });
 
     sections.forEach(section => observer.observe(section));
