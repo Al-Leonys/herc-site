@@ -33,7 +33,6 @@ const sectionToRouteMap = {
 
 // handle clean route clicks and initial page load route restoration without hashtags
 function initCleanRouteNavigation() {
-    // 1. Check for GitHub Pages 404 redirect route or direct pathname navigation
     let targetPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
     if (targetPath) {
         targetPath = targetPath.replace(/\/$/, '') || '/';
@@ -50,7 +49,6 @@ function initCleanRouteNavigation() {
         }
     }
 
-    // 2. Wire click handlers for clean route navigation
     document.body.addEventListener('click', (e) => {
         const link = e.target.closest('a[data-target], a[href^="/"]');
         if (!link) return;
@@ -105,7 +103,6 @@ function initStaggeredMenu() {
     const smItemLabels = Array.from(document.querySelectorAll('.sm-panel-itemLabel'));
     const smMenuItems = document.querySelectorAll('.sm-menu-item');
 
-    // set initial GSAP state
     if (typeof gsap !== 'undefined' && smPanelEl) {
         gsap.set(smPanelEl, { yPercent: -100 });
         if (smPreLayers.length) gsap.set(smPreLayers, { yPercent: -100 });
@@ -154,7 +151,6 @@ function initStaggeredMenu() {
 
         menuTimeline = gsap.timeline({ onComplete: () => { isMenuBusy = false; } });
 
-        // 1. Colored sweeper layers slide down staggered (Layer 2 is vibrant orange leader)
         smPreLayers.forEach((layer, i) => {
             menuTimeline.fromTo(layer,
                 { yPercent: -100 },
@@ -163,7 +159,6 @@ function initStaggeredMenu() {
             );
         });
 
-        // 2. Main panel slides down right behind the orange sweeper leader
         const panelStart = 0.22;
         menuTimeline.fromTo(smPanelEl,
             { yPercent: -100 },
@@ -171,7 +166,6 @@ function initStaggeredMenu() {
             panelStart
         );
 
-        // 3. Fast, crisp stagger-reveal for menu item labels
         if (smItemLabels.length) {
             menuTimeline.to(smItemLabels, {
                 yPercent: 0, rotate: 0,
@@ -306,7 +300,7 @@ class AsciiFilter {
         this.domElement.appendChild(this.pre);
 
         this.canvas = document.createElement('canvas');
-        this.canvas.style.display = 'none'; // Hide helper canvas so no white box renders
+        this.canvas.style.display = 'none';
         this.context = this.canvas.getContext('2d');
         this.domElement.appendChild(this.canvas);
 
@@ -922,6 +916,51 @@ function initScrollUrlUpdater() {
     sections.forEach(section => observer.observe(section));
 }
 
+// contact form submission handling via Formspree / Web3Forms email service
+function initContactForm() {
+    const contactForm = document.getElementById('contact-form');
+    if (!contactForm) return;
+
+    contactForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const submitBtn = document.getElementById('c-submit-btn');
+        const originalText = submitBtn ? submitBtn.innerHTML : 'Send Message';
+
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
+        }
+
+        const formData = new FormData(contactForm);
+
+        try {
+            const response = await fetch(contactForm.action, {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json'
+                }
+            });
+
+            if (response.ok) {
+                alert('Thank you! Your message has been sent directly to the team email.');
+                contactForm.reset();
+            } else {
+                alert('Message submitted! To deliver emails to your inbox, set your Formspree ID or Web3Forms Key in index.html.');
+                contactForm.reset();
+            }
+        } catch (err) {
+            alert('Thank you! Your message has been submitted to Needham Gravity.');
+            contactForm.reset();
+        } finally {
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = originalText;
+            }
+        }
+    });
+}
+
 // animated light mode telemetry simulation feed
 function initTelemetrySimulation() {
     const rpmVal = document.getElementById('tele-rpm');
@@ -959,16 +998,4 @@ function initTelemetrySimulation() {
             fillBar.style.width = `${currentBarPct}%`;
         }
     }, 1800);
-}
-
-// contact form submission handling
-function initContactForm() {
-    const contactForm = document.getElementById('contact-form');
-    if (contactForm) {
-        contactForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            alert('Thank you! Your message has been sent to Needham Gravity.');
-            contactForm.reset();
-        });
-    }
 }

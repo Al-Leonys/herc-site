@@ -354,7 +354,7 @@
         </div>
     </section>
 
-    <!-- contact form section -->
+    <!-- CONTACT FORM SECTION WITH FORMSPREE EMAIL DISPATCH -->
     <section class="section" id="contact" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
@@ -366,23 +366,26 @@
             </div>
 
             <div class="contact-container">
-                <form id="contact-form">
+                <!-- Formspree Endpoint with CC field for ashaigor@gmail.com -->
+                <form id="contact-form" action="https://formspree.io/f/mzebprww" method="POST">
+                    <input type="hidden" name="_cc" value="ashaigor@gmail.com">
+
                     <div class="form-group">
                         <label class="form-label" for="c-name">Full Name</label>
-                        <input type="text" id="c-name" class="form-input" placeholder="Your Name" required>
+                        <input type="text" id="c-name" name="name" class="form-input" placeholder="Your Name" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="c-email">Email Address</label>
-                        <input type="email" id="c-email" class="form-input" placeholder="name@example.com" required>
+                        <input type="email" id="c-email" name="email" class="form-input" placeholder="name@example.com" required>
                     </div>
 
                     <div class="form-group">
                         <label class="form-label" for="c-message">Message</label>
-                        <textarea id="c-message" class="form-textarea" placeholder="How can we help or collaborate?" required></textarea>
+                        <textarea id="c-message" name="message" class="form-textarea" placeholder="How can we help or collaborate?" required></textarea>
                     </div>
 
-                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                    <button type="submit" id="c-submit-btn" class="btn btn-primary" style="width: 100%;">
                         Send Message <i class="fa-regular fa-paper-plane"></i>
                     </button>
                 </form>
