@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Needham Gravity | NASA HERC Team</title>
+
+    <!-- seo meta tags -->
+    <meta name="description" content="Needham Gravity is a high school engineering team participating in NASA's Human Exploration Rover Challenge (HERC).">
+    <meta name="keywords" content="Needham Gravity, NASA HERC, Human Exploration Rover Challenge, Needham High School, Rover Engineering">
+    <meta name="author" content="Needham Gravity Team">
+
+    <!-- open graph tags -->
+    <meta property="og:type" content="website">
+    <meta property="og:title" content="Needham Gravity | NASA HERC Engineering Team">
+    <meta property="og:description" content="Student rover engineering team for NASA's Human Exploration Rover Challenge.">
+    <meta property="og:image" content="/assets/logo.png">
+
+    <!-- favicon -->
+    <link rel="icon" type="image/png" href="/assets/logo.png">
+
+    <!-- google fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <!-- fontawesome icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- design system stylesheet -->
+    <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+
+    <!-- ambient background glow blobs -->
+    <div class="blob-container">
+        <div class="glow-blob blob-1"></div>
+        <div class="glow-blob blob-2"></div>
+    </div>
+
+    <!-- header overlay: logo on left, menu button on right (NO menu bar container) -->
+    <div class="header-overlay-bar">
+        <a href="#hero" class="logo-link">
+            <img src="assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
+            <span class="logo-title">NEEDHAM GRAVITY</span>
+        </a>
+
+        <!-- echoes menu toggle button -->
+        <button class="sm-toggle" id="sm-toggle-btn" aria-label="Open menu">
+            <span class="sm-toggle-line">Menu</span>
+            <span class="sm-icon">
+                <span class="sm-icon-line"></span>
+                <span class="sm-icon-line sm-icon-line-v"></span>
+            </span>
+        </button>
+    </div>
+
+    <!-- echoes staggered menu overlay (with GSAP sweeper prelayers & orange leader) -->
+    <div id="staggered-menu-overlay" class="staggered-menu-wrapper">
+        <div class="sm-prelayers">
+            <div class="sm-prelayer sm-prelayer-1"></div>
+            <div class="sm-prelayer sm-prelayer-2"></div>
+            <div class="sm-prelayer sm-prelayer-3"></div>
+        </div>
+
+        <aside id="staggered-menu-panel" class="staggered-menu-panel">
+            <div class="sm-panel-inner">
+                <div class="sm-panel-grid">
+                    <!-- column 1: explore -->
+                    <div class="sm-grid-col">
+                        <h3 class="sm-col-title">Explore</h3>
+                        <ul class="sm-col-list">
+                            <li><span class="sm-panel-itemWrap"><a href="#hero" class="sm-menu-item"><span class="sm-panel-itemLabel">Home</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="#about" class="sm-menu-item"><span class="sm-panel-itemLabel">Mission Overview</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="#telemetry" class="sm-menu-item"><span class="sm-panel-itemLabel">Vehicle Telemetry</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="#team" class="sm-menu-item"><span class="sm-panel-itemLabel">Subsystems</span></a></span></li>
+                        </ul>
+                    </div>
+
+                    <!-- column 2: roadmap & engagement -->
+                    <div class="sm-grid-col">
+                        <h3 class="sm-col-title">Roadmap & Involvement</h3>
+                        <ul class="sm-col-list">
+                            <li><span class="sm-panel-itemWrap"><a href="#roadmap" class="sm-menu-item"><span class="sm-panel-itemLabel">Development Roadmap</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="#sponsors" class="sm-menu-item"><span class="sm-panel-itemLabel">Sponsorship Tiers</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="#contact" class="sm-menu-item"><span class="sm-panel-itemLabel">Get In Touch</span></a></span></li>
+                        </ul>
+                    </div>
+
+                    <!-- column 3: program info -->
+                    <div class="sm-grid-col">
+                        <h3 class="sm-col-title">NASA HERC Program</h3>
+                        <p style="font-size: 14px; color: var(--text-secondary); line-height: 1.6;">
+                            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </aside>
+    </div>
+
+    <!-- HERO HEADER SECTION - TAKES UP FULL VIEWPORT (100vh) UNTIL SCROLLING DOWN -->
+    <section class="hero-section" id="hero">
+        <div class="hero-bg-container" id="halftone-bg-container">
+            <img src="assets/hero-bg.jpg" alt="Historic Needham High Header" class="hero-bg-img">
+            <div class="hero-overlay"></div>
+        </div>
+
+        <div class="hero-content">
+            <!-- Three.js ASCII text container for NEEDHAM GRAVITY -->
+            <div id="ascii-text-container" class="ascii-text-hero-title"></div>
+            <p class="hero-subtitle">
+                Designing and fabricating a human-powered extraterrestrial vehicle for NASA's Human Exploration Rover Challenge at the U.S. Space & Rocket Center.
+            </p>
+            <div class="hero-actions">
+                <a href="#about" class="btn btn-primary">
+                    Explore Mission <i class="fa-solid fa-arrow-right"></i>
+                </a>
+                <a href="#telemetry" class="btn btn-secondary">
+                    View Telemetry [Placeholder] <i class="fa-solid fa-microchip"></i>
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- mission section -->
+    <section class="section" id="about">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">THE PROGRAM</span>
+                <h2 class="section-title">NASA HERC Challenge Overview</h2>
+                <p class="section-desc">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                </p>
+            </div>
+
+            <div class="grid-2">
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-person-biking"></i>
+                    </div>
+                    <h3 class="card-title">Dual-Pilot Drivetrain [Placeholder]</h3>
+                    <p class="card-text">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-microchip"></i>
+                    </div>
+                    <h3 class="card-title">Avionics & Telemetry [Placeholder]</h3>
+                    <p class="card-text">
+                        Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-circle-notch"></i>
+                    </div>
+                    <h3 class="card-title">Wheel & Traction Design [Placeholder]</h3>
+                    <p class="card-text">
+                        Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                    </p>
+                </div>
+
+                <div class="glass-card">
+                    <div class="card-icon">
+                        <i class="fa-solid fa-vial"></i>
+                    </div>
+                    <h3 class="card-title">Science Task Tools [Placeholder]</h3>
+                    <p class="card-text">
+                        Sed ut perspiciatis unde omnis iste natus error sit voluptatem accusantium doloremque laudantium.
+                    </p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- LIGHT MODE ANIMATED TELEMETRY MODULE PANEL (PLACEHOLDER DATA) -->
+    <section class="section" style="background: rgba(10, 28, 54, 0.02);" id="telemetry">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">VEHICLE DIAGNOSTICS</span>
+                <h2 class="section-title">Telemetry Panel [Placeholder]</h2>
+                <p class="section-desc">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+                </p>
+            </div>
+
+            <div class="telemetry-box">
+                <div class="telemetry-header">
+                    <div class="telemetry-title">
+                        <div class="status-indicator"></div> TELEMETRY MODULE // FEED [PLACEHOLDER]
+                    </div>
+                    <span style="font-size: 11px; color: #64748B; font-weight: 600;">LIVE ANIMATED FEED</span>
+                </div>
+
+                <div class="telemetry-grid">
+                    <div class="tele-metric">
+                        <div class="tele-label">Drivetrain Speed [Placeholder]</div>
+                        <div class="tele-value"><span id="tele-speed">12.4</span><span class="tele-unit">mph</span></div>
+                    </div>
+
+                    <div class="tele-metric">
+                        <div class="tele-label">Cadence RPM [Placeholder]</div>
+                        <div class="tele-value"><span id="tele-rpm">145</span><span class="tele-unit">rpm</span></div>
+                    </div>
+
+                    <div class="tele-metric">
+                        <div class="tele-label">Power Output [Placeholder]</div>
+                        <div class="tele-value"><span id="tele-power">340</span><span class="tele-unit">W</span></div>
+                    </div>
+
+                    <div class="tele-metric">
+                        <div class="tele-label">Terrain Incline [Placeholder]</div>
+                        <div class="tele-value"><span id="tele-incline">14.2</span><span class="tele-unit">°</span></div>
+                    </div>
+
+                    <div class="tele-metric">
+                        <div class="tele-label">System Battery [Placeholder]</div>
+                        <div class="tele-value"><span id="tele-battery">98</span><span class="tele-unit">%</span></div>
+                    </div>
+
+                    <div class="tele-metric">
+                        <div class="tele-label">Signal Quality [Placeholder]</div>
+                        <div class="tele-value" style="color: var(--success-color);">99.2<span class="tele-unit">%</span></div>
+                    </div>
+                </div>
+
+                <div style="margin-top: 20px;">
+                    <div style="display: flex; justify-content: space-between; font-size: 11px; color: #64748B; margin-bottom: 6px; font-weight: 600;">
+                        <span>TORQUE LOAD METRIC [PLACEHOLDER]</span>
+                        <span>NOMINAL</span>
+                    </div>
+                    <div class="tele-bar-bg">
+                        <div class="tele-bar-fill" id="tele-bar-fill"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- team subsystems roster (placeholders) -->
+    <section class="section" id="team">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">TEAM DIVISIONS</span>
+                <h2 class="section-title">Engineering Subsystems [Placeholder]</h2>
+                <p class="section-desc">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+                </p>
+            </div>
+
+            <div class="grid-3">
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-user-gear"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">Drivetrain Subsystem</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-microchip"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">Avionics & Telemetry</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Ut enim ad minim veniam, quis nostrud exercitation.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-wrench"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">Chassis & Fabrication</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Duis aute irure dolor in reprehenderit in voluptate.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-person-running"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">Ergonomics & Safety</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Excepteur sint occaecat cupidatat non proident.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-circle-notch"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">Wheel Technology</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Sunt in culpa qui officia deserunt mollit anim.</p>
+                </div>
+
+                <div class="team-card">
+                    <div class="member-avatar"><i class="fa-solid fa-bullhorn"></i></div>
+                    <h3 class="card-title" style="font-size: 18px;">STEM Outreach</h3>
+                    <p class="card-text">Subsystem Lead [Placeholder]</p>
+                    <p style="font-size: 12px; color: var(--text-muted); margin-top: 8px;">Sed ut perspiciatis unde omnis iste natus error.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- roadmap timeline section -->
+    <section class="section" style="background: rgba(10, 28, 54, 0.02);" id="roadmap">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">MILESTONES</span>
+                <h2 class="section-title">Development Roadmap</h2>
+                <p class="section-desc">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor.
+                </p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date">PHASE 1 [PLACEHOLDER]</div>
+                        <h4 style="font-size: 18px;">Concept & CAD Review</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date">PHASE 2 [PLACEHOLDER]</div>
+                        <h4 style="font-size: 18px;">Fabrication & Testing</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Ut enim ad minim veniam, quis nostrud exercitation ullamco.</p>
+                    </div>
+                </div>
+
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card">
+                        <div class="timeline-date">PHASE 3 [PLACEHOLDER]</div>
+                        <h4 style="font-size: 18px;">NASA Competition Finals</h4>
+                        <p style="font-size: 13px; color: var(--text-secondary); margin-top: 4px;">Duis aute irure dolor in reprehenderit in voluptate velit.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- SPONSORSHIP TIERS -->
+    <section class="section" id="sponsors">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">SUPPORT NEEDHAM GRAVITY</span>
+                <h2 class="section-title">Sponsorship Tiers</h2>
+                <p class="section-desc">
+                    Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed do eiusmod tempor incididunt.
+                </p>
+            </div>
+
+            <div class="sponsor-tier-grid">
+                <!-- silver tier -->
+                <div class="sponsor-card">
+                    <h3 class="tier-name">Silver Tier</h3>
+                    <div class="tier-amount">$1,000</div>
+                    <ul class="tier-features">
+                        <li><i class="fa-solid fa-check"></i> Logo placement on team banner</li>
+                        <li><i class="fa-solid fa-check"></i> Social media sponsor feature</li>
+                        <li><i class="fa-solid fa-check"></i> Team shirt inclusion</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary" style="width: 100%;">Select Tier</a>
+                </div>
+
+                <!-- titanium lead tier -->
+                <div class="sponsor-card featured">
+                    <div class="sponsor-badge">RECOMMENDED</div>
+                    <h3 class="tier-name">Titanium Lead</h3>
+                    <div class="tier-amount">$5,000+</div>
+                    <ul class="tier-features">
+                        <li><i class="fa-solid fa-check"></i> Prominent logo on HERC vehicle frame</li>
+                        <li><i class="fa-solid fa-check"></i> Title sponsor credit in NASA docs</li>
+                        <li><i class="fa-solid fa-check"></i> Live team demonstration visit</li>
+                        <li><i class="fa-solid fa-check"></i> All lower tier benefits included</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-primary" style="width: 100%;">Become Lead Sponsor</a>
+                </div>
+
+                <!-- gold tier -->
+                <div class="sponsor-card">
+                    <h3 class="tier-name">Gold Tier</h3>
+                    <div class="tier-amount">$2,500</div>
+                    <ul class="tier-features">
+                        <li><i class="fa-solid fa-check"></i> Logo on pilot suits & chassis</li>
+                        <li><i class="fa-solid fa-check"></i> Dedicated sponsor feature post</li>
+                        <li><i class="fa-solid fa-check"></i> Competition send-off invitation</li>
+                    </ul>
+                    <a href="#contact" class="btn btn-secondary" style="width: 100%;">Select Tier</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- contact section -->
+    <section class="section" style="background: rgba(10, 28, 54, 0.02);" id="contact">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">GET IN TOUCH</span>
+                <h2 class="section-title">Contact Needham Gravity</h2>
+                <p class="section-desc">
+                    Send a message regarding student membership, sponsorships, or general inquiries.
+                </p>
+            </div>
+
+            <div class="contact-container">
+                <form id="contact-form">
+                    <div class="grid-2">
+                        <div class="form-group">
+                            <label class="form-label">Your Name</label>
+                            <input type="text" class="form-input" placeholder="Name" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="form-label">Email Address</label>
+                            <input type="email" class="form-input" placeholder="email@domain.com" required>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Subject</label>
+                        <input type="text" class="form-input" placeholder="Inquiry Subject" required>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="form-label">Message</label>
+                        <textarea class="form-textarea" placeholder="Your message here..." required></textarea>
+                    </div>
+
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">
+                        Send Message <i class="fa-solid fa-paper-plane"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- site footer -->
+    <footer class="site-footer">
+        <div class="footer-container">
+            <div class="footer-brand">
+                <a href="#hero" class="logo-link">
+                    <img src="assets/logo.png" alt="Needham Gravity Logo" style="height: 38px;">
+                    <span class="logo-title" style="font-size: 18px;">NEEDHAM GRAVITY</span>
+                </a>
+                <p>
+                    Student engineering team from Needham High School participating in the NASA Human Exploration Rover Challenge.
+                </p>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Navigation</h4>
+                <ul class="footer-links">
+                    <li><a href="#hero">Home</a></li>
+                    <li><a href="#about">Mission Overview</a></li>
+                    <li><a href="#telemetry">Vehicle Telemetry</a></li>
+                    <li><a href="#team">Subsystems</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Involvement</h4>
+                <ul class="footer-links">
+                    <li><a href="#roadmap">Development Roadmap</a></li>
+                    <li><a href="#sponsors">Sponsorship Tiers</a></li>
+                    <li><a href="#contact">Contact Us</a></li>
+                </ul>
+            </div>
+
+            <div>
+                <h4 class="footer-title">Connect</h4>
+                <ul class="footer-links" style="display: flex; gap: 14px; font-size: 18px; margin-top: 6px;">
+                    <li><a href="#" aria-label="GitHub"><i class="fa-brands fa-github"></i></a></li>
+                    <li><a href="#" aria-label="Instagram"><i class="fa-brands fa-instagram"></i></a></li>
+                </ul>
+            </div>
+        </div>
+
+        <div class="footer-bottom">
+            <div>&copy; 2026 Needham Gravity HERC Team. All rights reserved.</div>
+        </div>
+    </footer>
+
+    <!-- ogl webgl library for halftone reveal shader background -->
+    <script src="https://cdn.jsdelivr.net/npm/ogl@1.0.6/dist/ogl.umd.js"></script>
+
+    <!-- three.js library for ascii text canvas rendering -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    
+    <!-- gsap library for echoes staggered menu animation -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+
+    <!-- application script -->
+    <script src="js/app.js"></script>
+</body>
+</html>
