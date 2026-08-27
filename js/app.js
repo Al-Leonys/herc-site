@@ -3,7 +3,7 @@
 document.addEventListener('DOMContentLoaded', () => {
     initCleanRouteNavigation();
     initStaggeredMenu();
-    initCanvAsciiHeroTitle();
+    initParticleTextHeroTitle();
     initTelemetrySimulation();
     initContactForm();
     initScrollUrlUpdater();
@@ -69,7 +69,7 @@ function initCleanRouteNavigation() {
             if (targetElem) {
                 e.preventDefault();
                 routePath = sectionToRouteMap[targetId] || '/';
-                
+
                 targetElem.scrollIntoView({ behavior: 'smooth' });
                 history.pushState(null, '', routePath);
 
@@ -175,7 +175,7 @@ function initStaggeredMenu() {
         }
     }
 
-    window.closeStaggeredMenu = function(callback) {
+    window.closeStaggeredMenu = function (callback) {
         if (!window.isMenuOpen) {
             if (callback) callback();
             return;
@@ -236,429 +236,430 @@ function initStaggeredMenu() {
     });
 }
 
-const vertexShader = `
-varying vec2 vUv;
-uniform float uTime;
-uniform float mouse;
-uniform float uEnableWaves;
-
-void main() {
-    vUv = uv;
-    float time = uTime * 5.;
-
-    float waveFactor = uEnableWaves;
-
-    vec3 transformed = position;
-
-    transformed.x += sin(time + position.y) * 0.5 * waveFactor;
-    transformed.y += cos(time + position.z) * 0.15 * waveFactor;
-    transformed.z += sin(time + position.x) * waveFactor;
-
-    gl_Position = projectionMatrix * modelViewMatrix * vec4(transformed, 1.0);
-}
-`;
-
-const fragmentShader = `
-varying vec2 vUv;
-uniform float mouse;
-uniform float uTime;
-uniform sampler2D uTexture;
-
-void main() {
-    float time = uTime;
-    vec2 pos = vUv;
-    
-    float move = sin(time + mouse) * 0.01;
-    float r = texture2D(uTexture, pos + cos(time * 2. - time + pos.x) * .01).r;
-    float g = texture2D(uTexture, pos + tan(time * .5 + pos.x - time) * .01).g;
-    float b = texture2D(uTexture, pos - cos(time * 2. + time + pos.y) * .01).b;
-    float a = texture2D(uTexture, pos).a;
-    gl_FragColor = vec4(r, g, b, a);
-}
-`;
-
-if (!Math.map) {
-    Math.map = function (n, start, stop, start2, stop2) {
-        return ((n - start) / (stop - start)) * (stop2 - start2) + start2;
+// Helper utilities for ParticleText canvas text animation
+const hexToRgb = hex => {
+    const clean = (hex || '').replace('#', '').trim();
+    if (!/^[0-9a-fA-F]{6}$/.test(clean)) return null;
+    return {
+        r: parseInt(clean.slice(0, 2), 16),
+        g: parseInt(clean.slice(2, 4), 16),
+        b: parseInt(clean.slice(4, 6), 16)
     };
-}
+};
 
-const PX_RATIO = typeof window !== 'undefined' ? window.devicePixelRatio : 1;
+const mixRgb = (from, to, amount) => ({
+    r: Math.round(from.r + (to.r - from.r) * amount),
+    g: Math.round(from.g + (to.g - from.g) * amount),
+    b: Math.round(from.b + (to.b - from.b) * amount)
+});
 
-class AsciiFilter {
-    constructor(renderer, { fontSize, fontFamily, charset, invert } = {}) {
-        this.renderer = renderer;
-        this.domElement = document.createElement('div');
-        this.domElement.style.position = 'absolute';
-        this.domElement.style.top = '0';
-        this.domElement.style.left = '0';
-        this.domElement.style.width = '100%';
-        this.domElement.style.height = '100%';
+const rgbToCss = rgb => `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
+const clamp = (value, min, max) => Math.min(Math.max(value, min), max);
+const easeOutCubic = t => 1 - Math.pow(1 - t, 3);
 
-        this.pre = document.createElement('pre');
-        this.domElement.appendChild(this.pre);
+const resolveFontSize = (value, container, fontWeight, fontFamily) => {
+    if (typeof value === 'number') return value;
+    const probe = document.createElement('span');
+    probe.textContent = 'M';
+    probe.style.position = 'absolute';
+    probe.style.visibility = 'hidden';
+    probe.style.pointerEvents = 'none';
+    probe.style.fontSize = value;
+    probe.style.fontWeight = String(fontWeight);
+    probe.style.fontFamily = fontFamily;
+    container.appendChild(probe);
+    const size = parseFloat(window.getComputedStyle(probe).fontSize) || 96;
+    probe.remove();
+    return size;
+};
+
+const waitForFonts = async font => {
+    if (!('fonts' in document)) return;
+    try {
+        await document.fonts.load(font);
+    } catch { }
+    await document.fonts.ready;
+};
+
+class ParticleText {
+    constructor(options, container) {
+        this.container = container;
+        this.text = options.text || 'NEEDHAM GRAVITY';
+        this.particleSize = options.particleSize || 2.2;
+        this.density = options.density || 4;
+        this.color = options.color || '#f8fafc';
+        this.highlightColor = options.highlightColor || '#f3c319';
+        this.scatter = options.scatter !== undefined ? options.scatter : 190;
+        this.gatherDuration = options.gatherDuration || 1600;
+        this.stagger = options.stagger !== undefined ? options.stagger : 420;
+        this.pointerRepel = options.pointerRepel !== undefined ? options.pointerRepel : 42;
+        this.repelRadius = options.repelRadius !== undefined ? options.repelRadius : 120;
+        this.idleDrift = options.idleDrift !== undefined ? options.idleDrift : 0.8;
+        this.trigger = options.trigger || 'mount';
+        this.fontSize = options.fontSize || 'clamp(3.5rem, 13vw, 9rem)';
+        this.fontWeight = options.fontWeight || 900;
+        this.fontFamily = options.fontFamily || "'Outfit', 'IBM Plex Mono', sans-serif";
+        this.glow = options.glow !== undefined ? options.glow : true;
 
         this.canvas = document.createElement('canvas');
-        this.canvas.style.display = 'none';
-        this.context = this.canvas.getContext('2d');
-        this.domElement.appendChild(this.canvas);
+        this.canvas.className = 'particle-text__canvas';
+        this.canvas.style.display = 'block';
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.container.appendChild(this.canvas);
+        this.ctx = this.canvas.getContext('2d');
 
-        this.deg = 0;
-        this.invert = invert ?? true;
-        this.fontSize = fontSize ?? 4.5;
-        this.fontFamily = fontFamily ?? "'IBM Plex Mono', monospace";
-        this.charset = charset ?? ' .\'`^",:;Il!i~+_-?][}{1)(|/tfjrxnuvczXYUJCLQ0OZmwqpdbkhao*#MW&8%B@$';
+        this.particles = [];
+        this.animationFrame = null;
+        this.resizeFrame = null;
+        this.buildId = 0;
+        this.gathering = false;
+        this.gatherStart = 0;
+        this.reducedMotion = window.matchMedia?.('(prefers-reduced-motion: reduce)').matches ?? false;
+        this.width = 0;
+        this.height = 0;
+        this.dpr = 1;
 
-        this.onMouseMove = this.onMouseMove.bind(this);
-        document.addEventListener('mousemove', this.onMouseMove);
-    }
-
-    setSize(width, height) {
-        this.width = width;
-        this.height = height;
-        this.renderer.setSize(width, height);
-        this.reset();
-
-        this.center = { x: width / 2, y: height / 2 };
-        this.mouse = { x: this.center.x, y: this.center.y };
-    }
-
-    reset() {
-        this.context.font = `${this.fontSize}px ${this.fontFamily}`;
-        const charWidth = this.context.measureText('A').width;
-
-        this.cols = Math.floor(this.width / (this.fontSize * (charWidth / this.fontSize)));
-        this.rows = Math.floor(this.height / this.fontSize);
-
-        this.canvas.width = Math.max(1, this.cols);
-        this.canvas.height = Math.max(1, this.rows);
-        this.canvas.style.display = 'none';
-
-        this.pre.style.fontFamily = this.fontFamily;
-        this.pre.style.fontSize = `${this.fontSize}px`;
-        this.pre.style.margin = '0';
-        this.pre.style.padding = '0';
-        this.pre.style.lineHeight = '0.95em';
-        this.pre.style.letterSpacing = '0';
-        this.pre.style.position = 'absolute';
-        this.pre.style.left = '0';
-        this.pre.style.top = '0';
-        this.pre.style.zIndex = '9';
-        this.pre.style.backgroundImage = 'linear-gradient(135deg, #ffffff 0%, #fdf9f3 50%, #f3c319 100%)';
-        this.pre.style.webkitTextFillColor = 'transparent';
-        this.pre.style.webkitBackgroundClip = 'text';
-        this.pre.style.backgroundClip = 'text';
-    }
-
-    render(scene, camera) {
-        this.renderer.render(scene, camera);
-
-        const w = this.canvas.width;
-        const h = this.canvas.height;
-        this.context.clearRect(0, 0, w, h);
-        if (this.context && w && h) {
-            this.context.drawImage(this.renderer.domElement, 0, 0, w, h);
-        }
-
-        this.asciify(this.context, w, h);
-    }
-
-    onMouseMove(e) {
-        this.mouse = { x: e.clientX * PX_RATIO, y: e.clientY * PX_RATIO };
-    }
-
-    get dx() {
-        return this.mouse.x - this.center.x;
-    }
-
-    get dy() {
-        return this.mouse.y - this.center.y;
-    }
-
-    asciify(ctx, w, h) {
-        if (w && h) {
-            const imgData = ctx.getImageData(0, 0, w, h).data;
-            let str = '';
-            for (let y = 0; y < h; y++) {
-                for (let x = 0; x < w; x++) {
-                    const i = x * 4 + y * 4 * w;
-                    const [r, g, b, a] = [imgData[i], imgData[i + 1], imgData[i + 2], imgData[i + 3]];
-
-                    if (a === 0) {
-                        str += ' ';
-                        continue;
-                    }
-
-                    let gray = (0.3 * r + 0.6 * g + 0.1 * b) / 255;
-                    let idx = Math.floor((1 - gray) * (this.charset.length - 1));
-                    if (this.invert) idx = this.charset.length - idx - 1;
-                    str += this.charset[idx];
-                }
-                str += '\n';
-            }
-            this.pre.innerHTML = str;
-        }
-    }
-
-    dispose() {
-        document.removeEventListener('mousemove', this.onMouseMove);
-    }
-}
-
-// MULTI-LINE CANVAS TEXT RENDERING SUPPORT FOR MOBILE 2-LINE ASCII TEXT
-class CanvasTxt {
-    constructor(txt, { fontSize = 110, fontFamily = 'IBM Plex Mono', color = '#fdf9f3' } = {}) {
-        this.canvas = document.createElement('canvas');
-        this.context = this.canvas.getContext('2d');
-        this.txt = txt;
-        this.lines = txt.split('\n');
-        this.fontSize = fontSize;
-        this.fontFamily = fontFamily;
-        this.color = color;
-
-        this.font = `600 ${this.fontSize}px ${this.fontFamily}`;
-    }
-
-    resize() {
-        this.context.font = this.font;
-        let maxWidth = 0;
-        this.lines.forEach(line => {
-            const metrics = this.context.measureText(line);
-            if (metrics.width > maxWidth) maxWidth = metrics.width;
-        });
-
-        const textWidth = Math.ceil(maxWidth) + 50;
-        const lineH = Math.ceil(this.fontSize * 1.05);
-        const textHeight = Math.ceil(lineH * this.lines.length) + 40;
-
-        this.canvas.width = Math.max(1, textWidth);
-        this.canvas.height = Math.max(1, textHeight);
-    }
-
-    render() {
-        this.context.clearRect(0, 0, this.canvas.width, this.canvas.height);
-        this.context.fillStyle = this.color;
-        this.context.font = this.font;
-
-        const lineH = Math.ceil(this.fontSize * 1.02);
-        this.lines.forEach((line, i) => {
-            const metrics = this.context.measureText(line);
-            const yPos = 20 + (metrics.actualBoundingBoxAscent || (this.fontSize * 0.8)) + (i * lineH);
-            this.context.fillText(line, 20, yPos);
-        });
-    }
-
-    get width() { return this.canvas.width; }
-    get height() { return this.canvas.height; }
-    get texture() { return this.canvas; }
-}
-
-class CanvAscii {
-    constructor(
-        { text, asciiFontSize, textFontSize, textColor, planeBaseHeight, enableWaves },
-        containerElem,
-        width,
-        height
-    ) {
-        this.textString = text;
-        this.asciiFontSize = asciiFontSize;
-        this.textFontSize = textFontSize;
-        this.textColor = textColor;
-        this.planeBaseHeight = planeBaseHeight;
-        this.container = containerElem;
-        this.width = width;
-        this.height = height;
-        this.enableWaves = enableWaves;
-
-        this.camera = new THREE.PerspectiveCamera(45, this.width / this.height, 1, 1000);
-        this.camera.position.z = 30;
-
-        this.scene = new THREE.Scene();
-        this.mouse = { x: this.width / 2, y: this.height / 2 };
-
-        this.onMouseMove = this.onMouseMove.bind(this);
-    }
-
-    async init() {
-        this.setMesh();
-        this.setRenderer();
-    }
-
-    setMesh() {
-        this.textCanvas = new CanvasTxt(this.textString, {
-            fontSize: this.textFontSize,
-            fontFamily: 'IBM Plex Mono',
-            color: this.textColor
-        });
-        this.textCanvas.resize();
-        this.textCanvas.render();
-
-        this.texture = new THREE.CanvasTexture(this.textCanvas.texture);
-        this.texture.minFilter = THREE.NearestFilter;
-
-        const textAspect = this.textCanvas.width / this.textCanvas.height;
-        const baseH = this.planeBaseHeight;
-        const planeW = baseH * textAspect;
-        const planeH = baseH;
-
-        this.geometry = new THREE.PlaneGeometry(planeW, planeH, 36, 36);
-        this.material = new THREE.ShaderMaterial({
-            vertexShader,
-            fragmentShader,
-            transparent: true,
-            uniforms: {
-                uTime: { value: 0 },
-                mouse: { value: 1.0 },
-                uTexture: { value: this.texture },
-                uEnableWaves: { value: this.enableWaves ? 1.0 : 0.0 }
-            }
-        });
-
-        this.mesh = new THREE.Mesh(this.geometry, this.material);
-        this.scene.add(this.mesh);
-    }
-
-    setRenderer() {
-        this.renderer = new THREE.WebGLRenderer({ antialias: false, alpha: true });
-        this.renderer.setPixelRatio(1);
-        this.renderer.setClearColor(0x000000, 0);
-
-        this.filter = new AsciiFilter(this.renderer, {
-            fontFamily: 'IBM Plex Mono',
-            fontSize: this.asciiFontSize,
-            invert: true
-        });
-
-        this.container.appendChild(this.filter.domElement);
-        this.setSize(this.width, this.height);
-
-        this.container.addEventListener('mousemove', this.onMouseMove);
-        this.container.addEventListener('touchmove', this.onMouseMove);
-    }
-
-    setSize(w, h) {
-        this.width = w;
-        this.height = h;
-
-        this.camera.aspect = w / h;
-        this.camera.updateProjectionMatrix();
-
-        this.filter.setSize(w, h);
-
-        this.center = { x: w / 2, y: h / 2 };
-    }
-
-    load() {
-        this.animate();
-    }
-
-    onMouseMove(evt) {
-        const e = evt.touches ? evt.touches[0] : evt;
-        const bounds = this.container.getBoundingClientRect();
-        const x = e.clientX - bounds.left;
-        const y = e.clientY - bounds.top;
-        this.mouse = { x, y };
-    }
-
-    animate() {
-        const animateFrame = () => {
-            this.animationFrameId = requestAnimationFrame(animateFrame);
-            this.render();
+        this.pointer = {
+            active: false,
+            x: 0,
+            y: 0,
+            smoothX: 0,
+            smoothY: 0
         };
-        animateFrame();
+
+        this.init();
     }
 
-    render() {
-        const time = new Date().getTime() * 0.001;
-
-        this.textCanvas.render();
-        this.texture.needsUpdate = true;
-
-        this.mesh.material.uniforms.uTime.value = Math.sin(time);
-
-        this.updateRotation();
-        this.filter.render(this.scene, this.camera);
+    startGather() {
+        this.gathering = false;
     }
 
-    updateRotation() {
-        const x = Math.map(this.mouse.y, 0, this.height, 0.35, -0.35);
-        const y = Math.map(this.mouse.x, 0, this.width, -0.35, 0.35);
+    drawParticle(particle) {
+        const size = particle.size;
+        this.ctx.fillStyle = particle.color;
 
-        this.mesh.rotation.x += (x - this.mesh.rotation.x) * 0.05;
-        this.mesh.rotation.y += (y - this.mesh.rotation.y) * 0.05;
-    }
-
-    dispose() {
-        cancelAnimationFrame(this.animationFrameId);
-        if (this.filter) {
-            this.filter.dispose();
-            if (this.filter.domElement.parentNode) {
-                this.container.removeChild(this.filter.domElement);
-            }
-        }
-        this.container.removeEventListener('mousemove', this.onMouseMove);
-        this.container.removeEventListener('touchmove', this.onMouseMove);
-        if (this.renderer) {
-            this.renderer.dispose();
-        }
-    }
-}
-
-let asciiInstance = null;
-
-function initCanvAsciiHeroTitle() {
-    const asciiContainer = document.getElementById('ascii-text-container');
-    if (!asciiContainer || typeof THREE === 'undefined') return;
-
-    function setupInstance() {
-        if (asciiInstance) {
-            asciiInstance.dispose();
-            asciiInstance = null;
-            asciiContainer.innerHTML = '';
+        if (size <= 2.1) {
+            this.ctx.fillRect(particle.x - size / 2, particle.y - size / 2, size, size);
+            return;
         }
 
-        const width = asciiContainer.clientWidth || window.innerWidth;
+        this.ctx.beginPath();
+        this.ctx.arc(particle.x, particle.y, size / 2, 0, Math.PI * 2);
+        this.ctx.fill();
+    }
+
+    render(now) {
+        if (!this.isVisible) return;
+
+        this.ctx.clearRect(0, 0, this.width, this.height);
+
+        this.pointer.smoothX += (this.pointer.x - this.pointer.smoothX) * 0.18;
+        this.pointer.smoothY += (this.pointer.y - this.pointer.smoothY) * 0.18;
+
+        const driftTime = now * 0.0015;
         const isMobile = window.innerWidth < 600;
 
-        const text = isMobile ? 'NEEDHAM\nGRAVITY' : 'NEEDHAM GRAVITY';
-        const height = isMobile ? Math.min(340, Math.max(260, window.innerWidth * 0.65)) : Math.min(300, Math.max(220, window.innerWidth * 0.22));
-        asciiContainer.style.height = `${height}px`;
+        this.particles.forEach(particle => {
+            let baseX = particle.targetX;
+            let baseY = particle.targetY;
 
-        let asciiFontSize, textFontSize, planeBaseHeight;
+            // Subtle organic particle wiggle (reduced on mobile viewports)
+            if (!this.reducedMotion && this.idleDrift > 0) {
+                const wiggleAmp = isMobile ? 0.22 : 1.35;
+                const wiggleX = Math.sin(driftTime * 2.8 + particle.seed * 25) * wiggleAmp * particle.depth;
+                const wiggleY = Math.cos(driftTime * 2.4 + particle.depth * 25) * wiggleAmp * particle.depth;
+                baseX += wiggleX;
+                baseY += wiggleY;
+            }
 
-        if (isMobile) {
-            planeBaseHeight = Math.min(10.5, Math.max(7.8, window.innerWidth / 45));
-            textFontSize = Math.min(115, Math.max(75, window.innerWidth / 4.2));
-            asciiFontSize = Math.min(5.2, Math.max(3.8, window.innerWidth / 85));
-        } else {
-            planeBaseHeight = Math.min(12.0, Math.max(8.8, window.innerWidth / 115));
-            textFontSize = Math.min(145, Math.max(95, window.innerWidth / 8.8));
-            asciiFontSize = Math.min(6.0, Math.max(4.6, window.innerWidth / 240));
-        }
+            if (this.pointer.active && !this.reducedMotion && this.pointerRepel > 0 && this.repelRadius > 0) {
+                const dx = baseX - this.pointer.smoothX;
+                const dy = baseY - this.pointer.smoothY;
+                const distance = Math.hypot(dx, dy);
+                if (distance > 0 && distance < this.repelRadius) {
+                    const force = Math.pow(1 - distance / this.repelRadius, 2) * this.pointerRepel;
+                    baseX += (dx / distance) * force;
+                    baseY += (dy / distance) * force;
+                }
+            }
 
-        asciiInstance = new CanvAscii({
-            text: text,
-            asciiFontSize: asciiFontSize,
-            textFontSize: textFontSize,
-            textColor: '#fdf9f3',
-            planeBaseHeight: planeBaseHeight,
-            enableWaves: true
-        }, asciiContainer, width, height);
+            const follow = this.reducedMotion ? 1 : 0.28;
+            particle.x += (baseX - particle.x) * follow;
+            particle.y += (baseY - particle.y) * follow;
 
-        asciiInstance.init().then(() => {
-            if (asciiInstance) asciiInstance.load();
+            this.drawParticle(particle);
         });
+
+        this.animationFrame = window.requestAnimationFrame(this.render.bind(this));
     }
 
-    setupInstance();
+    ensureRenderLoop() {
+        if (this.animationFrame === null) {
+            this.animationFrame = window.requestAnimationFrame(this.render.bind(this));
+        }
+    }
 
-    let resizeTimer;
-    window.addEventListener('resize', () => {
-        clearTimeout(resizeTimer);
-        resizeTimer = setTimeout(() => {
-            setupInstance();
-        }, 150);
-    });
+    async sampleText() {
+        const currentBuild = ++this.buildId;
+        const rect = this.container.getBoundingClientRect();
+        this.width = Math.floor(rect.width);
+        this.height = Math.floor(rect.height);
+
+        if (this.width <= 0 || this.height <= 0) return;
+
+        this.dpr = Math.min(window.devicePixelRatio || 1, 2);
+        this.canvas.width = Math.max(1, Math.floor(this.width * this.dpr));
+        this.canvas.height = Math.max(1, Math.floor(this.height * this.dpr));
+        this.canvas.style.width = '100%';
+        this.canvas.style.height = '100%';
+        this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+        const computed = window.getComputedStyle(this.container);
+        const resolvedFamily = this.fontFamily === 'inherit' ? computed.fontFamily || 'sans-serif' : this.fontFamily;
+
+        const isMobile = window.innerWidth < 600;
+        const textToDraw = isMobile ? 'NEEDHAM\nGRAVITY' : 'NEEDHAM GRAVITY';
+        const lines = String(textToDraw || ' ').split('\n');
+
+        let resolvedSize = resolveFontSize(this.fontSize, this.container, this.fontWeight, resolvedFamily);
+        if (isMobile) resolvedSize = Math.min(resolvedSize, Math.max(34, window.innerWidth / 7.5));
+
+        let font = `${this.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
+
+        await waitForFonts(font);
+        if (currentBuild !== this.buildId) return;
+
+        const offscreen = document.createElement('canvas');
+        offscreen.width = Math.floor(this.width * this.dpr);
+        offscreen.height = Math.floor(this.height * this.dpr);
+        const offCtx = offscreen.getContext('2d', { willReadFrequently: true });
+        if (!offCtx) return;
+
+        offCtx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
+
+        const maxTextWidth = this.width * 0.92;
+        offCtx.font = font;
+
+        let maxMeasuredWidth = 0;
+        lines.forEach(line => {
+            const m = offCtx.measureText(line);
+            if (m.width > maxMeasuredWidth) maxMeasuredWidth = m.width;
+        });
+
+        if (maxMeasuredWidth > maxTextWidth) {
+            resolvedSize = Math.max(18, resolvedSize * (maxTextWidth / maxMeasuredWidth));
+            font = `${this.fontWeight} ${resolvedSize}px ${resolvedFamily}`;
+            await waitForFonts(font);
+            if (currentBuild !== this.buildId) return;
+            offCtx.font = font;
+        }
+
+        const lineH = Math.ceil(resolvedSize * 1.08);
+        const totalHeight = lineH * lines.length;
+
+        offCtx.clearRect(0, 0, this.width, this.height);
+        offCtx.font = font;
+        offCtx.textAlign = 'center';
+        offCtx.textBaseline = 'middle';
+        offCtx.fillStyle = '#ffffff';
+
+        const startY = this.height / 2 - (totalHeight / 2) + (lineH / 2);
+        lines.forEach((line, idx) => {
+            offCtx.fillText(line, this.width / 2, startY + idx * lineH);
+        });
+
+        const imageData = offCtx.getImageData(0, 0, offscreen.width, offscreen.height);
+        const targets = [];
+        const step = isMobile ? 3 : 4;
+
+        for (let y = 0; y < offscreen.height; y += step) {
+            for (let x = 0; x < offscreen.width; x += step) {
+                const alpha = imageData.data[(y * offscreen.width + x) * 4 + 3];
+                if (alpha > 40) {
+                    targets.push({
+                        x: x / this.dpr,
+                        y: y / this.dpr,
+                        alpha: alpha / 255
+                    });
+                }
+            }
+        }
+
+        const baseRgb = hexToRgb(this.color);
+        const highlightRgb = hexToRgb(this.highlightColor);
+        const currentParticleSize = isMobile ? 1.75 : this.particleSize;
+
+        this.particles = targets.map((target, index) => {
+            const seed = ((index * 9301 + 49297) % 233280) / 233280;
+            const depth = 0.45 + (((index * 233 + 97) % 1000) / 1000) * 0.9;
+            const blend = baseRgb && highlightRgb ? clamp(target.x / Math.max(1, this.width) + (seed - 0.5) * 0.35, 0, 1) : 0;
+            const particleColor = baseRgb && highlightRgb ? rgbToCss(mixRgb(baseRgb, highlightRgb, blend)) : this.color;
+
+            // Micro-texture jitter for organic warmth while keeping Retina grid alignment
+            const offsetX = isMobile ? (seed - 0.5) * 0.35 : 0;
+            const offsetY = isMobile ? (depth - 0.5) * 0.35 : 0;
+
+            const posX = target.x + offsetX;
+            const posY = target.y + offsetY;
+
+            return {
+                x: posX,
+                y: posY,
+                startX: posX,
+                startY: posY,
+                targetX: posX,
+                targetY: posY,
+                size: Math.max(0.6, currentParticleSize * (0.7 + target.alpha * 0.4)),
+                color: particleColor,
+                seed,
+                depth,
+                delay: 0
+            };
+        });
+
+        this.pointer.x = this.width / 2;
+        this.pointer.y = this.height / 2;
+        this.pointer.smoothX = this.pointer.x;
+        this.pointer.smoothY = this.pointer.y;
+
+        if (this.reducedMotion) {
+            this.particles.forEach(particle => {
+                particle.x = particle.targetX;
+                particle.y = particle.targetY;
+                particle.startX = particle.targetX;
+                particle.startY = particle.targetY;
+                particle.delay = 0;
+            });
+            this.gathering = false;
+        } else {
+            this.startGather(false);
+        }
+
+        this.ensureRenderLoop();
+    }
+
+    queueSample() {
+        if (this.resizeFrame) window.cancelAnimationFrame(this.resizeFrame);
+        this.resizeFrame = window.requestAnimationFrame(this.sampleText.bind(this));
+    }
+
+    handlePointerMove(event) {
+        const rect = this.canvas.getBoundingClientRect();
+        const touch = event.touches ? event.touches[0] : event;
+        if (touch) {
+            this.pointer.x = touch.clientX - rect.left;
+            this.pointer.y = touch.clientY - rect.top;
+            this.pointer.active = true;
+        }
+    }
+
+    handlePointerLeave() {
+        this.pointer.active = false;
+    }
+
+    handlePointerEnter(event) {
+        this.handlePointerMove(event);
+        if (this.trigger === 'hover') this.startGather(true);
+    }
+
+    handleTouchMove(event) {
+        this.handlePointerMove(event);
+    }
+
+    handleTouchEnd() {
+        this.pointer.active = false;
+    }
+
+    handleClick() {
+        if (this.trigger === 'click') this.startGather(true);
+    }
+
+    init() {
+        this.isVisible = true;
+        this.handlePointerMove = this.handlePointerMove.bind(this);
+        this.handlePointerLeave = this.handlePointerLeave.bind(this);
+        this.handlePointerEnter = this.handlePointerEnter.bind(this);
+        this.handleTouchMove = this.handleTouchMove.bind(this);
+        this.handleTouchEnd = this.handleTouchEnd.bind(this);
+        this.handleClick = this.handleClick.bind(this);
+        this.queueSample = this.queueSample.bind(this);
+
+        this.canvas.addEventListener('pointerenter', this.handlePointerEnter);
+        this.canvas.addEventListener('pointermove', this.handlePointerMove);
+        this.canvas.addEventListener('pointerleave', this.handlePointerLeave);
+        this.canvas.addEventListener('click', this.handleClick);
+
+        this.canvas.addEventListener('touchstart', this.handleTouchMove, { passive: true });
+        this.canvas.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+        this.canvas.addEventListener('touchend', this.handleTouchEnd, { passive: true });
+
+        this.intersectionObserver = new IntersectionObserver(([entry]) => {
+            const wasVisible = this.isVisible;
+            this.isVisible = entry.isIntersecting;
+            if (this.isVisible && !wasVisible) {
+                this.ensureRenderLoop();
+            } else if (!this.isVisible && this.animationFrame !== null) {
+                window.cancelAnimationFrame(this.animationFrame);
+                this.animationFrame = null;
+            }
+        }, { threshold: 0.05 });
+        this.intersectionObserver.observe(this.container);
+
+        this.resizeObserver = new ResizeObserver(this.queueSample);
+        this.resizeObserver.observe(this.container);
+        this.sampleText();
+    }
+
+    dispose() {
+        this.buildId += 1;
+        this.isVisible = false;
+        if (this.intersectionObserver) this.intersectionObserver.disconnect();
+        if (this.resizeObserver) this.resizeObserver.disconnect();
+        this.canvas.removeEventListener('pointerenter', this.handlePointerEnter);
+        this.canvas.removeEventListener('pointermove', this.handlePointerMove);
+        this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
+        this.canvas.removeEventListener('click', this.handleClick);
+
+        this.canvas.removeEventListener('touchstart', this.handleTouchMove);
+        this.canvas.removeEventListener('touchmove', this.handleTouchMove);
+        this.canvas.removeEventListener('touchend', this.handleTouchEnd);
+
+        if (this.animationFrame !== null) window.cancelAnimationFrame(this.animationFrame);
+        if (this.resizeFrame !== null) window.cancelAnimationFrame(this.resizeFrame);
+    }
+}
+
+let particleTextInstance = null;
+
+function initParticleTextHeroTitle() {
+    const container = document.getElementById('particle-text-container');
+    if (!container) return;
+
+    if (particleTextInstance) {
+        particleTextInstance.dispose();
+        particleTextInstance = null;
+        container.innerHTML = '';
+    }
+
+    particleTextInstance = new ParticleText({
+        text: 'NEEDHAM GRAVITY',
+        particleSize: 2.2,
+        density: 4,
+        color: '#f8fafc',
+        highlightColor: '#f3c319',
+        scatter: 190,
+        gatherDuration: 1600,
+        stagger: 420,
+        pointerRepel: 42,
+        repelRadius: 120,
+        idleDrift: 0.8,
+        trigger: 'mount',
+        fontSize: 'clamp(3.5rem, 13vw, 9rem)',
+        fontWeight: 900,
+        fontFamily: "'Outfit', 'IBM Plex Mono', sans-serif",
+        glow: true
+    }, container);
 }
 
 // scroll observer that updates the clean URL path as the user scrolls through page sections (without hashtags)
