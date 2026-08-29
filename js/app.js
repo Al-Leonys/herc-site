@@ -16,6 +16,7 @@ const routeToSectionMap = {
     '/about': 'about',
     '/telemetry': 'telemetry',
     '/team': 'team',
+    '/meet-team': 'meet-team',
     '/roadmap': 'roadmap',
     '/sponsors': 'sponsors',
     '/contact': 'contact'
@@ -26,6 +27,7 @@ const sectionToRouteMap = {
     'about': '/about',
     'telemetry': '/telemetry',
     'team': '/team',
+    'meet-team': '/meet-team',
     'roadmap': '/roadmap',
     'sponsors': '/sponsors',
     'contact': '/contact'
