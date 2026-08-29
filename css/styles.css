@@ -497,6 +497,21 @@ ul {
     background-color: var(--primary-light);
 }
 
+.btn-sponsor {
+    background-color: #FFFFFF;
+    color: #1A1A1A;
+    --btn-shadow-color: #9CA3AF;
+    border: 1px solid #D1D5DB;
+}
+
+.btn-sponsor:hover {
+    background-color: #F1F2F4;
+}
+
+.sponsor-card .btn-sponsor {
+    margin-top: auto;
+}
+
 .section {
     padding: 90px 24px;
     position: relative;
@@ -613,6 +628,9 @@ ul {
     position: relative;
     box-shadow: var(--shadow-main);
     transition: var(--transition-smooth);
+    display: flex;
+    flex-direction: column;
+    height: 100%;
 }
 
 .sponsor-card.featured {
@@ -661,6 +679,7 @@ ul {
 .tier-features {
     text-align: left;
     margin-bottom: 30px;
+    flex-grow: 1;
 }
 
 .tier-features li {
@@ -674,6 +693,54 @@ ul {
 
 .tier-features li i {
     color: var(--primary-color);
+}
+
+/* Sponsor tier plaques - styled like the pill buttons, with a diagonal
+   sparkle sheen, colored per tier */
+.tier-plaque {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 12px 28px;
+    border-radius: var(--radius-full);
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 20px;
+    color: #FFFFFF;
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+    position: relative;
+    overflow: hidden;
+    border: 1px solid var(--plaque-shadow-color, rgba(0, 0, 0, 0.35));
+    box-shadow: 0 6px 0 0 var(--plaque-shadow-color, rgba(0, 0, 0, 0.35));
+}
+
+.tier-plaque::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: repeating-linear-gradient(
+        135deg,
+        rgba(255, 255, 255, 0.55) 0px,
+        rgba(255, 255, 255, 0.55) 4px,
+        transparent 4px,
+        transparent 16px
+    );
+    pointer-events: none;
+}
+
+.tier-plaque-silver {
+    background: linear-gradient(135deg, #C7CCD1, #9AA2AA);
+    --plaque-shadow-color: #6B7280;
+}
+
+.tier-plaque-gold {
+    background: linear-gradient(135deg, #F5D060, #D4A30A);
+    --plaque-shadow-color: #A6790A;
+}
+
+.tier-plaque-diamond {
+    background: linear-gradient(135deg, #8FE3F5, #22B8D8);
+    --plaque-shadow-color: #167E97;
 }
 
 .timeline {
@@ -1104,7 +1171,7 @@ ul {
         max-width: 360px !important;
     }
 
-    /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (TITANIUM LEAD ON TOP) */
+    /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (DIAMOND SPONSOR ON TOP) */
     .sponsor-tier-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -1120,7 +1187,7 @@ ul {
     }
 
     .sponsor-card.featured {
-        order: -1 !important; /* Move Titanium Lead to top on mobile */
+        order: -1 !important; /* Move Diamond Sponsor to top on mobile */
         transform: none !important;
         width: 100% !important;
     }
