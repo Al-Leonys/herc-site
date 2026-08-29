@@ -658,23 +658,21 @@ ul {
 .sponsor-card-silver::after {
     background: linear-gradient(
         135deg,
-        transparent 0px,
-        transparent 60px,
-        rgba(255, 255, 255, 0.34) 60px,
-        rgba(255, 255, 255, 0.34) 84px,
-        transparent 84px,
-        transparent 150px,
-        rgba(255, 255, 255, 0.34) 150px,
-        rgba(255, 255, 255, 0.34) 160px,
-        transparent 160px,
-        transparent 330px,
-        rgba(255, 255, 255, 0.34) 330px,
-        rgba(255, 255, 255, 0.34) 368px,
-        transparent 368px,
-        transparent 500px,
-        rgba(255, 255, 255, 0.34) 500px,
-        rgba(255, 255, 255, 0.34) 518px,
-        transparent 518px
+        rgba(255, 255, 255, 0.16) 0px,
+        rgba(255, 255, 255, 0.16) 24px,
+        transparent 24px,
+        transparent 190px,
+        rgba(255, 255, 255, 0.16) 190px,
+        rgba(255, 255, 255, 0.16) 292px,
+        transparent 292px,
+        transparent 400px,
+        rgba(255, 255, 255, 0.16) 400px,
+        rgba(255, 255, 255, 0.16) 424px,
+        transparent 424px,
+        transparent 560px,
+        rgba(255, 255, 255, 0.16) 560px,
+        rgba(255, 255, 255, 0.16) 668px,
+        transparent 668px
     );
     background-repeat: no-repeat;
     background-size: 220% 220%;
@@ -691,26 +689,22 @@ ul {
     background: linear-gradient(
         135deg,
         transparent 0px,
-        transparent 10px,
-        rgba(255, 255, 255, 0.34) 10px,
-        rgba(255, 255, 255, 0.34) 40px,
-        transparent 40px,
-        transparent 140px,
-        rgba(255, 255, 255, 0.34) 140px,
-        rgba(255, 255, 255, 0.34) 150px,
-        transparent 150px,
-        transparent 260px,
-        rgba(255, 255, 255, 0.34) 260px,
-        rgba(255, 255, 255, 0.34) 300px,
+        transparent 90px,
+        rgba(255, 255, 255, 0.16) 90px,
+        rgba(255, 255, 255, 0.16) 116px,
+        transparent 116px,
         transparent 300px,
+        rgba(255, 255, 255, 0.16) 300px,
+        rgba(255, 255, 255, 0.16) 410px,
+        transparent 410px,
         transparent 460px,
-        rgba(255, 255, 255, 0.34) 460px,
-        rgba(255, 255, 255, 0.34) 472px,
-        transparent 472px,
+        rgba(255, 255, 255, 0.16) 460px,
+        rgba(255, 255, 255, 0.16) 480px,
+        transparent 480px,
         transparent 620px,
-        rgba(255, 255, 255, 0.34) 620px,
-        rgba(255, 255, 255, 0.34) 650px,
-        transparent 650px
+        rgba(255, 255, 255, 0.16) 620px,
+        rgba(255, 255, 255, 0.16) 700px,
+        transparent 700px
     );
     background-repeat: no-repeat;
     background-size: 220% 220%;
@@ -727,26 +721,22 @@ ul {
     background: linear-gradient(
         135deg,
         transparent 0px,
-        transparent 30px,
-        rgba(255, 255, 255, 0.34) 30px,
-        rgba(255, 255, 255, 0.34) 54px,
-        transparent 54px,
-        transparent 170px,
-        rgba(255, 255, 255, 0.34) 170px,
-        rgba(255, 255, 255, 0.34) 186px,
-        transparent 186px,
-        transparent 340px,
-        rgba(255, 255, 255, 0.34) 340px,
-        rgba(255, 255, 255, 0.34) 378px,
-        transparent 378px,
-        transparent 470px,
-        rgba(255, 255, 255, 0.34) 470px,
-        rgba(255, 255, 255, 0.34) 490px,
-        transparent 490px,
-        transparent 660px,
-        rgba(255, 255, 255, 0.34) 660px,
-        rgba(255, 255, 255, 0.34) 692px,
-        transparent 692px
+        transparent 50px,
+        rgba(255, 255, 255, 0.16) 50px,
+        rgba(255, 255, 255, 0.16) 78px,
+        transparent 78px,
+        transparent 250px,
+        rgba(255, 255, 255, 0.16) 250px,
+        rgba(255, 255, 255, 0.16) 384px,
+        transparent 384px,
+        transparent 460px,
+        rgba(255, 255, 255, 0.16) 460px,
+        rgba(255, 255, 255, 0.16) 500px,
+        transparent 500px,
+        transparent 640px,
+        rgba(255, 255, 255, 0.16) 640px,
+        rgba(255, 255, 255, 0.16) 750px,
+        transparent 750px
     );
     background-repeat: no-repeat;
     background-size: 220% 220%;
@@ -791,13 +781,13 @@ ul {
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    padding: 8px 22px;
+    padding: 10px 26px;
     border-radius: var(--radius-full);
     background-color: #F3F4F6;
     color: #1A1A1A;
     font-family: var(--font-heading);
     font-weight: 800;
-    font-size: 18px;
+    font-size: 22px;
     text-shadow: none;
     border: 2px solid #1F2937;
     box-shadow: 0 4px 0 0 #1F2937;
@@ -819,17 +809,28 @@ ul {
 }
 
 .tier-features li {
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.95);
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
-    margin-bottom: 12px;
+    font-size: 16px;
+    font-weight: 600;
+    color: #1A1A1A;
+    text-shadow: none;
+    margin-bottom: 14px;
     display: flex;
     align-items: center;
     gap: 10px;
 }
 
 .tier-features li i {
-    color: #FFFFFF;
+    color: #1A1A1A;
+}
+
+.check-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 20px;
+    height: 20px;
+    flex: 0 0 auto;
+    color: #1A1A1A;
 }
 
 .timeline {
