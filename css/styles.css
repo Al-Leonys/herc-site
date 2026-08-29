@@ -500,12 +500,12 @@ ul {
 .btn-sponsor {
     background-color: #FFFFFF;
     color: #1A1A1A;
-    --btn-shadow-color: #9CA3AF;
-    border: 1px solid #D1D5DB;
+    --btn-shadow-color: #1F2937;
+    border: 2px solid #1F2937;
 }
 
 .btn-sponsor:hover {
-    background-color: #F1F2F4;
+    background-color: #ECEDEF;
 }
 
 .sponsor-card .btn-sponsor {
@@ -633,10 +633,127 @@ ul {
     height: 100%;
 }
 
+.sponsor-card::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-lg);
+    pointer-events: none;
+    z-index: 0;
+    overflow: hidden;
+}
+
+.sponsor-card > * {
+    position: relative;
+    z-index: 1;
+}
+
+.sponsor-card-silver {
+    background: linear-gradient(160deg, #D4D8DC, #969FA8);
+    border: 4px solid #6B7280;
+    box-shadow: none;
+    filter: drop-shadow(0 14px 0 #6B7280);
+}
+
+.sponsor-card-silver::after {
+    background: linear-gradient(
+        135deg,
+        transparent 0px,
+        transparent 60px,
+        rgba(255, 255, 255, 0.34) 60px,
+        rgba(255, 255, 255, 0.34) 84px,
+        transparent 84px,
+        transparent 150px,
+        rgba(255, 255, 255, 0.34) 150px,
+        rgba(255, 255, 255, 0.34) 160px,
+        transparent 160px,
+        transparent 330px,
+        rgba(255, 255, 255, 0.34) 330px,
+        rgba(255, 255, 255, 0.34) 368px,
+        transparent 368px,
+        transparent 500px,
+        rgba(255, 255, 255, 0.34) 500px,
+        rgba(255, 255, 255, 0.34) 518px,
+        transparent 518px
+    );
+    background-repeat: no-repeat;
+    background-size: 220% 220%;
+}
+
+.sponsor-card-gold {
+    background: linear-gradient(160deg, #F6D96C, #C6900B);
+    border: 4px solid #A6790A;
+    box-shadow: none;
+    filter: drop-shadow(0 14px 0 #A6790A);
+}
+
+.sponsor-card-gold::after {
+    background: linear-gradient(
+        135deg,
+        transparent 0px,
+        transparent 10px,
+        rgba(255, 255, 255, 0.34) 10px,
+        rgba(255, 255, 255, 0.34) 40px,
+        transparent 40px,
+        transparent 140px,
+        rgba(255, 255, 255, 0.34) 140px,
+        rgba(255, 255, 255, 0.34) 150px,
+        transparent 150px,
+        transparent 260px,
+        rgba(255, 255, 255, 0.34) 260px,
+        rgba(255, 255, 255, 0.34) 300px,
+        transparent 300px,
+        transparent 460px,
+        rgba(255, 255, 255, 0.34) 460px,
+        rgba(255, 255, 255, 0.34) 472px,
+        transparent 472px,
+        transparent 620px,
+        rgba(255, 255, 255, 0.34) 620px,
+        rgba(255, 255, 255, 0.34) 650px,
+        transparent 650px
+    );
+    background-repeat: no-repeat;
+    background-size: 220% 220%;
+}
+
+.sponsor-card-diamond {
+    background: linear-gradient(160deg, #9BE7F7, #1FAFD1);
+    border: 4px solid #167E97;
+    box-shadow: none;
+    filter: drop-shadow(0 14px 0 #167E97);
+}
+
+.sponsor-card-diamond::after {
+    background: linear-gradient(
+        135deg,
+        transparent 0px,
+        transparent 30px,
+        rgba(255, 255, 255, 0.34) 30px,
+        rgba(255, 255, 255, 0.34) 54px,
+        transparent 54px,
+        transparent 170px,
+        rgba(255, 255, 255, 0.34) 170px,
+        rgba(255, 255, 255, 0.34) 186px,
+        transparent 186px,
+        transparent 340px,
+        rgba(255, 255, 255, 0.34) 340px,
+        rgba(255, 255, 255, 0.34) 378px,
+        transparent 378px,
+        transparent 470px,
+        rgba(255, 255, 255, 0.34) 470px,
+        rgba(255, 255, 255, 0.34) 490px,
+        transparent 490px,
+        transparent 660px,
+        rgba(255, 255, 255, 0.34) 660px,
+        rgba(255, 255, 255, 0.34) 692px,
+        transparent 692px
+    );
+    background-repeat: no-repeat;
+    background-size: 220% 220%;
+}
+
 .sponsor-card.featured {
-    border: 2px solid var(--primary-color);
     transform: scale(1.04);
-    box-shadow: 0 16px 40px rgba(10, 28, 54, 0.12);
 }
 
 .sponsor-card:hover {
@@ -660,19 +777,38 @@ ul {
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 0.05em;
+    z-index: 2;
 }
 
 .tier-name {
     font-size: 24px;
-    color: var(--text-primary);
+    color: #FFFFFF;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     margin-bottom: 8px;
+}
+
+.tier-name-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 22px;
+    border-radius: var(--radius-full);
+    background-color: #F3F4F6;
+    color: #1A1A1A;
+    font-family: var(--font-heading);
+    font-weight: 800;
+    font-size: 18px;
+    text-shadow: none;
+    border: 2px solid #1F2937;
+    box-shadow: 0 4px 0 0 #1F2937;
 }
 
 .tier-amount {
     font-family: var(--font-heading);
     font-size: 38px;
     font-weight: 800;
-    color: var(--primary-color);
+    color: #FFFFFF;
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
 }
 
@@ -684,7 +820,8 @@ ul {
 
 .tier-features li {
     font-size: 14px;
-    color: var(--text-secondary);
+    color: rgba(255, 255, 255, 0.95);
+    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
     margin-bottom: 12px;
     display: flex;
     align-items: center;
@@ -692,55 +829,7 @@ ul {
 }
 
 .tier-features li i {
-    color: var(--primary-color);
-}
-
-/* Sponsor tier plaques - styled like the pill buttons, with a diagonal
-   sparkle sheen, colored per tier */
-.tier-plaque {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 12px 28px;
-    border-radius: var(--radius-full);
-    font-family: var(--font-heading);
-    font-weight: 800;
-    font-size: 20px;
     color: #FFFFFF;
-    text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
-    position: relative;
-    overflow: hidden;
-    border: 1px solid var(--plaque-shadow-color, rgba(0, 0, 0, 0.35));
-    box-shadow: 0 6px 0 0 var(--plaque-shadow-color, rgba(0, 0, 0, 0.35));
-}
-
-.tier-plaque::before {
-    content: '';
-    position: absolute;
-    inset: 0;
-    background: repeating-linear-gradient(
-        135deg,
-        rgba(255, 255, 255, 0.55) 0px,
-        rgba(255, 255, 255, 0.55) 4px,
-        transparent 4px,
-        transparent 16px
-    );
-    pointer-events: none;
-}
-
-.tier-plaque-silver {
-    background: linear-gradient(135deg, #C7CCD1, #9AA2AA);
-    --plaque-shadow-color: #6B7280;
-}
-
-.tier-plaque-gold {
-    background: linear-gradient(135deg, #F5D060, #D4A30A);
-    --plaque-shadow-color: #A6790A;
-}
-
-.tier-plaque-diamond {
-    background: linear-gradient(135deg, #8FE3F5, #22B8D8);
-    --plaque-shadow-color: #167E97;
 }
 
 .timeline {
