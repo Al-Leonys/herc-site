@@ -785,11 +785,29 @@ function initSubsystemsCADAnimation() {
 
     if (!track || !img1 || !img2 || !img3) return;
 
+    function updateCardColumnHeight() {
+        const cardsColumn = document.querySelector('.subsystems-cards-column');
+        if (!cardsColumn) return;
+
+        if (window.innerWidth <= 900) {
+            const activeCard = cardsColumn.querySelector('.subsystem-callout-card.active-stage');
+            if (activeCard) {
+                const cardHeight = activeCard.scrollHeight;
+                cardsColumn.style.height = `${Math.max(cardHeight, 210)}px`;
+            }
+        } else {
+            cardsColumn.style.height = '';
+        }
+    }
+
     function setStage(stageIndex) {
         cards.forEach((card, i) => {
             if (card) card.classList.toggle('active-stage', i === stageIndex);
         });
+        updateCardColumnHeight();
     }
+
+    window.addEventListener('resize', updateCardColumnHeight);
 
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);

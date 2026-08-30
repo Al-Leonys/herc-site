@@ -1679,14 +1679,19 @@ ul {
     }
 
     .subsystems-cards-column {
-        height: 190px !important;
-        min-height: 190px !important;
+        position: relative !important;
+        height: 220px;
+        min-height: 200px !important;
+        transition: height 0.35s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .subsystem-callout-card {
-        padding: 16px 20px 14px !important;
+        padding: 16px 20px 16px !important;
         border-top: none !important;
         border-left: 1.5px solid rgba(10, 28, 54, 0.12) !important;
         border-radius: 0 0 var(--radius-lg) var(--radius-lg) !important;
+        height: auto !important;
+        min-height: 100% !important;
+        box-sizing: border-box;
     }
 }
