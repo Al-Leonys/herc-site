@@ -449,13 +449,13 @@ ul {
 
 .hero-subtitle {
     font-family: var(--font-mono);
-    font-size: clamp(17px, 3.4vw, 26px);
+    font-size: clamp(15px, 2.6vw, 22px);
     color: rgba(255, 255, 255, 0.95);
-    max-width: 680px;
+    max-width: 980px;
     margin: 0 auto 36px auto;
     font-weight: 600;
     letter-spacing: 0.04em;
-    line-height: 1.6;
+    line-height: 1.3;
     text-shadow: 0 2px 8px rgba(0, 0, 0, 0.8);
     padding: 0 16px;
 }
