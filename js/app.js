@@ -1,17 +1,27 @@
 // needham gravity app logic - echoes gsap staggered menu, three.js canvascii title, & ogl halftonereveal background
 
 document.addEventListener('DOMContentLoaded', () => {
-    initCleanRouteNavigation();
-    initStaggeredMenu();
-    initParticleTextHeroTitle();
-    initSubsystemsCADAnimation();
-    initTimelineScrollAnimation();
-    initTelemetrySimulation();
-    initIntegratedGoogleForm();
-    initPhoneNumberFormatter();
-    initAccordionGallery();
-    initScrollUrlUpdater();
-    initClickPops();
+    const initializers = [
+        initCleanRouteNavigation,
+        initStaggeredMenu,
+        initParticleTextHeroTitle,
+        initSubsystemsCADAnimation,
+        initTimelineScrollAnimation,
+        initTelemetrySimulation,
+        initIntegratedGoogleForm,
+        initPhoneNumberFormatter,
+        initAccordionGallery,
+        initScrollUrlUpdater,
+        initClickPops
+    ];
+
+    initializers.forEach(fn => {
+        try {
+            if (typeof fn === 'function') fn();
+        } catch (err) {
+            console.warn(`[Init Safeguard] Exception in ${fn.name || 'initializer'}:`, err);
+        }
+    });
 
     if (typeof ScrollTrigger !== 'undefined') {
         setTimeout(() => { ScrollTrigger.refresh(); }, 300);
@@ -848,11 +858,15 @@ function initSubsystemsCADAnimation() {
         gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
+        const stickyWrapper = document.querySelector('.subsystems-sticky-wrapper');
+
         ScrollTrigger.create({
             trigger: track,
             start: 'top top',
             end: 'bottom bottom',
             scrub: 0.2,
+            pin: stickyWrapper || true,
+            pinSpacing: false,
             onUpdate: (self) => {
                 const p = self.progress;
                 if (p < 0.35) {
