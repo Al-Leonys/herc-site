@@ -823,44 +823,37 @@ function initSubsystemsCADAnimation() {
     if (!track || !canvas) return;
 
     const ctx = canvas.getContext('2d');
-    const TOTAL_FRAMES = 60;
+    const TOTAL_FRAMES = 260;
     const images = new Array(TOTAL_FRAMES);
     let currentFrameFloat = 0;
     let isPreloaded = false;
 
-    // 1. Load initial keyframe immediately (< 50ms instant initial render)
-    const firstImg = new Image();
-    firstImg.src = 'assets/frames/frame_001.webp';
-    firstImg.onload = () => {
-        images[0] = firstImg;
-        drawFrame(0);
-    };
+    // Defer animation loading until hero header and top assets are fully initialized
+    function startAnimationSetup() {
+        const firstImg = new Image();
+        firstImg.src = 'assets/frames/frame_001.webp';
+        firstImg.onload = () => {
+            images[0] = firstImg;
+            drawFrame(0);
+        };
 
-    // 2. Lazy preload remaining frames in background when user approaches section
-    function preloadRemainingFrames() {
-        if (isPreloaded) return;
-        isPreloaded = true;
-
-        for (let i = 1; i <= TOTAL_FRAMES; i++) {
-            if (!images[i - 1]) {
-                const img = new Image();
-                const frameNum = String(i).padStart(3, '0');
-                img.src = `assets/frames/frame_${frameNum}.webp`;
-                images[i - 1] = img;
-            }
+        if ('IntersectionObserver' in window) {
+            const observer = new IntersectionObserver((entries) => {
+                if (entries[0].isIntersecting) {
+                    preloadRemainingFrames();
+                    observer.disconnect();
+                }
+            }, { rootMargin: '600px 0px 600px 0px' });
+            observer.observe(track);
+        } else {
+            preloadRemainingFrames();
         }
     }
 
-    if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-            if (entries[0].isIntersecting) {
-                preloadRemainingFrames();
-                observer.disconnect();
-            }
-        }, { rootMargin: '600px 0px 600px 0px' });
-        observer.observe(track);
+    if (document.readyState === 'complete') {
+        setTimeout(startAnimationSetup, 100);
     } else {
-        preloadRemainingFrames();
+        window.addEventListener('load', () => setTimeout(startAnimationSetup, 100));
     }
 
     function updateCardColumnHeight() {
@@ -904,8 +897,8 @@ function initSubsystemsCADAnimation() {
         const displayHeight = Math.round(rect.height * dpr);
 
         if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-            canvas.width = displayWidth || 1280;
-            canvas.height = displayHeight || 720;
+            canvas.width = displayWidth || 960;
+            canvas.height = displayHeight || 540;
         }
 
         const hRatio = canvas.width / img1.width;
@@ -916,14 +909,14 @@ function initSubsystemsCADAnimation() {
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-        // 1. Render primary current frame
+        // 1. Render primary frame
         ctx.globalAlpha = 1.0;
         ctx.drawImage(
             img1, 0, 0, img1.width, img1.height,
             centerShiftX, centerShiftY, img1.width * ratio, img1.height * ratio
         );
 
-        // 2. Optical Cross-Fade: blend next frame smoothly based on sub-frame progress
+        // 2. Optical Cross-Fade: blend next frame smoothly
         if (mix > 0.01 && img2 && img2.complete && frameIndex1 !== frameIndex2) {
             ctx.globalAlpha = mix;
             ctx.drawImage(
@@ -935,7 +928,7 @@ function initSubsystemsCADAnimation() {
     }
 
     let targetFrame = 0;
-    const MAX_FRAME_SPEED = 2.0;
+    const MAX_FRAME_SPEED = 3.5;
 
     function renderLoop() {
         if (Math.abs(targetFrame - currentFrameFloat) > 0.01) {
@@ -945,13 +938,13 @@ function initSubsystemsCADAnimation() {
 
             const roundedFrame = Math.round(currentFrameFloat);
 
-            // Transition timestamps (60 WebP frames total):
-            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 14)
-            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 15 to 34)
-            // Stage 2 (Electronics): 6.4s - 10.83s (frames 35 to 59)
-            if (roundedFrame < 15) {
+            // Transition timestamps (260 WebP frames total):
+            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 64)
+            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 65 to 153)
+            // Stage 2 (Electronics): 6.4s - 10.83s (frames 154 to 259)
+            if (roundedFrame < 65) {
                 setStage(0);
-            } else if (roundedFrame < 35) {
+            } else if (roundedFrame < 154) {
                 setStage(1);
             } else {
                 setStage(2);

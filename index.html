@@ -22,6 +22,10 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
+    <link rel="preload" as="image" href="assets/logo.png">
+    <link rel="preload" as="image" href="assets/hero-bg.jpg">
+    <link rel="preload" as="image" href="assets/NASA_logo.svg">
+
     <link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 <body>
@@ -33,7 +37,7 @@
 
     <div class="header-overlay-bar">
         <a href="/" data-target="hero" class="logo-link logo-btn">
-            <img src="assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
+            <img src="assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img" fetchpriority="high" loading="eager">
             <span class="logo-title">NEEDHAM GRAVITY</span>
         </a>
 
@@ -89,7 +93,7 @@
     <main id="main-landing-view">
     <section class="hero-section" id="hero">
         <div class="hero-bg-container" id="halftone-bg-container">
-            <img src="assets/hero-bg.jpg" alt="Historic Needham High Header" class="hero-bg-img">
+            <img src="assets/hero-bg.jpg" alt="Historic Needham High Header" class="hero-bg-img" fetchpriority="high" loading="eager">
             <div class="hero-overlay"></div>
         </div>
 
@@ -116,7 +120,7 @@
             <div class="section-header">
                 <span class="section-subtitle">THE PROGRAM</span>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
-                    <img src="assets/NASA_logo.svg" alt="NASA Logo" style="height: 60px;">
+                    <img src="assets/NASA_logo.svg" alt="NASA Logo" style="height: 60px;" fetchpriority="high" loading="eager">
                     <h2 class="section-title" style="margin-bottom: 0;">NASA HERC Challenge Overview</h2>
                 </div>
                 <p class="section-desc">
