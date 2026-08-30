@@ -861,49 +861,31 @@ function initSubsystemsCADAnimation() {
         gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: track,
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: 0.3,
-                snap: {
-                    snapTo: [0, 0.5, 1.0],
-                    duration: { min: 0.25, max: 0.5 },
-                    delay: 0.05,
-                    ease: 'power2.inOut'
+        ScrollTrigger.create({
+            trigger: track,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.2,
+            onUpdate: (self) => {
+                const p = self.progress;
+                if (p < 0.35) {
+                    setStage(0);
+                    img1.style.opacity = '1';
+                    img2.style.opacity = '0';
+                    img3.style.opacity = '0';
+                } else if (p < 0.70) {
+                    setStage(1);
+                    img1.style.opacity = '0';
+                    img2.style.opacity = '1';
+                    img3.style.opacity = '0';
+                } else {
+                    setStage(2);
+                    img1.style.opacity = '0';
+                    img2.style.opacity = '0';
+                    img3.style.opacity = '1';
                 }
             }
         });
-
-        // stage 1: chassis & frame overview -> drivetrain assembly (0.30)
-        tl.to(img1, {
-            opacity: 0,
-            duration: 0.2,
-            ease: 'power2.inOut',
-            onStart: function () { setStage(1); },
-            onReverseComplete: function () { setStage(0); }
-        }, 0.30)
-        .to(img2, {
-            opacity: 1,
-            duration: 0.2,
-            ease: 'power2.inOut'
-        }, 0.30);
-
-        // stage 2: drivetrain assembly -> electronics & payload (0.70)
-        tl.to(img2, {
-            opacity: 0,
-            duration: 0.2,
-            ease: 'power2.inOut',
-            onStart: function () { setStage(2); },
-            onReverseComplete: function () { setStage(1); }
-        }, 0.70)
-        .to(img3, {
-            opacity: 1,
-            duration: 0.2,
-            ease: 'power2.inOut'
-        }, 0.70);
-
     } else {
         setStage(0);
     }
@@ -977,9 +959,23 @@ function initTimelineScrollAnimation() {
             ease: 'none',
             scrollTrigger: {
                 trigger: timeline,
-                start: 'top 50%',
-                end: 'bottom 50%',
-                scrub: 0.3
+                start: 'top 75%',
+                end: 'bottom 85%',
+                scrub: 0.2,
+                onUpdate: (self) => {
+                    const scrollY = window.scrollY || window.pageYOffset;
+                    const winHeight = window.innerHeight;
+                    const docHeight = document.documentElement.scrollHeight;
+                    if (scrollY + winHeight >= docHeight - 60) {
+                        gsap.set(progressBar, { height: '100%' });
+                        items.forEach(item => {
+                            const card = item.querySelector('.timeline-card');
+                            const dot = item.querySelector('.timeline-dot');
+                            if (card) card.classList.add('active');
+                            if (dot) dot.classList.add('active');
+                        });
+                    }
+                }
             }
         });
 
@@ -990,7 +986,7 @@ function initTimelineScrollAnimation() {
 
             ScrollTrigger.create({
                 trigger: item,
-                start: 'top 50%',
+                start: 'top 75%',
                 onEnter: () => {
                     if (card) card.classList.add('active');
                     if (dot) dot.classList.add('active');
