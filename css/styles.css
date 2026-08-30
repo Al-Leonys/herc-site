@@ -1502,6 +1502,11 @@ ul {
     display: none;
     padding-top: 100px;
     padding-bottom: 80px;
+    background: #FFFFFF;
+}
+
+body.is-contact-page {
+    background: #FFFFFF !important;
 }
 
 body.is-contact-page #main-landing-view {
@@ -1716,7 +1721,7 @@ body.is-contact-page #contact-page-view {
 
 .preset-btn {
     padding: 8px 16px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 13px;
     font-weight: 600;
     color: #0A1C36;

@@ -1010,6 +1010,7 @@ function initScrollUrlUpdater() {
 
     function updateActiveRouteOnScroll() {
         if (isProgrammaticScroll) return;
+        if (document.body.classList.contains('is-contact-page')) return;
 
         const scrollY = window.scrollY || window.pageYOffset;
         const windowHeight = window.innerHeight;
