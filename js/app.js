@@ -888,9 +888,15 @@ function initSubsystemsCADAnimation() {
         updateCardColumnHeight();
     }
 
-    function drawFrame(index) {
-        const img = images[index];
-        if (!img || !img.complete) return;
+    function drawFrame(frameFloat) {
+        const frameIndex1 = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(frameFloat)));
+        const frameIndex2 = Math.min(TOTAL_FRAMES - 1, frameIndex1 + 1);
+        const mix = frameFloat - frameIndex1;
+
+        const img1 = images[frameIndex1];
+        const img2 = images[frameIndex2];
+
+        if (!img1 || !img1.complete) return;
 
         const rect = canvas.getBoundingClientRect();
         const dpr = window.devicePixelRatio || 1;
@@ -902,17 +908,30 @@ function initSubsystemsCADAnimation() {
             canvas.height = displayHeight || 720;
         }
 
-        const hRatio = canvas.width / img.width;
-        const vRatio = canvas.height / img.height;
+        const hRatio = canvas.width / img1.width;
+        const vRatio = canvas.height / img1.height;
         const ratio = Math.min(hRatio, vRatio);
-        const centerShiftX = (canvas.width - img.width * ratio) / 2;
-        const centerShiftY = (canvas.height - img.height * ratio) / 2;
+        const centerShiftX = (canvas.width - img1.width * ratio) / 2;
+        const centerShiftY = (canvas.height - img1.height * ratio) / 2;
 
         ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+        // 1. Render primary current frame
+        ctx.globalAlpha = 1.0;
         ctx.drawImage(
-            img, 0, 0, img.width, img.height,
-            centerShiftX, centerShiftY, img.width * ratio, img.height * ratio
+            img1, 0, 0, img1.width, img1.height,
+            centerShiftX, centerShiftY, img1.width * ratio, img1.height * ratio
         );
+
+        // 2. Optical Cross-Fade: blend next frame smoothly based on sub-frame progress
+        if (mix > 0.01 && img2 && img2.complete && frameIndex1 !== frameIndex2) {
+            ctx.globalAlpha = mix;
+            ctx.drawImage(
+                img2, 0, 0, img2.width, img2.height,
+                centerShiftX, centerShiftY, img2.width * ratio, img2.height * ratio
+            );
+            ctx.globalAlpha = 1.0;
+        }
     }
 
     let targetFrame = 0;
@@ -924,24 +943,21 @@ function initSubsystemsCADAnimation() {
             const step = Math.sign(diff) * Math.min(Math.abs(diff) * 0.22, MAX_FRAME_SPEED);
             currentFrameFloat += step;
 
-            const frameIndex = Math.min(
-                TOTAL_FRAMES - 1,
-                Math.max(0, Math.round(currentFrameFloat))
-            );
+            const roundedFrame = Math.round(currentFrameFloat);
 
             // Transition timestamps (60 WebP frames total):
             // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 14)
             // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 15 to 34)
             // Stage 2 (Electronics): 6.4s - 10.83s (frames 35 to 59)
-            if (frameIndex < 15) {
+            if (roundedFrame < 15) {
                 setStage(0);
-            } else if (frameIndex < 35) {
+            } else if (roundedFrame < 35) {
                 setStage(1);
             } else {
                 setStage(2);
             }
 
-            drawFrame(frameIndex);
+            drawFrame(currentFrameFloat);
         }
         requestAnimationFrame(renderLoop);
     }
@@ -950,7 +966,7 @@ function initSubsystemsCADAnimation() {
 
     window.addEventListener('resize', () => {
         updateCardColumnHeight();
-        drawFrame(Math.round(currentFrameFloat));
+        drawFrame(currentFrameFloat);
     });
 
     setStage(0);
