@@ -858,15 +858,11 @@ function initSubsystemsCADAnimation() {
         gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
-        const stickyWrapper = document.querySelector('.subsystems-sticky-wrapper');
-
         ScrollTrigger.create({
             trigger: track,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 0.2,
-            pin: stickyWrapper || true,
-            pinSpacing: false,
+            scrub: 0.1,
             onUpdate: (self) => {
                 const p = self.progress;
                 if (p < 0.35) {
@@ -954,28 +950,28 @@ function initTimelineScrollAnimation() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // animate central progress line height smoothly as section is scrolled
-        gsap.to(progressBar, {
-            height: '100%',
-            ease: 'none',
-            scrollTrigger: {
-                trigger: timeline,
-                start: 'top 75%',
-                end: 'bottom 85%',
-                scrub: 0.2,
-                onUpdate: (self) => {
-                    const scrollY = window.scrollY || window.pageYOffset;
-                    const winHeight = window.innerHeight;
-                    const docHeight = document.documentElement.scrollHeight;
-                    if (scrollY + winHeight >= docHeight - 60) {
-                        gsap.set(progressBar, { height: '100%' });
-                        items.forEach(item => {
-                            const card = item.querySelector('.timeline-card');
-                            const dot = item.querySelector('.timeline-dot');
-                            if (card) card.classList.add('active');
-                            if (dot) dot.classList.add('active');
-                        });
-                    }
+        gsap.set(progressBar, { height: '0%' });
+
+        ScrollTrigger.create({
+            trigger: timeline,
+            start: 'top 70%',
+            end: 'bottom 80%',
+            scrub: 0.1,
+            onUpdate: (self) => {
+                const progressPercent = Math.min(self.progress * 100, 100);
+                progressBar.style.height = `${progressPercent}%`;
+
+                const scrollY = window.scrollY || window.pageYOffset;
+                const winHeight = window.innerHeight;
+                const docHeight = document.documentElement.scrollHeight;
+                if (scrollY + winHeight >= docHeight - 50) {
+                    progressBar.style.height = '100%';
+                    items.forEach(item => {
+                        const card = item.querySelector('.timeline-card');
+                        const dot = item.querySelector('.timeline-dot');
+                        if (card) card.classList.add('active');
+                        if (dot) dot.classList.add('active');
+                    });
                 }
             }
         });
