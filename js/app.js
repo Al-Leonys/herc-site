@@ -8,6 +8,8 @@ document.addEventListener('DOMContentLoaded', () => {
     initTimelineScrollAnimation();
     initTelemetrySimulation();
     initContactForm();
+    initIntegratedGoogleForm();
+    initAccordionGallery();
     initScrollUrlUpdater();
     initClickPops();
 
@@ -34,6 +36,7 @@ const routeToSectionMap = {
     '/meet-team': 'meet-team',
     '/sponsors': 'sponsors',
     '/contact': 'contact',
+    '/contact-form': 'contact-form',
     '/roadmap': 'roadmap'
 };
 
@@ -44,13 +47,31 @@ const sectionToRouteMap = {
     'meet-team': '/meet-team',
     'sponsors': '/sponsors',
     'contact': '/contact',
+    'contact-form': '/contact-form',
     'roadmap': '/roadmap'
 };
 
 // handle clean route clicks and initial page load route restoration without hashtags
 function scrollToSectionForPath(path, isInstant = false) {
-    if (!path || path === '/') return;
+    if (!path) return;
     const cleanPath = path.replace(/\/$/, '') || '/';
+
+    if (cleanPath === '/contact' || cleanPath === '/contact-form') {
+        document.body.classList.add('is-contact-page');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        history.replaceState(null, '', '/contact-form');
+        setTimeout(() => { initAccordionGallery(); }, 50);
+        return;
+    }
+
+    document.body.classList.remove('is-contact-page');
+
+    if (cleanPath === '/') {
+        window.scrollTo({ top: 0, behavior: isInstant ? 'auto' : 'smooth' });
+        history.replaceState(null, '', '/');
+        return;
+    }
+
     const targetId = routeToSectionMap[cleanPath];
     if (!targetId) return;
 
@@ -96,6 +117,11 @@ function initCleanRouteNavigation() {
         }, { once: true });
     }
 
+    window.addEventListener('popstate', () => {
+        const currentPath = window.location.pathname;
+        scrollToSectionForPath(currentPath, true);
+    });
+
     document.body.addEventListener('click', (e) => {
         const link = e.target.closest('a[data-target], a[href^="/"]');
         if (!link) return;
@@ -109,6 +135,30 @@ function initCleanRouteNavigation() {
         if (!targetId && href) {
             const cleanHref = href.replace(/\/$/, '') || '/';
             targetId = routeToSectionMap[cleanHref];
+        }
+
+        if (targetId === 'contact-form' || routePath === '/contact-form' || routePath === '/contact') {
+            e.preventDefault();
+            document.body.classList.add('is-contact-page');
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            history.pushState(null, '', '/contact-form');
+            if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
+                window.closeStaggeredMenu();
+            }
+            setTimeout(() => { initAccordionGallery(); }, 50);
+            return;
+        }
+
+        document.body.classList.remove('is-contact-page');
+
+        if (targetId === 'hero' || routePath === '/') {
+            e.preventDefault();
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+            history.pushState(null, '', '/');
+            if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
+                window.closeStaggeredMenu();
+            }
+            return;
         }
 
         if (targetId) {
@@ -136,15 +186,6 @@ function initCleanRouteNavigation() {
                     isProgrammaticScroll = false;
                 }, 850);
             }
-        }
-    });
-
-    window.addEventListener('popstate', () => {
-        const path = (window.location.pathname.replace(/\/$/, '') || '/');
-        if (path === '/') {
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        } else {
-            scrollToSectionForPath(path, false);
         }
     });
 }
@@ -964,7 +1005,7 @@ function initTimelineScrollAnimation() {
 
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
-    const sectionIds = ['hero', 'about', 'team', 'meet-team', 'sponsors', 'contact', 'roadmap'];
+    const sectionIds = ['hero', 'about', 'team', 'meet-team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
     let lastActiveRoute = window.location.pathname.replace(/\/$/, '') || '/';
 
     function updateActiveRouteOnScroll() {
@@ -1029,4 +1070,174 @@ function initScrollUrlUpdater() {
             ticking = true;
         }
     }, { passive: true });
+}
+
+// integrated google form preset buttons & iframe submission feedback
+function initIntegratedGoogleForm() {
+    const form = document.getElementById('google-contact-form');
+    const iframe = document.getElementById('hidden_gform_iframe');
+    const donationInput = document.getElementById('entry-donation');
+    const presetBtns = document.querySelectorAll('.donation-presets .preset-btn');
+    const successBanner = document.getElementById('form-success-banner');
+    const submitBtn = document.getElementById('gform-submit-btn');
+
+    if (!form) return;
+
+    let isFormSubmitting = false;
+
+    if (presetBtns.length && donationInput) {
+        presetBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const amount = btn.getAttribute('data-amount');
+                donationInput.value = amount;
+
+                presetBtns.forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+            });
+        });
+
+        donationInput.addEventListener('input', () => {
+            presetBtns.forEach(b => b.classList.remove('active'));
+        });
+    }
+
+    form.addEventListener('submit', () => {
+        isFormSubmitting = true;
+        if (submitBtn) {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = 'Submitting Request <i class="fa-solid fa-spinner fa-spin"></i>';
+        }
+    });
+
+    if (iframe) {
+        iframe.addEventListener('load', () => {
+            if (isFormSubmitting) {
+                isFormSubmitting = false;
+                form.style.display = 'none';
+                if (successBanner) successBanner.style.display = 'block';
+
+                const formCard = form.closest('.custom-form-card') || form.closest('.custom-form-container');
+                if (formCard) {
+                    formCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                }
+            }
+        });
+    }
+}
+
+// gsap accordion gallery logic
+function initAccordionGallery() {
+    const root = document.querySelector('.accordion-gallery');
+    if (!root) return;
+
+    const panels = Array.from(root.querySelectorAll('.ag-panel'));
+    if (!panels.length) return;
+
+    const count = panels.length;
+    let active = 2;
+    const expandRatio = 0.52;
+    const tilt = 8;
+    const parallax = 0.5;
+    const duration = 0.6;
+    const ease = 'power3.out';
+    const stagger = 0.06;
+    const gap = 10;
+
+    let mediaSize = 320;
+    let currentTL = null;
+
+    const prefersReduced = typeof window !== 'undefined' && window.matchMedia
+        ? window.matchMedia('(prefers-reduced-motion: reduce)').matches
+        : false;
+
+    function measure() {
+        const rect = root.getBoundingClientRect();
+        const usable = Math.max(rect.width - gap * (count - 1), 120);
+        mediaSize = Math.max(140, usable * Math.min(Math.max(expandRatio, 0.2), 0.9) * 1.22);
+        root.style.setProperty('--ag-media-size', `${mediaSize}px`);
+        applyLayout(false);
+    }
+
+    function applyLayout(animate = true) {
+        if (!panels.length) return;
+
+        const r = Math.min(Math.max(expandRatio, 0.2), 0.9);
+        const grow = count > 1 ? (r * (count - 1)) / (1 - r) : 1;
+
+        if (currentTL) currentTL.kill();
+        const dur = animate && !prefersReduced ? duration : 0;
+
+        if (typeof gsap !== 'undefined') {
+            const tl = gsap.timeline();
+
+            panels.forEach((panel, i) => {
+                const isActive = i === active;
+                const media = panel.querySelector('.ag-panel__media');
+                const bar = panel.querySelector('.ag-panel__bar');
+                const text = panel.querySelector('.ag-panel__text');
+
+                const rot = isActive ? 0 : (i < active ? tilt : -tilt);
+
+                tl.to(panel, { flexGrow: isActive ? grow : 1, rotateY: rot, duration: dur, ease }, 0);
+
+                if (media) {
+                    const drift = Math.max(-1.5, Math.min(1.5, active - i));
+                    const shift = drift * parallax * mediaSize * 0.06;
+                    const gray = isActive ? 0 : 1;
+                    const dim = isActive ? 0 : 0.35;
+
+                    tl.to(media, {
+                        xPercent: -50,
+                        x: isActive ? 0 : shift,
+                        '--ag-gray': gray,
+                        '--ag-dim': dim,
+                        duration: dur,
+                        ease
+                    }, 0);
+                }
+
+                if (bar && text) {
+                    if (isActive) {
+                        tl.to([bar, text], { opacity: 1, x: 0, duration: dur, ease, stagger: prefersReduced ? 0 : stagger }, 0);
+                    } else {
+                        tl.to([bar, text], { opacity: 0, x: -14, duration: dur * 0.6, ease }, 0);
+                    }
+                }
+            });
+
+            currentTL = tl;
+        } else {
+            panels.forEach((panel, i) => {
+                const isActive = i === active;
+                panel.style.flexGrow = isActive ? grow : 1;
+            });
+        }
+    }
+
+    panels.forEach((panel, i) => {
+        panel.addEventListener('mouseenter', () => {
+            if (active !== i) {
+                active = i;
+                applyLayout(true);
+            }
+        });
+
+        panel.addEventListener('focus', () => {
+            if (active !== i) {
+                active = i;
+                applyLayout(true);
+            }
+        });
+
+        panel.addEventListener('click', (e) => {
+            if (active !== i) {
+                e.preventDefault();
+                active = i;
+                applyLayout(true);
+            }
+        });
+    });
+
+    measure();
+    window.addEventListener('resize', measure);
 }

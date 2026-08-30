@@ -166,7 +166,7 @@
     <script>
         (function() {
             var path = window.location.pathname.replace(/\/$/, '');
-            var validRoutes = ['/about', '/team', '/meet-team', '/sponsors', '/contact', '/roadmap'];
+            var validRoutes = ['/about', '/team', '/meet-team', '/sponsors', '/contact', '/contact-form', '/roadmap'];
             if (validRoutes.indexOf(path) !== -1) {
                 sessionStorage.setItem('redirect_route', path);
                 window.location.replace('/');

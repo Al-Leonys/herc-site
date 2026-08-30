@@ -70,7 +70,7 @@
                         <h3 class="sm-col-title">Involvement & Roadmap</h3>
                         <ul class="sm-col-list">
                             <li><span class="sm-panel-itemWrap"><a href="/sponsors" data-target="sponsors" class="sm-menu-item"><span class="sm-panel-itemLabel">Sponsorship Tiers</span></a></span></li>
-                            <li><span class="sm-panel-itemWrap"><a href="/contact" data-target="contact" class="sm-menu-item"><span class="sm-panel-itemLabel">Get In Touch</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="/contact-form" data-target="contact-form" class="sm-menu-item"><span class="sm-panel-itemLabel">Contact Form</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/roadmap" data-target="roadmap" class="sm-menu-item"><span class="sm-panel-itemLabel">Development Roadmap</span></a></span></li>
                         </ul>
                     </div>
@@ -86,6 +86,7 @@
         </aside>
     </div>
 
+    <main id="main-landing-view">
     <section class="hero-section" id="hero">
         <div class="hero-bg-container" id="halftone-bg-container">
             <img src="assets/hero-bg.jpg" alt="Historic Needham High Header" class="hero-bg-img">
@@ -308,7 +309,7 @@
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Social media acknowledgment</li>
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Logo on team apparel</li>
                     </ul>
-                    <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-sponsor" style="width: 100%;">Become Sponsor</a>
+                    <a href="/contact-form" data-target="contact-form" class="btn btn-sponsor" style="width: 100%;">Become Sponsor</a>
                 </div>
 
                 <div class="sponsor-card sponsor-card-diamond featured">
@@ -321,7 +322,7 @@
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Dedicated rover demonstration</li>
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Large logo on team apparel and documentation</li>
                     </ul>
-                    <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-sponsor" style="width: 100%;">Become Lead Sponsor</a>
+                    <a href="/contact-form" data-target="contact-form" class="btn btn-sponsor" style="width: 100%;">Become Lead Sponsor</a>
                 </div>
 
                 <div class="sponsor-card sponsor-card-gold">
@@ -332,34 +333,13 @@
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Website logo & hyperlink</li>
                         <li><svg class="check-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M5 13l4.5 4.5L19 7.5" stroke="currentColor" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg> Logo on apparel & documentation</li>
                     </ul>
-                    <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-sponsor" style="width: 100%;">Become Sponsor</a>
+                    <a href="/contact-form" data-target="contact-form" class="btn btn-sponsor" style="width: 100%;">Become Sponsor</a>
                 </div>
             </div>
 
             <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 8px;">
                 <p style="color: var(--text-secondary); margin-bottom: 15px;">While we created these tiers for your convenience, all donation amounts are appreciated.</p>
-                <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-primary">Make a Custom Donation</a>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" id="contact" style="background: #FFFFFF;">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">GET IN TOUCH</span>
-                <h2 class="section-title">Contact Mission Control</h2>
-                <p class="section-desc">
-                    Send a message to the Needham Gravity engineering team.
-                </p>
-            </div>
-
-            <div class="contact-container">
-                <div style="text-align: center; padding: 20px;">
-                    <p style="margin-bottom: 20px; color: var(--text-secondary);">For inquiries, please use the form below or contact us through social media.</p>
-                    <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-primary" style="width: 100%; display: inline-block;">
-                        Send Message <i class="fa-regular fa-envelope"></i>
-                    </a>
-                </div>
+                <a href="/contact-form" data-target="contact-form" class="btn btn-primary">Make a Custom Donation</a>
             </div>
         </div>
     </section>
@@ -459,6 +439,158 @@
             </div>
         </div>
     </section>
+    </main>
+
+    <main id="contact-page-view">
+    <section class="section" id="contact-form" style="background: #FFFFFF;">
+        <div class="container">
+            <div class="section-header" style="margin-bottom: 40px;">
+                <span class="section-subtitle">GET IN TOUCH & SPONSOR</span>
+                <h2 class="section-title">Contact Mission Control</h2>
+                <p class="section-desc">
+                    Send a message directly to the Needham Gravity engineering team, ask questions, or submit a proposed sponsorship inquiry.
+                </p>
+            </div>
+
+            <!-- Accordion Gallery Showcase (No founder photos) -->
+            <div class="accordion-gallery-wrapper">
+                <div class="accordion-gallery" role="list" aria-label="Rover Engineering Showcase">
+                    <div class="ag-panel" role="listitem" tabindex="0" aria-label="Needham High Team">
+                        <span class="ag-panel__frame">
+                            <span class="ag-panel__media">
+                                <img src="assets/hero-bg.jpg" alt="Needham High Team">
+                            </span>
+                            <span class="ag-panel__overlay"></span>
+                        </span>
+                        <span class="ag-panel__label">
+                            <span class="ag-panel__bar"></span>
+                            <span class="ag-panel__text">Needham High Team</span>
+                        </span>
+                    </div>
+
+                    <div class="ag-panel" role="listitem" tabindex="0" aria-label="Rover Engineering Design">
+                        <span class="ag-panel__frame">
+                            <span class="ag-panel__media">
+                                <img src="assets/rover.webp" alt="Rover Design Render">
+                            </span>
+                            <span class="ag-panel__overlay"></span>
+                        </span>
+                        <span class="ag-panel__label">
+                            <span class="ag-panel__bar"></span>
+                            <span class="ag-panel__text">Rover Engineering Design</span>
+                        </span>
+                    </div>
+
+                    <div class="ag-panel ag-panel--active" role="listitem" tabindex="0" aria-label="Chassis & Frame Specs">
+                        <span class="ag-panel__frame">
+                            <span class="ag-panel__media">
+                                <img src="assets/sketch1.png" alt="Chassis CAD Specs">
+                            </span>
+                            <span class="ag-panel__overlay"></span>
+                        </span>
+                        <span class="ag-panel__label">
+                            <span class="ag-panel__bar"></span>
+                            <span class="ag-panel__text">Chassis & Frame Specs</span>
+                        </span>
+                    </div>
+
+                    <div class="ag-panel" role="listitem" tabindex="0" aria-label="Drivetrain Tread System">
+                        <span class="ag-panel__frame">
+                            <span class="ag-panel__media">
+                                <img src="assets/sketch2.png" alt="Drivetrain CAD Specs">
+                            </span>
+                            <span class="ag-panel__overlay"></span>
+                        </span>
+                        <span class="ag-panel__label">
+                            <span class="ag-panel__bar"></span>
+                            <span class="ag-panel__text">Drivetrain Tread System</span>
+                        </span>
+                    </div>
+
+                    <div class="ag-panel" role="listitem" tabindex="0" aria-label="Payload & Task Subsystem">
+                        <span class="ag-panel__frame">
+                            <span class="ag-panel__media">
+                                <img src="assets/task.png" alt="Payload Task Specs">
+                            </span>
+                            <span class="ag-panel__overlay"></span>
+                        </span>
+                        <span class="ag-panel__label">
+                            <span class="ag-panel__bar"></span>
+                            <span class="ag-panel__text">Payload & Task Subsystem</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Clean Borderless Form -->
+            <div class="custom-form-container">
+                <form 
+                  action="https://docs.google.com/forms/d/e/1FAIpQLSekVsQ8Vz_UareJ9CB60sCPaaG9dplVt4WgGjPO-6M6K4wSPA/formResponse" 
+                  method="POST" 
+                  target="hidden_gform_iframe" 
+                  id="google-contact-form"
+                  class="clean-contact-form"
+                >
+                    <div class="gform-grid">
+                        <div class="gform-group">
+                            <label class="gform-label" for="entry-name">Name <span class="req-star">*</span></label>
+                            <input type="text" id="entry-name" name="entry.2005620554" class="gform-input" placeholder="Your Full Name" required>
+                        </div>
+
+                        <div class="gform-group">
+                            <label class="gform-label" for="entry-company">Company / Institution <span class="req-star">*</span></label>
+                            <input type="text" id="entry-company" name="entry.2022231541" class="gform-input" placeholder="Company, School, or Organization" required>
+                        </div>
+
+                        <div class="gform-group">
+                            <label class="gform-label" for="entry-email">Email <span class="req-star">*</span></label>
+                            <input type="email" id="entry-email" name="entry.2135327116" class="gform-input" placeholder="name@organization.com" required>
+                        </div>
+
+                        <div class="gform-group">
+                            <label class="gform-label" for="entry-phone">Phone Number</label>
+                            <input type="tel" id="entry-phone" name="entry.1166974658" class="gform-input" placeholder="(555) 000-0000">
+                        </div>
+                    </div>
+
+                    <div class="gform-group full-width" style="margin-top: 24px;">
+                        <label class="gform-label" for="entry-donation">
+                            If you want to become a sponsor right now, please add the monetary amount of your proposed donation
+                        </label>
+
+                        <div class="donation-presets">
+                            <button type="button" class="preset-btn" data-amount="$100">$100</button>
+                            <button type="button" class="preset-btn" data-amount="$500 ($500 Bronze Tier)">$500 (Bronze)</button>
+                            <button type="button" class="preset-btn" data-amount="$1,250 ($1,250 Gold Tier)">$1,250 (Gold)</button>
+                            <button type="button" class="preset-btn" data-amount="$3,000+ ($3,000+ Lead Partner)">$3,000+ (Lead)</button>
+                        </div>
+
+                        <input type="text" id="entry-donation" name="entry.699310492" class="gform-input" placeholder="Enter amount (e.g. $500) or select a preset tier above">
+                    </div>
+
+                    <div class="gform-group full-width" style="margin-top: 24px;">
+                        <label class="gform-label" for="entry-message">What would you like to say to the Needham Gravity team?</label>
+                        <textarea id="entry-message" name="entry.839337160" class="gform-input gform-textarea" rows="4" placeholder="Your message, questions, or sponsorship details..."></textarea>
+                    </div>
+
+                    <div style="margin-top: 32px; text-align: center;">
+                        <button type="submit" id="gform-submit-btn" class="btn btn-primary" style="padding: 16px 48px; font-size: 16px; min-width: 260px;">
+                            Submit Message <i class="fa-solid fa-paper-plane"></i>
+                        </button>
+                    </div>
+                </form>
+
+                <iframe name="hidden_gform_iframe" id="hidden_gform_iframe" style="display:none;"></iframe>
+
+                <div id="form-success-banner" class="gform-success-card" style="display:none;">
+                    <div class="success-icon-wrap"><i class="fa-solid fa-circle-check"></i></div>
+                    <h3>Message Received!</h3>
+                    <p>Thank you! Your message and sponsorship request have been sent directly to the Needham Gravity team. We will review your submission and follow up shortly.</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    </main>
 
     <footer class="site-footer">
         <div class="footer-container">
@@ -486,7 +618,7 @@
                 <h4 class="footer-title">Engagement</h4>
                 <ul class="footer-links">
                     <li><a href="/sponsors" data-target="sponsors">Sponsors</a></li>
-                    <li><a href="/contact" data-target="contact">Contact</a></li>
+                    <li><a href="/contact-form" data-target="contact-form">Contact Form</a></li>
                     <li><a href="/roadmap" data-target="roadmap">Roadmap</a></li>
                 </ul>
             </div>

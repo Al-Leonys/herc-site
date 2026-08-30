@@ -1497,6 +1497,287 @@ ul {
     }
 }
 
+/* spa view switching for standalone contact form page */
+#contact-page-view {
+    display: none;
+    padding-top: 100px;
+    padding-bottom: 80px;
+}
+
+body.is-contact-page #main-landing-view {
+    display: none !important;
+}
+
+body.is-contact-page #contact-page-view {
+    display: block !important;
+}
+
+/* accordion gallery component styles */
+.accordion-gallery-wrapper {
+    width: 100%;
+    max-width: 1080px;
+    margin: 0 auto 40px auto;
+}
+
+.accordion-gallery {
+    display: flex;
+    width: 100%;
+    height: 460px;
+    gap: 10px;
+    box-sizing: border-box;
+    perspective: 1000px;
+}
+
+.ag-panel {
+    position: relative;
+    flex: 1 1 0%;
+    height: 100%;
+    overflow: hidden;
+    cursor: pointer;
+    outline: none;
+    text-decoration: none;
+    border-radius: 16px;
+    will-change: flex-grow, transform;
+    transform-style: preserve-3d;
+}
+
+.ag-panel__frame {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    border-radius: inherit;
+}
+
+.ag-panel__media {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: var(--ag-media-size, 340px);
+    height: 100%;
+    transform: translateX(-50%);
+    will-change: transform, filter;
+    filter: grayscale(var(--ag-gray, 1));
+}
+
+.ag-panel__media img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.ag-panel__overlay {
+    position: absolute;
+    inset: 0;
+    background: #060010;
+    opacity: var(--ag-dim, 0.35);
+    pointer-events: none;
+    transition: opacity 0.4s ease;
+}
+
+.ag-panel__label {
+    position: absolute;
+    bottom: 22px;
+    left: 22px;
+    right: 22px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    z-index: 5;
+    pointer-events: none;
+}
+
+.ag-panel__bar {
+    width: 4px;
+    height: 24px;
+    background: #FFFFFF;
+    border-radius: 2px;
+    opacity: 0;
+    transform: translateX(-14px);
+}
+
+.ag-panel__text {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 1.15rem;
+    color: #FFFFFF;
+    letter-spacing: 0.02em;
+    opacity: 0;
+    transform: translateX(-14px);
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.85);
+}
+
+/* clean borderless contact form styles matching site design system */
+.custom-form-container {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 0;
+}
+
+.clean-contact-form {
+    width: 100%;
+}
+
+.form-section-title {
+    font-family: var(--font-heading);
+    font-size: 1.75rem;
+    font-weight: 800;
+    color: #0A1C36;
+    margin-bottom: 24px;
+    text-align: center;
+}
+
+@media (max-width: 768px) {
+    .accordion-gallery {
+        height: 380px;
+    }
+}
+
+/* integrated google contact & sponsorship form styles */
+.custom-gform-wrapper {
+    max-width: 840px;
+    margin: 0 auto;
+    padding: 40px 36px;
+    border-radius: var(--radius-lg);
+    background: #FFFFFF;
+    border: none;
+    box-shadow: none;
+}
+
+.gform-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+}
+
+.gform-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.gform-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.gform-label {
+    font-family: var(--font-heading);
+    font-weight: 700;
+    font-size: 14px;
+    color: #0A1C36;
+    margin-bottom: 8px;
+    line-height: 1.4;
+}
+
+.req-star {
+    color: #D93025;
+    font-weight: 700;
+}
+
+.gform-input {
+    width: 100%;
+    box-sizing: border-box;
+    padding: 13px 16px;
+    font-family: var(--font-mono);
+    font-size: 14px;
+    color: #0A1C36;
+    background: #F8F9FA;
+    border: 1.5px solid rgba(10, 28, 54, 0.16);
+    border-radius: 8px;
+    outline: none;
+    transition: all 0.25s ease;
+}
+
+.gform-input:focus {
+    border-color: #0066CC;
+    background: #FFFFFF;
+    box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
+}
+
+.gform-input::placeholder,
+.gform-textarea::placeholder {
+    font-family: var(--font-sans);
+    font-size: 14px;
+    font-weight: 400;
+    color: rgba(10, 28, 54, 0.45);
+    opacity: 1;
+}
+
+.gform-textarea {
+    resize: vertical;
+    min-height: 110px;
+}
+
+.donation-presets {
+    display: flex;
+    gap: 10px;
+    flex-wrap: wrap;
+    margin-bottom: 10px;
+}
+
+.preset-btn {
+    padding: 8px 16px;
+    font-family: var(--font-mono);
+    font-size: 13px;
+    font-weight: 600;
+    color: #0A1C36;
+    background: #EDEEF2;
+    border: 1.5px solid rgba(10, 28, 54, 0.14);
+    border-radius: var(--radius-full);
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.preset-btn:hover {
+    background: #E2E4EC;
+    border-color: #0066CC;
+    color: #0066CC;
+}
+
+.preset-btn.active {
+    background: #0066CC;
+    border-color: #0066CC;
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(0, 102, 204, 0.25);
+}
+
+.gform-success-card {
+    text-align: center;
+    padding: 40px 20px;
+}
+
+.success-icon-wrap {
+    font-size: 54px;
+    color: #10B981;
+    margin-bottom: 16px;
+}
+
+.gform-success-card h3 {
+    font-family: var(--font-heading);
+    font-size: 24px;
+    font-weight: 800;
+    color: #0A1C36;
+    margin-bottom: 12px;
+}
+
+.gform-success-card p {
+    font-size: 15px;
+    color: var(--text-secondary);
+    max-width: 520px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+@media (max-width: 768px) {
+    .custom-gform-wrapper {
+        padding: 24px 18px;
+    }
+
+    .gform-grid {
+        grid-template-columns: 1fr;
+        gap: 16px;
+    }
+}
+
 /* 
    subsystems pinned scroll animation & cad showcase styles
     */
