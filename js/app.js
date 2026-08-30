@@ -809,12 +809,10 @@ async function submitContactFormBackup(form, formData) {
     }
 }
 
-// interactive subsystems cad fade out & callout transition
+// interactive subsystems frame-by-frame canvas scroll-driven animation & callout transition
 function initSubsystemsCADAnimation() {
     const track = document.getElementById('subsystems-track');
-    const img1 = document.getElementById('cad-img-1');
-    const img2 = document.getElementById('cad-img-2');
-    const img3 = document.getElementById('cad-img-3');
+    const canvas = document.getElementById('subsystems-canvas');
 
     const cards = [
         document.getElementById('subsystem-card-1'),
@@ -822,7 +820,23 @@ function initSubsystemsCADAnimation() {
         document.getElementById('subsystem-card-3')
     ];
 
-    if (!track || !img1 || !img2 || !img3) return;
+    if (!track || !canvas) return;
+
+    const ctx = canvas.getContext('2d');
+    const TOTAL_FRAMES = 260;
+    const images = [];
+    let currentFrameIndex = 0;
+
+    // Preload frame images
+    for (let i = 1; i <= TOTAL_FRAMES; i++) {
+        const img = new Image();
+        const frameNum = String(i).padStart(3, '0');
+        img.src = `assets/frames/frame_${frameNum}.jpg`;
+        if (i === 1) {
+            img.onload = () => drawFrame(0);
+        }
+        images.push(img);
+    }
 
     function updateCardColumnHeight() {
         const cardsColumn = document.querySelector('.subsystems-cards-column');
@@ -839,68 +853,97 @@ function initSubsystemsCADAnimation() {
         }
     }
 
+    let currentStage = -1;
     function setStage(stageIndex) {
+        if (currentStage === stageIndex) return;
+        currentStage = stageIndex;
         cards.forEach((card, i) => {
             if (card) card.classList.toggle('active-stage', i === stageIndex);
         });
         updateCardColumnHeight();
     }
 
-    window.addEventListener('resize', updateCardColumnHeight);
+    function drawFrame(index) {
+        const img = images[index];
+        if (!img || !img.complete) return;
+
+        const rect = canvas.getBoundingClientRect();
+        const dpr = window.devicePixelRatio || 1;
+        const displayWidth = Math.round(rect.width * dpr);
+        const displayHeight = Math.round(rect.height * dpr);
+
+        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
+            canvas.width = displayWidth || 1920;
+            canvas.height = displayHeight || 1080;
+        }
+
+        const hRatio = canvas.width / img.width;
+        const vRatio = canvas.height / img.height;
+        const ratio = Math.min(hRatio, vRatio);
+        const centerShiftX = (canvas.width - img.width * ratio) / 2;
+        const centerShiftY = (canvas.height - img.height * ratio) / 2;
+
+        ctx.clearRect(0, 0, canvas.width, canvas.height);
+        ctx.drawImage(
+            img, 0, 0, img.width, img.height,
+            centerShiftX, centerShiftY, img.width * ratio, img.height * ratio
+        );
+    }
+
+    let targetFrame = 0;
+    let currentFrameFloat = 0;
+    const MAX_FRAME_SPEED = 3.8; // Hard cap: max 3.8 frames per tick for slightly faster responsive scrubbing
+
+    function renderLoop() {
+        if (Math.abs(targetFrame - currentFrameFloat) > 0.01) {
+            const diff = targetFrame - currentFrameFloat;
+            // Smooth lerp dampened by MAX_FRAME_SPEED cap
+            const step = Math.sign(diff) * Math.min(Math.abs(diff) * 0.22, MAX_FRAME_SPEED);
+            currentFrameFloat += step;
+
+            const frameIndex = Math.min(
+                TOTAL_FRAMES - 1,
+                Math.max(0, Math.round(currentFrameFloat))
+            );
+
+            // Transition timestamps (260 frames total):
+            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 64)
+            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 65 to 153)
+            // Stage 2 (Electronics): 6.4s - 10.83s (frames 154 to 259)
+            if (frameIndex < 65) {
+                setStage(0);
+            } else if (frameIndex < 154) {
+                setStage(1);
+            } else {
+                setStage(2);
+            }
+
+            drawFrame(frameIndex);
+        }
+        requestAnimationFrame(renderLoop);
+    }
+
+    requestAnimationFrame(renderLoop);
+
+    window.addEventListener('resize', () => {
+        updateCardColumnHeight();
+        drawFrame(Math.round(currentFrameFloat));
+    });
+
+    setStage(0);
 
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // initial opacity: img1 is visible, img2 and img3 are transparent until they fade in
-        gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
-        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 4 });
-        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
-        setStage(0);
-
-        const tl = gsap.timeline({
-            scrollTrigger: {
-                trigger: track,
-                start: 'top top',
-                end: 'bottom bottom',
-                scrub: 0.3,
-                snap: {
-                    snapTo: [0, 0.5, 1.0],
-                    duration: { min: 0.25, max: 0.5 },
-                    delay: 0.05,
-                    ease: 'power2.inOut'
-                }
+        ScrollTrigger.create({
+            trigger: track,
+            start: 'top top',
+            end: 'bottom bottom',
+            scrub: 0.25, // Slightly punchier responsive scrub
+            onUpdate: (self) => {
+                targetFrame = self.progress * (TOTAL_FRAMES - 1);
             }
         });
-
-        // stage 1: chassis & frame overview -> drivetrain assembly (0.30)
-        tl.to(img1, {
-            opacity: 0,
-            duration: 0.2,
-            ease: 'power2.inOut',
-            onStart: function () { setStage(1); },
-            onReverseComplete: function () { setStage(0); }
-        }, 0.30)
-        .to(img2, {
-            opacity: 1,
-            duration: 0.2,
-            ease: 'power2.inOut'
-        }, 0.30);
-
-        // stage 2: drivetrain assembly -> electronics & payload (0.70)
-        tl.to(img2, {
-            opacity: 0,
-            duration: 0.2,
-            ease: 'power2.inOut',
-            onStart: function () { setStage(2); },
-            onReverseComplete: function () { setStage(1); }
-        }, 0.70)
-        .to(img3, {
-            opacity: 1,
-            duration: 0.2,
-            ease: 'power2.inOut'
-        }, 0.70);
-    } else {
-        setStage(0);
     }
 }
 
