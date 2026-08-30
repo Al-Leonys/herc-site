@@ -7,7 +7,6 @@ document.addEventListener('DOMContentLoaded', () => {
     initSubsystemsCADAnimation();
     initTimelineScrollAnimation();
     initTelemetrySimulation();
-    initContactForm();
     initIntegratedGoogleForm();
     initPhoneNumberFormatter();
     initAccordionGallery();
