@@ -424,10 +424,10 @@ ul {
 
 .hero-credit-logo {
     position: absolute;
-    top: 50%;
+    top: 68%;
     transform: translateY(-50%);
-    height: 180px;
-    width: 180px;
+    height: 260px;
+    width: 260px;
     z-index: 2;
     overflow: hidden;
     display: flex;
@@ -1371,8 +1371,9 @@ ul {
     }
 
     .hero-credit-logo {
-        height: 64px !important;
-        width: 64px !important;
+        height: 84px !important;
+        width: 84px !important;
+        top: 62% !important;
     }
 
     .hero-credit-logo-left {
