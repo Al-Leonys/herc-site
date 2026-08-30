@@ -828,6 +828,20 @@ function initSubsystemsCADAnimation() {
     let currentFrameFloat = 0;
     let isPreloaded = false;
 
+    function preloadRemainingFrames() {
+        if (isPreloaded) return;
+        isPreloaded = true;
+
+        for (let i = 1; i <= TOTAL_FRAMES; i++) {
+            if (!images[i - 1]) {
+                const img = new Image();
+                const frameNum = String(i).padStart(3, '0');
+                img.src = `assets/frames/frame_${frameNum}.webp`;
+                images[i - 1] = img;
+            }
+        }
+    }
+
     // Defer animation loading until hero header and top assets are fully initialized
     function startAnimationSetup() {
         const firstImg = new Image();
