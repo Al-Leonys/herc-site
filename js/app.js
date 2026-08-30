@@ -767,49 +767,37 @@ function initParticleTextHeroTitle() {
 
 
 
-// contact form submission handling via formspree / web3forms email service
-function initContactForm() {
-    const contactForm = document.getElementById('contact-form');
-    if (!contactForm) return;
+// backup email dispatch mirrors the primary contact form submission through Formspree
+async function submitContactFormBackup(form, formData) {
+    const formspreeEndpoint = form.getAttribute('data-formspree-endpoint');
+    if (!formspreeEndpoint) return false;
 
-    contactForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const submitBtn = document.getElementById('c-submit-btn');
-        const originalText = submitBtn ? submitBtn.innerHTML : 'Send Message';
+    const backupData = new FormData();
+    const formspreeCc = form.getAttribute('data-formspree-cc');
 
-        if (submitBtn) {
-            submitBtn.disabled = true;
-            submitBtn.innerHTML = '<i class="fa-solid fa-spinner fa-spin"></i> Sending...';
-        }
+    for (const [key, value] of formData.entries()) {
+        backupData.append(key, value);
+    }
 
-        const formData = new FormData(contactForm);
+    if (formspreeCc) {
+        backupData.append('_cc', formspreeCc);
+    }
 
-        try {
-            const response = await fetch(contactForm.action, {
-                method: 'POST',
-                body: formData,
-                headers: {
-                    'Accept': 'application/json'
-                }
-            });
+    backupData.append('_subject', 'Needham Gravity Contact Form Submission');
 
-            if (response.ok) {
-                alert('Thank you! Your message has been sent directly to the team email.');
-                contactForm.reset();
-            } else {
-                alert('Message submitted! To deliver emails to your inbox, set your Formspree ID or Web3Forms Key in index.html.');
-                contactForm.reset();
+    try {
+        const response = await fetch(formspreeEndpoint, {
+            method: 'POST',
+            body: backupData,
+            headers: {
+                'Accept': 'application/json'
             }
-        } catch (err) {
-            alert('Thank you! Your message has been submitted to Needham Gravity.');
-            contactForm.reset();
-        } finally {
-            if (submitBtn) {
-                submitBtn.disabled = false;
-                submitBtn.innerHTML = originalText;
-            }
-        }
-    });
+        });
+
+        return response.ok;
+    } catch {
+        return false;
+    }
 }
 
 // interactive subsystems cad fade out & callout transition
@@ -1127,7 +1115,7 @@ function initIntegratedGoogleForm() {
         });
     }
 
-    form.addEventListener('submit', (e) => {
+    form.addEventListener('submit', () => {
         isFormSubmitting = true;
         if (submitBtn) {
             submitBtn.disabled = true;
@@ -1137,6 +1125,9 @@ function initIntegratedGoogleForm() {
         const formData = new FormData(form);
         const searchParams = new URLSearchParams(formData);
         const actionUrl = form.getAttribute('action');
+
+        // Backup email dispatch runs in parallel so the main Google Apps Script flow stays primary.
+        void submitContactFormBackup(form, formData);
 
         if (actionUrl && actionUrl !== '#') {
             fetch(actionUrl, {
