@@ -893,32 +893,34 @@ ul {
 
 .timeline {
     position: relative;
-    max-width: 900px;
+    max-width: 760px;
     margin: 0 auto;
 }
 
 .timeline::before {
     content: '';
     position: absolute;
-    left: 20px;
+    left: 50%;
     top: 0;
     bottom: 0;
     width: 2px;
     background: var(--border-color);
+    transform: translateX(-50%);
 }
 
 .timeline-item {
     position: relative;
     margin-bottom: 32px;
-    width: 100%;
-    padding: 0 0 0 50px;
-    text-align: left;
+    width: 50%;
+    padding: 0 24px;
 }
+
+.timeline-item:nth-child(odd) { left: 0; text-align: right; }
+.timeline-item:nth-child(even) { left: 50%; text-align: left; }
 
 .timeline-dot {
     position: absolute;
     top: 6px;
-    left: 13px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -927,11 +929,8 @@ ul {
     z-index: 2;
 }
 
-.timeline-row {
-    display: flex;
-    align-items: stretch;
-    gap: 20px;
-}
+.timeline-item:nth-child(odd) .timeline-dot { right: -7px; }
+.timeline-item:nth-child(even) .timeline-dot { left: -7px; }
 
 .timeline-card {
     background: #FFFFFF;
@@ -940,8 +939,6 @@ ul {
     padding: 20px;
     box-shadow: 0 7px 0 0 var(--box-shadow-color, var(--border-hover));
     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
-    flex: 1 1 auto;
-    min-width: 0;
 }
 
 .timeline-card:hover {
@@ -965,23 +962,36 @@ ul {
 }
 
 .timeline-images {
+    position: absolute;
+    top: 0;
     display: flex;
-    gap: 10px;
-    flex: 0 0 auto;
-    align-items: center;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.timeline-item:nth-child(odd) .timeline-images {
+    right: 100%;
+    margin-right: 20px;
+    align-items: flex-end;
+}
+
+.timeline-item:nth-child(even) .timeline-images {
+    left: 100%;
+    margin-left: 20px;
+    align-items: flex-start;
 }
 
 .timeline-images img {
-    width: 84px;
-    height: 84px;
+    width: 64px;
+    height: 64px;
     object-fit: cover;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
 }
 
 .timeline-placeholder {
-    width: 84px;
-    height: 84px;
+    width: 64px;
+    height: 64px;
     border-radius: var(--radius-sm);
     border: 2px dashed var(--border-color);
     background: #EDEFF2;
@@ -1415,12 +1425,11 @@ ul {
         box-sizing: border-box;
     }
 
-    .timeline-row {
-        flex-direction: column !important;
-    }
-
     .timeline-images {
-        align-self: flex-start;
+        position: static !important;
+        margin: 12px 0 0 0 !important;
+        flex-direction: row !important;
+        align-items: flex-start !important;
     }
 
     .telemetry-grid {
