@@ -1682,7 +1682,7 @@ body.is-contact-page #contact-page-view {
     width: 100%;
     box-sizing: border-box;
     padding: 13px 16px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-size: 14px;
     color: #0A1C36;
     background: #F8F9FA;
