@@ -422,22 +422,23 @@ ul {
     }
 }
 
-.hero-subtitle-row {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 24px;
-    margin: 0 auto 36px auto;
-    max-width: 900px;
-    flex-wrap: wrap;
+.hero-credit-logo {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 180px;
+    width: 180px;
+    object-fit: contain;
+    z-index: 2;
+    filter: drop-shadow(0 2px 10px rgba(0, 0, 0, 0.6));
 }
 
-.hero-credit-logo {
-    height: 140px;
-    width: 140px;
-    object-fit: contain;
-    flex: 0 0 140px;
-    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+.hero-credit-logo-left {
+    left: 6%;
+}
+
+.hero-credit-logo-right {
+    right: 6%;
 }
 
 .hero-subtitle {
@@ -445,7 +446,7 @@ ul {
     font-size: clamp(17px, 3.4vw, 26px);
     color: rgba(255, 255, 255, 0.95);
     max-width: 680px;
-    margin: 0;
+    margin: 0 auto 36px auto;
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1.6;
@@ -1352,19 +1353,21 @@ ul {
     .hero-subtitle {
         font-size: 13.5px !important;
         line-height: 1.45 !important;
-        margin-bottom: 0 !important;
+        margin-bottom: 20px !important;
         max-width: 360px !important;
     }
 
-    .hero-subtitle-row {
-        margin-bottom: 20px !important;
-        gap: 12px !important;
+    .hero-credit-logo {
+        height: 64px !important;
+        width: 64px !important;
     }
 
-    .hero-credit-logo {
-        height: 56px !important;
-        width: 56px !important;
-        flex: 0 0 56px !important;
+    .hero-credit-logo-left {
+        left: 3% !important;
+    }
+
+    .hero-credit-logo-right {
+        right: 3% !important;
     }
 
     /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (DIAMOND SPONSOR ON TOP) */
