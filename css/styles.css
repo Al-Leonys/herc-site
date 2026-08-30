@@ -422,12 +422,30 @@ ul {
     }
 }
 
+.hero-subtitle-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+    margin: 0 auto 36px auto;
+    max-width: 900px;
+    flex-wrap: wrap;
+}
+
+.hero-credit-logo {
+    height: 64px;
+    width: auto;
+    object-fit: contain;
+    flex: 0 0 auto;
+    filter: drop-shadow(0 2px 8px rgba(0, 0, 0, 0.5));
+}
+
 .hero-subtitle {
     font-family: var(--font-mono);
     font-size: clamp(17px, 3.4vw, 26px);
     color: rgba(255, 255, 255, 0.95);
     max-width: 680px;
-    margin: 0 auto 36px auto;
+    margin: 0;
     font-weight: 600;
     letter-spacing: 0.04em;
     line-height: 1.6;
@@ -962,36 +980,30 @@ ul {
 }
 
 .timeline-images {
-    position: absolute;
-    top: 0;
     display: flex;
-    flex-direction: column;
-    gap: 8px;
+    gap: 10px;
+    margin-top: 12px;
 }
 
 .timeline-item:nth-child(odd) .timeline-images {
-    right: 100%;
-    margin-right: 20px;
-    align-items: flex-end;
+    justify-content: flex-end;
 }
 
 .timeline-item:nth-child(even) .timeline-images {
-    left: 100%;
-    margin-left: 20px;
-    align-items: flex-start;
+    justify-content: flex-start;
 }
 
 .timeline-images img {
-    width: 64px;
-    height: 64px;
+    width: 120px;
+    height: 120px;
     object-fit: cover;
     border-radius: var(--radius-sm);
     border: 1px solid var(--border-color);
 }
 
 .timeline-placeholder {
-    width: 64px;
-    height: 64px;
+    width: 120px;
+    height: 120px;
     border-radius: var(--radius-sm);
     border: 2px dashed var(--border-color);
     background: #EDEFF2;
@@ -1363,8 +1375,17 @@ ul {
     .hero-subtitle {
         font-size: 13.5px !important;
         line-height: 1.45 !important;
-        margin-bottom: 20px !important;
+        margin-bottom: 0 !important;
         max-width: 360px !important;
+    }
+
+    .hero-subtitle-row {
+        margin-bottom: 20px !important;
+        gap: 12px !important;
+    }
+
+    .hero-credit-logo {
+        height: 36px !important;
     }
 
     /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (DIAMOND SPONSOR ON TOP) */
@@ -1426,10 +1447,8 @@ ul {
     }
 
     .timeline-images {
-        position: static !important;
-        margin: 12px 0 0 0 !important;
-        flex-direction: row !important;
-        align-items: flex-start !important;
+        justify-content: flex-start !important;
+        flex-wrap: wrap;
     }
 
     .telemetry-grid {
