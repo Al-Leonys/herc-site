@@ -1115,7 +1115,8 @@ function initIntegratedGoogleForm() {
         });
     }
 
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', (e) => {
+        e.preventDefault();
         isFormSubmitting = true;
         if (submitBtn) {
             submitBtn.disabled = true;
@@ -1143,7 +1144,7 @@ function initIntegratedGoogleForm() {
 
         submitTimeout = setTimeout(() => {
             showSuccessState();
-        }, 1200);
+        }, 600);
     });
 
     if (iframe) {
