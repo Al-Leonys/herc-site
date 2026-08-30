@@ -9,6 +9,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initTelemetrySimulation();
     initContactForm();
     initIntegratedGoogleForm();
+    initPhoneNumberFormatter();
     initAccordionGallery();
     initScrollUrlUpdater();
     initClickPops();
@@ -1073,7 +1074,7 @@ function initScrollUrlUpdater() {
     }, { passive: true });
 }
 
-// integrated google form preset buttons & iframe submission feedback
+// integrated google form preset buttons, phone formatting, & iframe submission feedback
 function initIntegratedGoogleForm() {
     const form = document.getElementById('google-contact-form');
     const iframe = document.getElementById('hidden_gform_iframe');
@@ -1085,6 +1086,21 @@ function initIntegratedGoogleForm() {
     if (!form) return;
 
     let isFormSubmitting = false;
+    let submitTimeout = null;
+
+    function showSuccessState() {
+        if (!isFormSubmitting) return;
+        isFormSubmitting = false;
+        if (submitTimeout) clearTimeout(submitTimeout);
+
+        form.style.display = 'none';
+        if (successBanner) successBanner.style.display = 'block';
+
+        const formCard = form.closest('.custom-form-card') || form.closest('.custom-form-container');
+        if (formCard) {
+            formCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }
+    }
 
     if (presetBtns.length && donationInput) {
         presetBtns.forEach(btn => {
@@ -1106,24 +1122,40 @@ function initIntegratedGoogleForm() {
         isFormSubmitting = true;
         if (submitBtn) {
             submitBtn.disabled = true;
-            submitBtn.innerHTML = 'Submitting Request <i class="fa-solid fa-spinner fa-spin"></i>';
+            submitBtn.innerHTML = 'Submitting Message <i class="fa-solid fa-spinner fa-spin"></i>';
         }
+
+        submitTimeout = setTimeout(() => {
+            showSuccessState();
+        }, 1200);
     });
 
     if (iframe) {
         iframe.addEventListener('load', () => {
-            if (isFormSubmitting) {
-                isFormSubmitting = false;
-                form.style.display = 'none';
-                if (successBanner) successBanner.style.display = 'block';
-
-                const formCard = form.closest('.custom-form-card') || form.closest('.custom-form-container');
-                if (formCard) {
-                    formCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-                }
-            }
+            showSuccessState();
         });
     }
+}
+
+// automatic phone number input auto-formatter: (555) 000-0000
+function initPhoneNumberFormatter() {
+    const phoneInput = document.getElementById('entry-phone');
+    if (!phoneInput) return;
+
+    phoneInput.addEventListener('input', (e) => {
+        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
+        if (!digits) {
+            e.target.value = '';
+            return;
+        }
+        if (digits.length <= 3) {
+            e.target.value = `(${digits}`;
+        } else if (digits.length <= 6) {
+            e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+        } else {
+            e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+        }
+    });
 }
 
 // gsap accordion gallery logic
