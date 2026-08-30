@@ -858,28 +858,31 @@ function initSubsystemsCADAnimation() {
         gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
+        const stickyWrapper = document.querySelector('.subsystems-sticky-wrapper');
+
         ScrollTrigger.create({
             trigger: track,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 0.1,
+            pin: stickyWrapper || true,
+            scrub: 0.2,
             onUpdate: (self) => {
                 const p = self.progress;
-                if (p < 0.35) {
+                if (p < 0.33) {
                     setStage(0);
-                    img1.style.opacity = '1';
-                    img2.style.opacity = '0';
-                    img3.style.opacity = '0';
-                } else if (p < 0.70) {
+                    gsap.to(img1, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img2, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img3, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                } else if (p < 0.66) {
                     setStage(1);
-                    img1.style.opacity = '0';
-                    img2.style.opacity = '1';
-                    img3.style.opacity = '0';
+                    gsap.to(img1, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img2, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img3, { opacity: 0, duration: 0.2, overwrite: 'auto' });
                 } else {
                     setStage(2);
-                    img1.style.opacity = '0';
-                    img2.style.opacity = '0';
-                    img3.style.opacity = '1';
+                    gsap.to(img1, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img2, { opacity: 0, duration: 0.2, overwrite: 'auto' });
+                    gsap.to(img3, { opacity: 1, duration: 0.2, overwrite: 'auto' });
                 }
             }
         });
