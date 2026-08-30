@@ -854,38 +854,42 @@ function initSubsystemsCADAnimation() {
         // responsive non-zooming fade out: all layers rendered centered at natural full scale (1.0)
         // top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
         gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
-        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 4 });
-        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
+        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 4 });
+        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 3 });
         setStage(0);
 
-        const stickyWrapper = document.querySelector('.subsystems-sticky-wrapper');
-
-        ScrollTrigger.create({
-            trigger: track,
-            start: 'top top',
-            end: 'bottom bottom',
-            pin: stickyWrapper || true,
-            scrub: 0.2,
-            onUpdate: (self) => {
-                const p = self.progress;
-                if (p < 0.33) {
-                    setStage(0);
-                    gsap.to(img1, { opacity: 1, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img2, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img3, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                } else if (p < 0.66) {
-                    setStage(1);
-                    gsap.to(img1, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img2, { opacity: 1, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img3, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                } else {
-                    setStage(2);
-                    gsap.to(img1, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img2, { opacity: 0, duration: 0.2, overwrite: 'auto' });
-                    gsap.to(img3, { opacity: 1, duration: 0.2, overwrite: 'auto' });
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: track,
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3,
+                snap: {
+                    snapTo: [0, 0.5, 1.0],
+                    duration: { min: 0.25, max: 0.5 },
+                    delay: 0.05,
+                    ease: 'power2.inOut'
                 }
             }
         });
+
+        // stage 1: chassis & frame overview -> drivetrain assembly (0.30)
+        tl.to(img1, {
+            opacity: 0,
+            duration: 0.2,
+            ease: 'power2.inOut',
+            onStart: function () { setStage(1); },
+            onReverseComplete: function () { setStage(0); }
+        }, 0.30);
+
+        // stage 2: drivetrain assembly -> electronics & payload (0.70)
+        tl.to(img2, {
+            opacity: 0,
+            duration: 0.2,
+            ease: 'power2.inOut',
+            onStart: function () { setStage(2); },
+            onReverseComplete: function () { setStage(1); }
+        }, 0.70);
     } else {
         setStage(0);
     }
