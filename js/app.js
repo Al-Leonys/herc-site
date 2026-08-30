@@ -48,26 +48,52 @@ const sectionToRouteMap = {
 };
 
 // handle clean route clicks and initial page load route restoration without hashtags
+function scrollToSectionForPath(path, isInstant = false) {
+    if (!path || path === '/') return;
+    const cleanPath = path.replace(/\/$/, '') || '/';
+    const targetId = routeToSectionMap[cleanPath];
+    if (!targetId) return;
+
+    const elem = document.getElementById(targetId);
+    if (!elem) return;
+
+    isProgrammaticScroll = true;
+    if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
+
+    const targetY = elem.getBoundingClientRect().top + window.pageYOffset;
+    window.scrollTo({
+        top: targetY,
+        behavior: isInstant ? 'auto' : 'smooth'
+    });
+
+    history.replaceState(null, '', cleanPath);
+
+    programmaticScrollTimer = setTimeout(() => {
+        isProgrammaticScroll = false;
+    }, 850);
+}
+
 function initCleanRouteNavigation() {
-    let targetPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
-    if (targetPath) {
-        targetPath = targetPath.replace(/\/$/, '') || '/';
+    if ('scrollRestoration' in history) {
+        history.scrollRestoration = 'manual';
+    }
+
+    const initialPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
+    if (initialPath && initialPath !== '/') {
         sessionStorage.removeItem('redirect_route');
-        const targetId = routeToSectionMap[targetPath];
-        if (targetId) {
-            isProgrammaticScroll = true;
-            if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
-            setTimeout(() => {
-                const elem = document.getElementById(targetId);
-                if (elem) {
-                    elem.scrollIntoView({ behavior: 'smooth' });
-                    history.replaceState(null, '', targetPath);
-                }
-                programmaticScrollTimer = setTimeout(() => {
-                    isProgrammaticScroll = false;
-                }, 850);
-            }, 150);
-        }
+        scrollToSectionForPath(initialPath, true);
+
+        setTimeout(() => {
+            scrollToSectionForPath(initialPath, true);
+        }, 100);
+
+        setTimeout(() => {
+            scrollToSectionForPath(initialPath, false);
+        }, 400);
+
+        window.addEventListener('load', () => {
+            scrollToSectionForPath(initialPath, false);
+        }, { once: true });
     }
 
     document.body.addEventListener('click', (e) => {
@@ -94,7 +120,12 @@ function initCleanRouteNavigation() {
                 isProgrammaticScroll = true;
                 if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
 
-                targetElem.scrollIntoView({ behavior: 'smooth' });
+                const targetY = targetElem.getBoundingClientRect().top + window.pageYOffset;
+                window.scrollTo({
+                    top: targetY,
+                    behavior: 'smooth'
+                });
+
                 history.pushState(null, '', routePath);
 
                 if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
@@ -110,17 +141,10 @@ function initCleanRouteNavigation() {
 
     window.addEventListener('popstate', () => {
         const path = (window.location.pathname.replace(/\/$/, '') || '/');
-        const targetId = routeToSectionMap[path];
-        if (targetId) {
-            const elem = document.getElementById(targetId);
-            if (elem) {
-                isProgrammaticScroll = true;
-                if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
-                elem.scrollIntoView({ behavior: 'smooth' });
-                programmaticScrollTimer = setTimeout(() => {
-                    isProgrammaticScroll = false;
-                }, 850);
-            }
+        if (path === '/') {
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        } else {
+            scrollToSectionForPath(path, false);
         }
     });
 }
@@ -773,8 +797,8 @@ function initSubsystemsCADAnimation() {
         // responsive non-zooming fade out: all layers rendered centered at natural full scale (1.0)
         // top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
         gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
-        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 4 });
-        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 3 });
+        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 4 });
+        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
         const tl = gsap.timeline({
@@ -799,6 +823,11 @@ function initSubsystemsCADAnimation() {
             ease: 'power2.inOut',
             onStart: function () { setStage(1); },
             onReverseComplete: function () { setStage(0); }
+        }, 0.30)
+        .to(img2, {
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power2.inOut'
         }, 0.30);
 
         // stage 2: drivetrain assembly -> electronics & payload (0.70)
@@ -808,6 +837,11 @@ function initSubsystemsCADAnimation() {
             ease: 'power2.inOut',
             onStart: function () { setStage(2); },
             onReverseComplete: function () { setStage(1); }
+        }, 0.70)
+        .to(img3, {
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power2.inOut'
         }, 0.70);
 
     } else {
