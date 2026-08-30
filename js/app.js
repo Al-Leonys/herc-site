@@ -1102,6 +1102,19 @@ function initIntegratedGoogleForm() {
         }
     }
 
+    const resetBtn = document.getElementById('gform-reset-btn');
+    if (resetBtn) {
+        resetBtn.addEventListener('click', () => {
+            form.reset();
+            form.style.display = 'block';
+            if (successBanner) successBanner.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Message <i class="fa-solid fa-paper-plane"></i>';
+            }
+        });
+    }
+
     if (presetBtns.length && donationInput) {
         presetBtns.forEach(btn => {
             btn.addEventListener('click', () => {
@@ -1118,11 +1131,26 @@ function initIntegratedGoogleForm() {
         });
     }
 
-    form.addEventListener('submit', () => {
+    form.addEventListener('submit', (e) => {
         isFormSubmitting = true;
         if (submitBtn) {
             submitBtn.disabled = true;
             submitBtn.innerHTML = 'Submitting Message <i class="fa-solid fa-spinner fa-spin"></i>';
+        }
+
+        const formData = new FormData(form);
+        const actionUrl = form.getAttribute('action');
+
+        if (actionUrl && actionUrl !== '#') {
+            fetch(actionUrl, {
+                method: 'POST',
+                body: formData,
+                mode: 'no-cors'
+            }).then(() => {
+                showSuccessState();
+            }).catch(() => {
+                showSuccessState();
+            });
         }
 
         submitTimeout = setTimeout(() => {

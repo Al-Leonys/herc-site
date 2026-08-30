@@ -534,22 +534,22 @@
                     <div class="gform-grid">
                         <div class="gform-group">
                             <label class="gform-label" for="entry-name">Name <span class="req-star">*</span></label>
-                            <input type="text" id="entry-name" name="entry.2005620554" class="gform-input" placeholder="Your Full Name" required>
+                            <input type="text" id="entry-name" name="name" data-entry="entry.2005620554" class="gform-input" placeholder="Your Full Name" required>
                         </div>
 
                         <div class="gform-group">
                             <label class="gform-label" for="entry-company">Company / Institution <span class="req-star">*</span></label>
-                            <input type="text" id="entry-company" name="entry.2022231541" class="gform-input" placeholder="Company, School, or Organization" required>
+                            <input type="text" id="entry-company" name="company" data-entry="entry.2022231541" class="gform-input" placeholder="Company, School, or Organization" required>
                         </div>
 
                         <div class="gform-group">
                             <label class="gform-label" for="entry-email">Email <span class="req-star">*</span></label>
-                            <input type="email" id="entry-email" name="entry.2135327116" class="gform-input" placeholder="name@organization.com" required>
+                            <input type="email" id="entry-email" name="email" data-entry="entry.2135327116" class="gform-input" placeholder="name@organization.com" required>
                         </div>
 
                         <div class="gform-group">
                             <label class="gform-label" for="entry-phone">Phone Number</label>
-                            <input type="tel" id="entry-phone" name="entry.1166974658" class="gform-input" placeholder="(555) 000-0000">
+                            <input type="tel" id="entry-phone" name="phone" data-entry="entry.1166974658" class="gform-input" placeholder="(555) 000-0000">
                         </div>
                     </div>
 
@@ -565,12 +565,12 @@
                             <button type="button" class="preset-btn" data-amount="$3,000+">$3,000+ (Diamond)</button>
                         </div>
 
-                        <input type="text" id="entry-donation" name="entry.699310492" class="gform-input" placeholder="Enter amount (e.g. $500) or select a preset tier">
+                        <input type="text" id="entry-donation" name="donation" data-entry="entry.699310492" class="gform-input" placeholder="Enter amount (e.g. $500) or select a preset tier">
                     </div>
 
                     <div class="gform-group full-width" style="margin-top: 24px;">
                         <label class="gform-label" for="entry-message">What would you like to say to the Needham Gravity team?</label>
-                        <textarea id="entry-message" name="entry.839337160" class="gform-input gform-textarea" rows="4" placeholder="Your message, questions, or sponsorship details..."></textarea>
+                        <textarea id="entry-message" name="message" data-entry="entry.839337160" class="gform-input gform-textarea" rows="4" placeholder="Your message, questions, or sponsorship details..."></textarea>
                     </div>
 
                     <div style="margin-top: 32px; text-align: center;">
@@ -586,6 +586,11 @@
                     <div class="success-icon-wrap"><i class="fa-solid fa-circle-check"></i></div>
                     <h3>Message Received!</h3>
                     <p>Thank you! Your message and sponsorship request have been sent directly to the Needham Gravity team. We will review your submission and follow up shortly.</p>
+                    <div style="margin-top: 28px;">
+                        <button type="button" id="gform-reset-btn" class="btn btn-secondary" style="padding: 12px 28px; font-size: 14px; width: auto; max-width: 100%;">
+                            Send Another Message <i class="fa-solid fa-rotate-left"></i>
+                        </button>
+                    </div>
                 </div>
             </div>
         </div>
