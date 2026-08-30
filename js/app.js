@@ -823,15 +823,15 @@ function initSubsystemsCADAnimation() {
     if (!track || !canvas) return;
 
     const ctx = canvas.getContext('2d');
-    const TOTAL_FRAMES = 260;
+    const TOTAL_FRAMES = 130;
     const images = [];
-    let currentFrameIndex = 0;
+    let currentFrameFloat = 0;
 
-    // Preload frame images
+    // Preload WebP frame images (4.2 MB total optimized payload)
     for (let i = 1; i <= TOTAL_FRAMES; i++) {
         const img = new Image();
         const frameNum = String(i).padStart(3, '0');
-        img.src = `assets/frames/frame_${frameNum}.jpg`;
+        img.src = `assets/frames/frame_${frameNum}.webp`;
         if (i === 1) {
             img.onload = () => drawFrame(0);
         }
@@ -906,13 +906,13 @@ function initSubsystemsCADAnimation() {
                 Math.max(0, Math.round(currentFrameFloat))
             );
 
-            // Transition timestamps (260 frames total):
-            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 64)
-            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 65 to 153)
-            // Stage 2 (Electronics): 6.4s - 10.83s (frames 154 to 259)
-            if (frameIndex < 65) {
+            // Transition timestamps (130 WebP frames total):
+            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 31)
+            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 32 to 76)
+            // Stage 2 (Electronics): 6.4s - 10.83s (frames 77 to 129)
+            if (frameIndex < 32) {
                 setStage(0);
-            } else if (frameIndex < 154) {
+            } else if (frameIndex < 77) {
                 setStage(1);
             } else {
                 setStage(2);
