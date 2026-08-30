@@ -851,11 +851,10 @@ function initSubsystemsCADAnimation() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // responsive non-zooming fade out: all layers rendered centered at natural full scale (1.0)
-        // top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
+        // initial opacity: img1 is visible, img2 and img3 are transparent until they fade in
         gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
-        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 4 });
-        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 3 });
+        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 4 });
+        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 0, zIndex: 3 });
         setStage(0);
 
         const tl = gsap.timeline({
@@ -880,6 +879,11 @@ function initSubsystemsCADAnimation() {
             ease: 'power2.inOut',
             onStart: function () { setStage(1); },
             onReverseComplete: function () { setStage(0); }
+        }, 0.30)
+        .to(img2, {
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power2.inOut'
         }, 0.30);
 
         // stage 2: drivetrain assembly -> electronics & payload (0.70)
@@ -889,6 +893,11 @@ function initSubsystemsCADAnimation() {
             ease: 'power2.inOut',
             onStart: function () { setStage(2); },
             onReverseComplete: function () { setStage(1); }
+        }, 0.70)
+        .to(img3, {
+            opacity: 1,
+            duration: 0.2,
+            ease: 'power2.inOut'
         }, 0.70);
     } else {
         setStage(0);
