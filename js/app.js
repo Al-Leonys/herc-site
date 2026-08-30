@@ -823,19 +823,44 @@ function initSubsystemsCADAnimation() {
     if (!track || !canvas) return;
 
     const ctx = canvas.getContext('2d');
-    const TOTAL_FRAMES = 130;
-    const images = [];
+    const TOTAL_FRAMES = 60;
+    const images = new Array(TOTAL_FRAMES);
     let currentFrameFloat = 0;
+    let isPreloaded = false;
 
-    // Preload WebP frame images (4.2 MB total optimized payload)
-    for (let i = 1; i <= TOTAL_FRAMES; i++) {
-        const img = new Image();
-        const frameNum = String(i).padStart(3, '0');
-        img.src = `assets/frames/frame_${frameNum}.webp`;
-        if (i === 1) {
-            img.onload = () => drawFrame(0);
+    // 1. Load initial keyframe immediately (< 50ms instant initial render)
+    const firstImg = new Image();
+    firstImg.src = 'assets/frames/frame_001.webp';
+    firstImg.onload = () => {
+        images[0] = firstImg;
+        drawFrame(0);
+    };
+
+    // 2. Lazy preload remaining frames in background when user approaches section
+    function preloadRemainingFrames() {
+        if (isPreloaded) return;
+        isPreloaded = true;
+
+        for (let i = 1; i <= TOTAL_FRAMES; i++) {
+            if (!images[i - 1]) {
+                const img = new Image();
+                const frameNum = String(i).padStart(3, '0');
+                img.src = `assets/frames/frame_${frameNum}.webp`;
+                images[i - 1] = img;
+            }
         }
-        images.push(img);
+    }
+
+    if ('IntersectionObserver' in window) {
+        const observer = new IntersectionObserver((entries) => {
+            if (entries[0].isIntersecting) {
+                preloadRemainingFrames();
+                observer.disconnect();
+            }
+        }, { rootMargin: '600px 0px 600px 0px' });
+        observer.observe(track);
+    } else {
+        preloadRemainingFrames();
     }
 
     function updateCardColumnHeight() {
@@ -873,8 +898,8 @@ function initSubsystemsCADAnimation() {
         const displayHeight = Math.round(rect.height * dpr);
 
         if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-            canvas.width = displayWidth || 1920;
-            canvas.height = displayHeight || 1080;
+            canvas.width = displayWidth || 1280;
+            canvas.height = displayHeight || 720;
         }
 
         const hRatio = canvas.width / img.width;
@@ -891,13 +916,11 @@ function initSubsystemsCADAnimation() {
     }
 
     let targetFrame = 0;
-    let currentFrameFloat = 0;
-    const MAX_FRAME_SPEED = 3.8; // Hard cap: max 3.8 frames per tick for slightly faster responsive scrubbing
+    const MAX_FRAME_SPEED = 2.0;
 
     function renderLoop() {
         if (Math.abs(targetFrame - currentFrameFloat) > 0.01) {
             const diff = targetFrame - currentFrameFloat;
-            // Smooth lerp dampened by MAX_FRAME_SPEED cap
             const step = Math.sign(diff) * Math.min(Math.abs(diff) * 0.22, MAX_FRAME_SPEED);
             currentFrameFloat += step;
 
@@ -906,13 +929,13 @@ function initSubsystemsCADAnimation() {
                 Math.max(0, Math.round(currentFrameFloat))
             );
 
-            // Transition timestamps (130 WebP frames total):
-            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 31)
-            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 32 to 76)
-            // Stage 2 (Electronics): 6.4s - 10.83s (frames 77 to 129)
-            if (frameIndex < 32) {
+            // Transition timestamps (60 WebP frames total):
+            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 14)
+            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 15 to 34)
+            // Stage 2 (Electronics): 6.4s - 10.83s (frames 35 to 59)
+            if (frameIndex < 15) {
                 setStage(0);
-            } else if (frameIndex < 77) {
+            } else if (frameIndex < 35) {
                 setStage(1);
             } else {
                 setStage(2);
@@ -939,8 +962,9 @@ function initSubsystemsCADAnimation() {
             trigger: track,
             start: 'top top',
             end: 'bottom bottom',
-            scrub: 0.25, // Slightly punchier responsive scrub
+            scrub: 0.25,
             onUpdate: (self) => {
+                preloadRemainingFrames();
                 targetFrame = self.progress * (TOTAL_FRAMES - 1);
             }
         });
