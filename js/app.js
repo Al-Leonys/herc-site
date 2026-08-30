@@ -1064,7 +1064,6 @@ function initIntegratedGoogleForm() {
     const iframe = document.getElementById('hidden_gform_iframe');
     const donationInput = document.getElementById('entry-donation');
     const presetBtns = document.querySelectorAll('.donation-presets .preset-btn');
-    const successPopup = document.getElementById('form-success-popup');
     const successBanner = document.getElementById('form-success-banner');
     const submitBtn = document.getElementById('gform-submit-btn');
 
@@ -1078,13 +1077,8 @@ function initIntegratedGoogleForm() {
         isFormSubmitting = false;
         if (submitTimeout) clearTimeout(submitTimeout);
 
-        if (successPopup) {
-            successPopup.style.display = 'flex';
-            successPopup.setAttribute('aria-hidden', 'false');
-            document.body.classList.add('success-popup-open');
-        } else if (successBanner) {
-            successBanner.style.display = 'block';
-        }
+        form.style.display = 'none';
+        if (successBanner) successBanner.style.display = 'block';
 
         const formCard = form.closest('.custom-form-card') || form.closest('.custom-form-container');
         if (formCard) {
@@ -1092,34 +1086,15 @@ function initIntegratedGoogleForm() {
         }
     }
 
-    function resetSuccessState() {
-        form.reset();
-        document.body.classList.remove('success-popup-open');
-        if (successPopup) {
-            successPopup.style.display = 'none';
-            successPopup.setAttribute('aria-hidden', 'true');
-        }
-        if (successBanner) successBanner.style.display = 'none';
-        presetBtns.forEach(btn => {
-            btn.classList.remove('active');
-        });
-        if (submitBtn) {
-            submitBtn.disabled = false;
-            submitBtn.innerHTML = 'Submit Message <i class="fa-solid fa-paper-plane"></i>';
-        }
-    }
-
     const resetBtn = document.getElementById('gform-reset-btn');
     if (resetBtn) {
         resetBtn.addEventListener('click', () => {
-            resetSuccessState();
-        });
-    }
-
-    if (successPopup) {
-        successPopup.addEventListener('click', (event) => {
-            if (event.target instanceof HTMLElement && event.target.hasAttribute('data-close-success-popup')) {
-                resetSuccessState();
+            form.reset();
+            form.style.display = 'block';
+            if (successBanner) successBanner.style.display = 'none';
+            if (submitBtn) {
+                submitBtn.disabled = false;
+                submitBtn.innerHTML = 'Submit Message <i class="fa-solid fa-paper-plane"></i>';
             }
         });
     }
@@ -1130,17 +1105,13 @@ function initIntegratedGoogleForm() {
                 const amount = btn.getAttribute('data-amount');
                 donationInput.value = amount;
 
-                presetBtns.forEach(presetBtn => {
-                    presetBtn.classList.remove('active');
-                });
+                presetBtns.forEach(b => b.classList.remove('active'));
                 btn.classList.add('active');
             });
         });
 
         donationInput.addEventListener('input', () => {
-            presetBtns.forEach(presetBtn => {
-                presetBtn.classList.remove('active');
-            });
+            presetBtns.forEach(b => b.classList.remove('active'));
         });
     }
 
