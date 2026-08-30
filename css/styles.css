@@ -929,12 +929,12 @@ ul {
     position: absolute;
     left: 50%;
     top: 0;
-    width: 3px;
-    background: linear-gradient(180deg, #F3C319 0%, #0066CC 100%);
+    width: 4px;
+    background: linear-gradient(180deg, #F3C319 0%, #0066CC 50%, #10B981 100%);
     transform: translateX(-50%);
     height: 0%;
-    z-index: 1;
-    box-shadow: none;
+    z-index: 2;
+    box-shadow: 0 0 10px rgba(0, 102, 204, 0.4);
     will-change: height;
 }
 
