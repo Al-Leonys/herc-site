@@ -1139,12 +1139,13 @@ function initIntegratedGoogleForm() {
         }
 
         const formData = new FormData(form);
+        const searchParams = new URLSearchParams(formData);
         const actionUrl = form.getAttribute('action');
 
         if (actionUrl && actionUrl !== '#') {
             fetch(actionUrl, {
                 method: 'POST',
-                body: formData,
+                body: searchParams,
                 mode: 'no-cors'
             }).then(() => {
                 showSuccessState();
