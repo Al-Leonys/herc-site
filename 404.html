@@ -9,7 +9,7 @@
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@500;600;700&family=Share+Tech+Mono&family=Inter:wght@400;500;600;700&family=Outfit:wght@600;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=ibm+plex+mono:wght@500;600;700&family=share+tech+mono&family=inter:wght@400;500;600;700&family=outfit:wght@600;700;800&display=swap" rel="stylesheet">
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
@@ -39,7 +39,7 @@
             box-shadow: var(--shadow-main);
         }
 
-        /* AUTHENTIC 4-FLAP MECHANICAL SPLIT-FLAP DISPLAY WITH SLASHED ZERO FONT */
+        /* authentic 4-flap mechanical split-flap display with slashed zero font */
         .split-flap-container {
             display: flex;
             align-items: center;
@@ -120,7 +120,7 @@
             z-index: 25;
         }
 
-        /* 3D split-flap folding animations */
+        /* 3d split-flap folding animations */
         .flap.flap-top.flipping {
             animation: flipTop 0.12s ease-in forwards;
         }
@@ -162,7 +162,7 @@
         }
     </style>
 
-    <!-- automatic GitHub Pages client-side path router script -->
+    <!-- automatic github pages client-side path router script -->
     <script>
         (function() {
             var path = window.location.pathname.replace(/\/$/, '');
@@ -189,7 +189,7 @@
 
     <div class="error-page-container">
         <div class="error-card">
-            <!-- 5-CHARACTER AUTHENTIC 4-FLAP SPLIT-FLAP DISPLAY -->
+            <!-- 5-character authentic 4-flap split-flap display -->
             <div class="split-flap-container" id="split-flap-display"></div>
 
             <h1 class="error-title">Trajectory Out of Bounds</h1>
@@ -228,7 +228,7 @@
             const tileElements = [];
             displayEl.innerHTML = '';
 
-            // Construct 5 physical 4-flap tile structures
+            // construct 5 physical 4-flap tile structures
             for (let i = 0; i < padTo; i++) {
                 const initialChar = words[0][i] || ' ';
 
@@ -273,17 +273,17 @@
                         nextChar = charset[Math.floor(Math.random() * (charset.length - 1))];
                     }
 
-                    // Prepare 4 flaps for realistic physical flip:
-                    // 1. top-static gets nextChar (revealed under top flap)
-                    // 2. flap-top stays currentChar (folds down)
-                    // 3. bottom-static stays currentChar
-                    // 4. flap-bottom gets nextChar (unfolds down over bottom-static)
+                    // prepare 4 flaps for realistic physical flip:
+                    // 1. top-static gets nextchar (revealed under top flap)
+                    // 2. flap-top stays currentchar (folds down)
+                    // 3. bottom-static stays currentchar
+                    // 4. flap-bottom gets nextchar (unfolds down over bottom-static)
                     tileObj.topStatic.textContent = nextChar;
                     tileObj.flapTopSpan.textContent = currentChar;
                     tileObj.bottomStatic.textContent = currentChar;
                     tileObj.flapBottomSpan.textContent = nextChar;
 
-                    // Trigger CSS 3D rotations
+                    // trigger css 3d rotations
                     tileObj.flapTop.classList.remove('flipping');
                     tileObj.flapBottom.classList.remove('flipping');
                     void tileObj.flapTop.offsetWidth; // reflow
@@ -294,7 +294,7 @@
                     tileObj.currentChar = nextChar;
 
                     setTimeout(() => {
-                        // Reset flaps to static state
+                        // reset flaps to static state
                         tileObj.bottomStatic.textContent = nextChar;
                         tileObj.flapTopSpan.textContent = nextChar;
                         tileObj.flapTop.classList.remove('flipping');

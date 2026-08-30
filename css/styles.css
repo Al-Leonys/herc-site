@@ -422,7 +422,7 @@ ul {
     }
 }
 
-/* Cleaned up hero credit logo styles */
+/* cleaned up hero credit logo styles */
 
 .hero-subtitle {
     font-family: var(--font-mono);
@@ -1312,7 +1312,7 @@ ul {
     color: var(--text-muted);
 }
 
-/* RESPONSIVE MEDIA QUERIES FOR MOBILE PERFECT LAYOUTS */
+/* responsive media queries for mobile perfect layouts */
 @media (max-width: 768px) {
     .header-overlay-bar {
         padding: 12px 14px;
@@ -1355,7 +1355,7 @@ ul {
         right: 3% !important;
     }
 
-    /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (DIAMOND SPONSOR ON TOP) */
+    /* sponsorship tiers vertical stack on mobile (diamond sponsor on top) */
     .sponsor-tier-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -1371,13 +1371,14 @@ ul {
     }
 
     .sponsor-card.featured {
-        order: -1 !important; /* Move Diamond Sponsor to top on mobile */
+        order: -1 !important; /* move diamond sponsor to top on mobile */
         transform: none !important;
         width: 100% !important;
     }
 
-    /* DEVELOPMENT ROADMAP MOBILE TIMELINE LINE & POSITIONING ONLY */
-    .timeline::before {
+    /* development roadmap mobile timeline line & positioning only */
+    .timeline::before,
+    .timeline-progress-bar {
         left: 20px !important;
         transform: none !important;
     }
@@ -1422,7 +1423,7 @@ ul {
         grid-template-columns: 1fr !important;
     }
 
-    /* FOOTER MOBILE NO HORIZONTAL OVERFLOW */
+    /* footer mobile no horizontal overflow */
     .site-footer {
         padding: 40px 16px 24px 16px !important;
         width: 100% !important;
@@ -1443,9 +1444,9 @@ ul {
     }
 }
 
-/* ==========================================================================
-   SUBSYSTEMS PINNED SCROLL ANIMATION & CAD SHOWCASE STYLES
-   ========================================================================== */
+/* 
+   subsystems pinned scroll animation & cad showcase styles
+    */
 .subsystems-pinned-section {
     position: relative;
     background: #FFFFFF !important;
@@ -1494,7 +1495,7 @@ ul {
     width: 100%;
 }
 
-/* EDGE-TO-EDGE DIAGRAM VIEWER SHOWCASE CARD */
+/* edge-to-edge diagram viewer showcase card */
 .diagram-viewer-column {
     position: relative;
     width: 100%;
@@ -1539,7 +1540,7 @@ ul {
 .diagram-img.layer-2 { opacity: 1; z-index: 4; }
 .diagram-img.layer-3 { opacity: 1; z-index: 3; }
 
-/* COMPACT JOINED SUBSYSTEM CALLOUT CARDS */
+/* compact joined subsystem callout cards */
 .subsystems-cards-column {
     position: relative;
     width: 100%;

@@ -1,4 +1,4 @@
-// needham gravity app logic - echoes GSAP staggered menu, Three.js CanvAscii title, & OGL HalftoneReveal background
+// needham gravity app logic - echoes gsap staggered menu, three.js canvascii title, & ogl halftonereveal background
 
 document.addEventListener('DOMContentLoaded', () => {
     initCleanRouteNavigation();
@@ -26,7 +26,7 @@ window.addEventListener('load', () => {
 let isProgrammaticScroll = false;
 let programmaticScrollTimer = null;
 
-// route path mapping helper in exact DOM scroll order
+// route path mapping helper in exact dom scroll order
 const routeToSectionMap = {
     '/': 'hero',
     '/about': 'about',
@@ -125,7 +125,7 @@ function initCleanRouteNavigation() {
     });
 }
 
-// echoes staggered top menu logic with GSAP in/out animations & orange sweeper leader
+// echoes staggered top menu logic with gsap in/out animations & orange sweeper leader
 function initStaggeredMenu() {
     window.isMenuOpen = false;
     let isMenuBusy = false;
@@ -271,7 +271,7 @@ function initStaggeredMenu() {
     });
 }
 
-// Helper utilities for ParticleText canvas text animation
+// helper utilities for particletext canvas text animation
 const hexToRgb = hex => {
     const clean = (hex || '').replace('#', '').trim();
     if (!/^[0-9a-fA-F]{6}$/.test(clean)) return null;
@@ -402,7 +402,7 @@ class ParticleText {
             let baseX = particle.targetX;
             let baseY = particle.targetY;
 
-            // Subtle organic particle wiggle (reduced on mobile viewports)
+            // subtle organic particle wiggle (reduced on mobile viewports)
             if (!this.reducedMotion && this.idleDrift > 0) {
                 const wiggleAmp = isMobile ? 0.22 : 1.35;
                 const wiggleX = Math.sin(driftTime * 2.8 + particle.seed * 25) * wiggleAmp * particle.depth;
@@ -534,7 +534,7 @@ class ParticleText {
             const blend = baseRgb && highlightRgb ? clamp(target.x / Math.max(1, this.width) + (seed - 0.5) * 0.35, 0, 1) : 0;
             const particleColor = baseRgb && highlightRgb ? rgbToCss(mixRgb(baseRgb, highlightRgb, blend)) : this.color;
 
-            // Micro-texture jitter for organic warmth while keeping Retina grid alignment
+            // micro-texture jitter for organic warmth while keeping retina grid alignment
             const offsetX = isMobile ? (seed - 0.5) * 0.35 : 0;
             const offsetY = isMobile ? (depth - 0.5) * 0.35 : 0;
 
@@ -699,35 +699,9 @@ function initParticleTextHeroTitle() {
     }, container);
 }
 
-// scroll observer that updates the clean URL path as the user scrolls through page sections (without hashtags)
-function initScrollUrlUpdater() {
-    const sections = document.querySelectorAll('section[id], footer[id]');
-    if (!sections.length || !('IntersectionObserver' in window)) return;
 
-    let currentRoutePath = window.location.pathname;
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const id = entry.target.getAttribute('id');
-                const routePath = sectionToRouteMap[id];
-
-                if (routePath && routePath !== currentRoutePath) {
-                    currentRoutePath = routePath;
-                    history.replaceState(null, '', routePath);
-                }
-            }
-        });
-    }, {
-        root: null,
-        rootMargin: '-20% 0px -40% 0px',
-        threshold: 0.25
-    });
-
-    sections.forEach(section => observer.observe(section));
-}
-
-// contact form submission handling via Formspree / Web3Forms email service
+// contact form submission handling via formspree / web3forms email service
 function initContactForm() {
     const contactForm = document.getElementById('contact-form');
     if (!contactForm) return;
@@ -772,7 +746,7 @@ function initContactForm() {
     });
 }
 
-// Interactive Subsystems CAD Fade Out & Callout Transition
+// interactive subsystems cad fade out & callout transition
 function initSubsystemsCADAnimation() {
     const track = document.getElementById('subsystems-track');
     const img1 = document.getElementById('cad-img-1');
@@ -796,8 +770,8 @@ function initSubsystemsCADAnimation() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // Responsive Non-Zooming Fade Out: All layers rendered centered at natural full scale (1.0)
-        // Top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
+        // responsive non-zooming fade out: all layers rendered centered at natural full scale (1.0)
+        // top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
         gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
         gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 4 });
         gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 3 });
@@ -818,7 +792,7 @@ function initSubsystemsCADAnimation() {
             }
         });
 
-        // STAGE 1: Chassis & Frame Overview -> Drivetrain Assembly (0.30)
+        // stage 1: chassis & frame overview -> drivetrain assembly (0.30)
         tl.to(img1, {
             opacity: 0,
             duration: 0.2,
@@ -827,7 +801,7 @@ function initSubsystemsCADAnimation() {
             onReverseComplete: function () { setStage(0); }
         }, 0.30);
 
-        // STAGE 2: Drivetrain Assembly -> Electronics & Payload (0.70)
+        // stage 2: drivetrain assembly -> electronics & payload (0.70)
         tl.to(img2, {
             opacity: 0,
             duration: 0.2,
@@ -892,7 +866,7 @@ function initClickPops() {
     });
 }
 
-// Project Echoes Style Timeline Scroll Animation (Vertical Progress Line & Node Activation)
+// project echoes style timeline scroll animation (vertical progress line & node activation)
 function initTimelineScrollAnimation() {
     const timeline = document.querySelector('.timeline');
     const progressBar = document.querySelector('.timeline-progress-bar');
@@ -903,26 +877,26 @@ function initTimelineScrollAnimation() {
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
-        // Animate central progress line height smoothly as section is scrolled
+        // animate central progress line height smoothly as section is scrolled
         gsap.to(progressBar, {
             height: '100%',
             ease: 'none',
             scrollTrigger: {
                 trigger: timeline,
-                start: 'top 75%',
-                end: 'bottom 85%',
+                start: 'top 50%',
+                end: 'bottom 50%',
                 scrub: 0.3
             }
         });
 
-        // Activate each node dot and timeline card when line reaches them
+        // activate each node dot and timeline card when line reaches them
         items.forEach(item => {
             const card = item.querySelector('.timeline-card');
             const dot = item.querySelector('.timeline-dot');
 
             ScrollTrigger.create({
                 trigger: item,
-                start: 'top 78%',
+                start: 'top 50%',
                 onEnter: () => {
                     if (card) card.classList.add('active');
                     if (dot) dot.classList.add('active');
@@ -936,7 +910,7 @@ function initTimelineScrollAnimation() {
     }
 }
 
-// Smooth & reliable scroll URL updater (Scroll Spy)
+// smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
     const sectionIds = ['hero', 'about', 'team', 'meet-team', 'sponsors', 'contact', 'roadmap'];
     let lastActiveRoute = window.location.pathname.replace(/\/$/, '') || '/';
@@ -950,15 +924,15 @@ function initScrollUrlUpdater() {
 
         let currentSectionId = 'hero';
 
-        // 1. Top of page -> Hero
+        // 1. top of page -> hero
         if (scrollY < 100) {
             currentSectionId = 'hero';
         }
-        // 2. Bottom of page -> Last section (roadmap)
+        // 2. bottom of page -> last section (roadmap)
         else if (windowHeight + scrollY >= documentHeight - 80) {
             currentSectionId = sectionIds[sectionIds.length - 1];
         }
-        // 3. Middle sections -> Section covering viewport focal line (35% from top)
+        // 3. middle sections -> section covering viewport focal line (35% from top)
         else {
             const focalY = scrollY + (windowHeight * 0.35);
             let closestSection = sectionIds[0];
