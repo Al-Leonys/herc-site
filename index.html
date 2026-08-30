@@ -577,7 +577,10 @@
 
                         <div class="gform-group">
                             <label class="gform-label" for="entry-phone">Phone Number</label>
-                            <input type="tel" id="entry-phone" name="phone" data-entry="entry.1166974658" class="gform-input" placeholder="(555) 000-0000">
+                            <div class="phone-input-wrapper">
+                                <span class="phone-flag-badge" id="phone-flag-badge" aria-hidden="true" title="Country Flag">🌐</span>
+                                <input type="tel" id="entry-phone" name="phone" data-entry="entry.1166974658" class="gform-input phone-with-flag" placeholder="(555) 000-0000 or +44 7911 123456">
+                            </div>
                         </div>
                     </div>
 

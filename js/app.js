@@ -1269,24 +1269,199 @@ function initIntegratedGoogleForm() {
     }
 }
 
-// automatic phone number input auto-formatter: (555) 000-0000
+// automatic international & domestic phone number input auto-formatter with predictive formatting and 400ms flag lookup
 function initPhoneNumberFormatter() {
     const phoneInput = document.getElementById('entry-phone');
+    const flagBadge = document.getElementById('phone-flag-badge');
     if (!phoneInput) return;
 
+    const COUNTRY_CODES = [
+        // 1-digit codes
+        { code: '1', flag: '🇺🇸', name: 'US/Canada' },
+        { code: '7', flag: '🇷🇺', name: 'Russia/Kazakhstan' },
+
+        // 2-digit codes
+        { code: '20', flag: '🇪🇬', name: 'Egypt' },
+        { code: '27', flag: '🇿🇦', name: 'South Africa' },
+        { code: '30', flag: '🇬🇷', name: 'Greece' },
+        { code: '31', flag: '🇳🇱', name: 'Netherlands' },
+        { code: '32', flag: '🇧🇪', name: 'Belgium' },
+        { code: '33', flag: '🇫🇷', name: 'France' },
+        { code: '34', flag: '🇪🇸', name: 'Spain' },
+        { code: '36', flag: '🇭🇺', name: 'Hungary' },
+        { code: '39', flag: '🇮🇹', name: 'Italy' },
+        { code: '40', flag: '🇷🇴', name: 'Romania' },
+        { code: '41', flag: '🇨🇭', name: 'Switzerland' },
+        { code: '43', flag: '🇦🇹', name: 'Austria' },
+        { code: '44', flag: '🇬🇧', name: 'United Kingdom' },
+        { code: '45', flag: '🇩🇰', name: 'Denmark' },
+        { code: '46', flag: '🇸🇪', name: 'Sweden' },
+        { code: '47', flag: '🇳🇴', name: 'Norway' },
+        { code: '48', flag: '🇵🇱', name: 'Poland' },
+        { code: '49', flag: '🇩🇪', name: 'Germany' },
+        { code: '51', flag: '🇵🇪', name: 'Peru' },
+        { code: '52', flag: '🇲🇽', name: 'Mexico' },
+        { code: '53', flag: '🇨🇺', name: 'Cuba' },
+        { code: '54', flag: '🇦🇷', name: 'Argentina' },
+        { code: '55', flag: '🇧🇷', name: 'Brazil' },
+        { code: '56', flag: '🇨🇱', name: 'Chile' },
+        { code: '57', flag: '🇨🇴', name: 'Colombia' },
+        { code: '58', flag: '🇻🇪', name: 'Venezuela' },
+        { code: '60', flag: '🇲🇾', name: 'Malaysia' },
+        { code: '61', flag: '🇦🇺', name: 'Australia' },
+        { code: '62', flag: '🇮🇩', name: 'Indonesia' },
+        { code: '63', flag: '🇵🇭', name: 'Philippines' },
+        { code: '64', flag: '🇳🇿', name: 'New Zealand' },
+        { code: '65', flag: '🇸🇬', name: 'Singapore' },
+        { code: '66', flag: '🇹🇭', name: 'Thailand' },
+        { code: '81', flag: '🇯🇵', name: 'Japan' },
+        { code: '82', flag: '🇰🇷', name: 'South Korea' },
+        { code: '84', flag: '🇻🇳', name: 'Vietnam' },
+        { code: '86', flag: '🇨🇳', name: 'China' },
+        { code: '90', flag: '🇹🇷', name: 'Turkey' },
+        { code: '91', flag: '🇮🇳', name: 'India' },
+        { code: '92', flag: '🇵🇰', name: 'Pakistan' },
+        { code: '93', flag: '🇦🇫', name: 'Afghanistan' },
+        { code: '94', flag: '🇱🇰', name: 'Sri Lanka' },
+        { code: '95', flag: '🇲🇲', name: 'Myanmar' },
+        { code: '98', flag: '🇮🇷', name: 'Iran' },
+
+        // 3-digit codes
+        { code: '212', flag: '🇲🇦', name: 'Morocco' },
+        { code: '213', flag: '🇩🇿', name: 'Algeria' },
+        { code: '216', flag: '🇹🇳', name: 'Tunisia' },
+        { code: '234', flag: '🇳🇬', name: 'Nigeria' },
+        { code: '254', flag: '🇰🇪', name: 'Kenya' },
+        { code: '351', flag: '🇵🇹', name: 'Portugal' },
+        { code: '352', flag: '🇱🇺', name: 'Luxembourg' },
+        { code: '353', flag: '🇮🇪', name: 'Ireland' },
+        { code: '354', flag: '🇮🇸', name: 'Iceland' },
+        { code: '358', flag: '🇫🇮', name: 'Finland' },
+        { code: '370', flag: '🇱🇹', name: 'Lithuania' },
+        { code: '371', flag: '🇱🇻', name: 'Latvia' },
+        { code: '372', flag: '🇪🇪', name: 'Estonia' },
+        { code: '380', flag: '🇺🇦', name: 'Ukraine' },
+        { code: '420', flag: '🇨🇿', name: 'Czech Republic' },
+        { code: '421', flag: '🇸🇰', name: 'Slovakia' },
+        { code: '852', flag: '🇭🇰', name: 'Hong Kong' },
+        { code: '853', flag: '🇲🇴', name: 'Macau' },
+        { code: '886', flag: '🇹🇼', name: 'Taiwan' },
+        { code: '966', flag: '🇸🇦', name: 'Saudi Arabia' },
+        { code: '971', flag: '🇦🇪', name: 'UAE' },
+        { code: '972', flag: '🇮🇱', name: 'Israel' }
+    ];
+
+    // Sort by code length descending (3-digit first, 2-digit, 1-digit) for longest prefix matching
+    const SORTED_CODES = COUNTRY_CODES.slice().sort((a, b) => b.code.length - a.code.length);
+
+    function findCountryByDigits(digitStr) {
+        for (const entry of SORTED_CODES) {
+            if (digitStr.startsWith(entry.code)) {
+                return entry;
+            }
+        }
+        return null;
+    }
+
+    function formatNationalDigits(digits) {
+        if (!digits) return '';
+        if (digits.length <= 3) return digits;
+        if (digits.length <= 6) return `${digits.slice(0, 3)} ${digits.slice(3)}`;
+        if (digits.length <= 10) return `${digits.slice(0, 3)} ${digits.slice(3, 6)} ${digits.slice(6)}`;
+        // Up to 15 digits (E.164 max limit for non-10-digit countries like UK/China/Germany)
+        return `${digits.slice(0, 4)} ${digits.slice(4, 8)} ${digits.slice(8)}`;
+    }
+
+    let flagDebounceTimer = null;
+
+    function updateFlagIcon(emoji) {
+        if (flagBadge) {
+            flagBadge.textContent = emoji || '🌐';
+        }
+    }
+
+    function triggerFlagLookup(rawVal) {
+        if (flagDebounceTimer) clearTimeout(flagDebounceTimer);
+        flagDebounceTimer = setTimeout(() => {
+            const val = rawVal.trim();
+            if (!val) {
+                updateFlagIcon('🌐');
+                return;
+            }
+            const digits = val.replace(/\D/g, '');
+            if (val.startsWith('+')) {
+                const country = findCountryByDigits(digits);
+                updateFlagIcon(country ? country.flag : '🌐');
+            } else {
+                if (digits.length >= 3) {
+                    updateFlagIcon('🇺🇸');
+                } else {
+                    updateFlagIcon('🌐');
+                }
+            }
+        }, 400);
+    }
+
     phoneInput.addEventListener('input', (e) => {
-        const digits = e.target.value.replace(/\D/g, '').slice(0, 10);
-        if (!digits) {
-            e.target.value = '';
-            return;
-        }
-        if (digits.length <= 3) {
-            e.target.value = `(${digits}`;
-        } else if (digits.length <= 6) {
-            e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+        const raw = e.target.value;
+        const isInternational = raw.trim().startsWith('+');
+
+        if (isInternational) {
+            // International mode: digits after + up to 15 digits (E.164 standard)
+            const digits = raw.replace(/\D/g, '').slice(0, 15);
+            if (!digits) {
+                e.target.value = '+';
+                triggerFlagLookup('+');
+                return;
+            }
+
+            const country = findCountryByDigits(digits);
+            if (country) {
+                const countryCode = country.code;
+                const nationalDigits = digits.slice(countryCode.length);
+
+                if (countryCode === '1') {
+                    // NANP (US/Canada): +1 (AAA) BBB-CCCC
+                    if (!nationalDigits) {
+                        e.target.value = `+1`;
+                    } else if (nationalDigits.length <= 3) {
+                        e.target.value = `+1 (${nationalDigits}`;
+                    } else if (nationalDigits.length <= 6) {
+                        e.target.value = `+1 (${nationalDigits.slice(0, 3)}) ${nationalDigits.slice(3)}`;
+                    } else {
+                        e.target.value = `+1 (${nationalDigits.slice(0, 3)}) ${nationalDigits.slice(3, 6)}-${nationalDigits.slice(6)}`;
+                    }
+                } else {
+                    // Global non-10-digit formats (UK, China, Europe, Asia, etc.)
+                    const formattedNat = formatNationalDigits(nationalDigits);
+                    e.target.value = `+${countryCode}` + (formattedNat ? ` ${formattedNat}` : '');
+                }
+            } else {
+                // Predictive formatting while entering country code
+                if (digits.length <= 3) {
+                    e.target.value = `+${digits}`;
+                } else {
+                    e.target.value = `+${digits.slice(0, 3)} ${digits.slice(3)}`;
+                }
+            }
         } else {
-            e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+            // Domestic US/Canada 10-digit formatting fallback: (AAA) BBB-CCCC
+            const digits = raw.replace(/\D/g, '').slice(0, 10);
+            if (!digits) {
+                e.target.value = '';
+                triggerFlagLookup('');
+                return;
+            }
+            if (digits.length <= 3) {
+                e.target.value = `(${digits}`;
+            } else if (digits.length <= 6) {
+                e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3)}`;
+            } else {
+                e.target.value = `(${digits.slice(0, 3)}) ${digits.slice(3, 6)}-${digits.slice(6)}`;
+            }
         }
+
+        triggerFlagLookup(e.target.value);
     });
 }
 

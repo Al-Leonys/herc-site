@@ -1698,6 +1698,31 @@ body.is-contact-page #contact-page-view {
     box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.15);
 }
 
+/* phone input wrapper & flag badge styling */
+.phone-input-wrapper {
+    position: relative;
+    width: 100%;
+    display: flex;
+    align-items: center;
+}
+
+.phone-flag-badge {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 18px;
+    line-height: 1;
+    pointer-events: none;
+    user-select: none;
+    z-index: 2;
+    transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+.phone-with-flag {
+    padding-left: 44px !important;
+}
+
 .gform-input::placeholder,
 .gform-textarea::placeholder {
     font-family: var(--font-sans);
