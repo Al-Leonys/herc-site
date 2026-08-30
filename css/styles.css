@@ -891,12 +891,34 @@ ul {
     padding: 0 24px;
 }
 
-.timeline-item:nth-child(odd) { left: 0; text-align: right; }
-.timeline-item:nth-child(even) { left: 50%; text-align: left; }
+.timeline {
+    position: relative;
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.timeline::before {
+    content: '';
+    position: absolute;
+    left: 20px;
+    top: 0;
+    bottom: 0;
+    width: 2px;
+    background: var(--border-color);
+}
+
+.timeline-item {
+    position: relative;
+    margin-bottom: 32px;
+    width: 100%;
+    padding: 0 0 0 50px;
+    text-align: left;
+}
 
 .timeline-dot {
     position: absolute;
     top: 6px;
+    left: 13px;
     width: 14px;
     height: 14px;
     border-radius: 50%;
@@ -905,8 +927,11 @@ ul {
     z-index: 2;
 }
 
-.timeline-item:nth-child(odd) .timeline-dot { right: -7px; }
-.timeline-item:nth-child(even) .timeline-dot { left: -7px; }
+.timeline-row {
+    display: flex;
+    align-items: stretch;
+    gap: 20px;
+}
 
 .timeline-card {
     background: #FFFFFF;
@@ -915,6 +940,8 @@ ul {
     padding: 20px;
     box-shadow: 0 7px 0 0 var(--box-shadow-color, var(--border-hover));
     transition: background-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+    flex: 1 1 auto;
+    min-width: 0;
 }
 
 .timeline-card:hover {
@@ -927,11 +954,37 @@ ul {
     font-weight: 700;
     color: var(--primary-color);
     margin-bottom: 4px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }
 
 .timeline-desc {
     font-size: 13px;
     color: var(--text-secondary);
+}
+
+.timeline-images {
+    display: flex;
+    gap: 10px;
+    flex: 0 0 auto;
+    align-items: center;
+}
+
+.timeline-images img {
+    width: 84px;
+    height: 84px;
+    object-fit: cover;
+    border-radius: var(--radius-sm);
+    border: 1px solid var(--border-color);
+}
+
+.timeline-placeholder {
+    width: 84px;
+    height: 84px;
+    border-radius: var(--radius-sm);
+    border: 2px dashed var(--border-color);
+    background: #EDEFF2;
 }
 
 .team-card {
@@ -1275,7 +1328,7 @@ ul {
     color: var(--text-muted);
 }
 
-
+/* RESPONSIVE MEDIA QUERIES FOR MOBILE PERFECT LAYOUTS */
 @media (max-width: 768px) {
     .header-overlay-bar {
         padding: 12px 14px;
@@ -1304,7 +1357,7 @@ ul {
         max-width: 360px !important;
     }
 
-
+    /* SPONSORSHIP TIERS VERTICAL STACK ON MOBILE (DIAMOND SPONSOR ON TOP) */
     .sponsor-tier-grid {
         display: flex !important;
         flex-direction: column !important;
@@ -1360,6 +1413,14 @@ ul {
     .timeline-card {
         width: 100% !important;
         box-sizing: border-box;
+    }
+
+    .timeline-row {
+        flex-direction: column !important;
+    }
+
+    .timeline-images {
+        align-self: flex-start;
     }
 
     .telemetry-grid {
