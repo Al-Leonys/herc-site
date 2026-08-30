@@ -67,11 +67,11 @@
                     </div>
 
                     <div class="sm-grid-col">
-                        <h3 class="sm-col-title">Roadmap & Involvement</h3>
+                        <h3 class="sm-col-title">Involvement & Roadmap</h3>
                         <ul class="sm-col-list">
-                            <li><span class="sm-panel-itemWrap"><a href="/roadmap" data-target="roadmap" class="sm-menu-item"><span class="sm-panel-itemLabel">Development Roadmap</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/sponsors" data-target="sponsors" class="sm-menu-item"><span class="sm-panel-itemLabel">Sponsorship Tiers</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/contact" data-target="contact" class="sm-menu-item"><span class="sm-panel-itemLabel">Get In Touch</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="/roadmap" data-target="roadmap" class="sm-menu-item"><span class="sm-panel-itemLabel">Development Roadmap</span></a></span></li>
                         </ul>
                     </div>
 
@@ -90,13 +90,6 @@
         <div class="hero-bg-container" id="halftone-bg-container">
             <img src="assets/hero-bg.jpg" alt="Historic Needham High Header" class="hero-bg-img">
             <div class="hero-overlay"></div>
-        </div>
-
-        <div class="hero-credit-logo hero-credit-logo-left">
-            <img src="assets/bacc.jpg" alt="Build a CubeSat Challenge">
-        </div>
-        <div class="hero-credit-logo hero-credit-logo-right">
-            <img src="assets/nasa.webp" alt="NASA" class="hero-credit-logo-zoom">
         </div>
 
         <div class="hero-content">
@@ -162,33 +155,49 @@
     </section>
 
     <!-- subsystems section -->
-    <section class="section" id="team">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">TEAM DIVISIONS</span>
-                <h2 class="section-title">Engineering Subsystems</h2>
-                <p class="section-desc">
-                    Students lead design, fabricate, and test specialized rover systems.
-                </p>
-            </div>
+    <section class="section subsystems-pinned-section" id="team" style="background: #FFFFFF;">
+        <div class="subsystems-scroll-track" id="subsystems-track">
+            <div class="subsystems-sticky-wrapper">
+                <div class="container subsystems-container">
+                    <div class="section-header subsystems-header">
+                        <span class="section-subtitle">TEAM DIVISIONS</span>
+                        <h2 class="section-title">Engineering Subsystems</h2>
+                        <p class="section-desc">
+                            Students lead design, fabricate, and test specialized rover systems.
+                        </p>
+                    </div>
 
-            <div class="grid-3">
-                <div class="team-card box-gold">
-                    <div class="card-image" style="background-image: url('assets/sketch1.png');"></div>
-                    <h3 class="card-title">Chassis & Frame</h3>
-                    <p class="card-text">We use lightweight and strong materials like aluminium for the chassis. The chassis is mounted to each tread assembly by two shock absorbers, aiding in suspension.</p>
-                </div>
+                    <div class="subsystems-showcase-grid">
+                        <!-- Left Column: Large Borderless Diagram Viewer -->
+                        <div class="diagram-viewer-column">
+                            <div class="diagram-viewport" id="diagram-viewport">
+                                <img src="assets/sketch1.png" alt="Chassis & Frame CAD Overview" class="diagram-img layer-1" id="cad-img-1">
+                                <img src="assets/sketch2.png" alt="Drivetrain CAD Assembly" class="diagram-img layer-2" id="cad-img-2">
+                                <img src="assets/sketch3.png" alt="Electronics & Task Payload Detail" class="diagram-img layer-3" id="cad-img-3">
+                            </div>
+                        </div>
 
-                <div class="team-card box-white">
-                    <div class="card-image" style="background-image: url('assets/sketch2.png');"></div>
-                    <h3 class="card-title">Drivetrain</h3>
-                    <p class="card-text">On each tread assembly, we use two sprockets, each driven by its own 12V 10:1 motor, to drive the treads. The bottom of the treads are tensioned by four roller wheels which each have their own shock absorbers.</p>
-                </div>
+                        <!-- Right Column: Compact Subsystem Callout Cards -->
+                        <div class="subsystems-cards-column">
+                            <div class="glass-card subsystem-callout-card box-gold active-stage" id="subsystem-card-1">
+                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px;">CHASSIS DIVISION</span>
+                                <h3 class="card-title" style="font-size: 1.25rem;">Chassis & Frame</h3>
+                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We use lightweight and strong materials like aluminium for the chassis. The chassis is mounted to each tread assembly by two shock absorbers, aiding in suspension.</p>
+                            </div>
 
-                <div class="team-card box-navy">
-                    <div class="card-image" style="background-image: url('assets/sketch3.png');"></div>
-                    <h3 class="card-title">Electronics & Task Completion</h3>
-                    <p class="card-text">We utilize an electronics system organized around a Raspberry Pi. When radio signals are sent by NASA, we receive them, decode them, and respond accordingly. To do so, we can utilize the gimbal-mounted camera to take pictures, or the ToF sensor to measure distance to a target.</p>
+                            <div class="glass-card subsystem-callout-card box-blue" id="subsystem-card-2">
+                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px; color: #0066cc;">DRIVETRAIN DIVISION</span>
+                                <h3 class="card-title" style="font-size: 1.25rem;">Drivetrain</h3>
+                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">On each tread assembly, we use two sprockets, each driven by its own 12V 10:1 motor, to drive the treads. The bottom of the treads are tensioned by four roller wheels which each have their own shock absorbers.</p>
+                            </div>
+
+                            <div class="glass-card subsystem-callout-card box-navy" id="subsystem-card-3">
+                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px; color: #0A1C36;">ELECTRONICS DIVISION</span>
+                                <h3 class="card-title" style="font-size: 1.25rem;">Electronics & Task Completion</h3>
+                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We utilize an electronics system organized around a Raspberry Pi. When radio signals are sent by NASA, we receive them, decode them, and respond accordingly. To do so, we can utilize the gimbal-mounted camera to take pictures, or the ToF sensor to measure distance to a target.</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>
@@ -216,7 +225,6 @@
 
                 <div class="member-card box-gold">
                     <div class="member-photo">
-                        <!-- Zoom 1.5x and move down 1/4 diameter -->
                         <img src="assets/karan.jpeg" alt="Karan Krishnan" style="transform: scale(1.5) translateY(16.5%);">
                     </div>
                     <h3 class="card-title">Karan Krishnan</h3>
@@ -226,7 +234,6 @@
 
                 <div class="member-card box-navy">
                     <div class="member-photo">
-                        <!-- Zoom 1.5x and move down 1/4 diameter -->
                         <img src="assets/christos.jpeg" alt="Christos Kyttaris" style="transform: scale(1.5) translateY(16.5%);">
                     </div>
                     <h3 class="card-title">Christos Kyttaris</h3>
@@ -245,7 +252,6 @@
 
                 <div class="member-card box-blue">
                     <div class="member-photo">
-                        <!-- Zoom 3.4x, move 1/4 left and ~1/8 down -->
                         <img src="assets/zirui.jpeg" alt="Zirui Wang" style="transform: scale(3.4) translate(-7.4%, 4.8%);">
                     </div>
                     <h3 class="card-title">Zirui Wang</h3>
@@ -264,7 +270,6 @@
 
                 <div class="member-card box-navy">
                     <div class="member-photo">
-                        <!-- Zoom 2x, move up 1/4 diameter -->
                         <img src="assets/itay.jpeg" alt="Itay Kedem" style="transform: scale(2) translateY(-12.5%);">
                     </div>
                     <h3 class="card-title">Itay Kedem</h3>
@@ -274,82 +279,11 @@
 
                 <div class="member-card box-white">
                     <div class="member-photo">
-                        <!-- Move up 1/8 diameter (needs slight scale to prevent empty space at bottom) -->
                         <img src="assets/hai.jpeg" alt="Hai Dang" style="transform: scale(1.25) translateY(-10%);">
                     </div>
                     <h3 class="card-title">Hai Dang</h3>
                     <p class="card-subtitle">Social Media & Outreach Manager</p>
                     <p class="card-text">Manages team outreach, social media presence, and engagement with the community.</p>
-                </div>
-            </div>
-        </div>
-    </section>
-
-    <section class="section" id="roadmap" style="background: #FFFFFF;">
-        <div class="container">
-            <div class="section-header">
-                <span class="section-subtitle">SEASON TIMELINE</span>
-                <h2 class="section-title">Development Roadmap</h2>
-                <p class="section-desc">
-                    Key milestones for NASA HERC 2026-2027 competition.
-                </p>
-            </div>
-
-            <div class="timeline">
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card box-blue">
-                        <div class="timeline-date"><span>Phase 01</span><span>October</span></div>
-                        <h4 style="margin-bottom: 6px;">Initial CAD & Analysis</h4>
-                        <p class="timeline-desc">We finalize the design from our proposal and begin detailed CAD modeling and analysis, while also planning manufacturing procedures.</p>
-                    </div>
-                    <div class="timeline-images">
-                        <img src="assets/sketch1.png" alt="Chassis sketch">
-                        <img src="assets/sketch2.png" alt="Drivetrain sketch">
-                        <img src="assets/sketch3.png" alt="Electronics sketch">
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card box-gold">
-                        <div class="timeline-date"><span>Phase 02</span><span>December</span></div>
-                        <h4 style="margin-bottom: 6px;">Fabrication & Testing</h4>
-                        <p class="timeline-desc">We begin the fabrication of the rover chassis, treads, and other components, ensuring all parts meet design specifications. We design circuit schematics and implement wiring. All the while, we test our subsystems.</p>
-                    </div>
-                    <div class="timeline-images">
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card box-navy">
-                        <div class="timeline-date"><span>Phase 03</span><span>February</span></div>
-                        <h4 style="margin-bottom: 6px;">Subsystem Integration</h4>
-                        <p class="timeline-desc">We integrate all subsystems, ensuring they work together seamlessly and meet design requirements. We run thorough testing to ensure all parts collectively function as intended.</p>
-                    </div>
-                    <div class="timeline-images">
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                    </div>
-                </div>
-
-                <div class="timeline-item">
-                    <div class="timeline-dot"></div>
-                    <div class="timeline-card box-white">
-                        <div class="timeline-date"><span>Phase 04</span><span>April</span></div>
-                        <h4 style="margin-bottom: 6px;">NASA HERC Competition</h4>
-                        <p class="timeline-desc">We participate in the NASA HERC competition, showcasing our rover and its capabilities. We gather feedback and analyze our performance for future improvements.</p>
-                    </div>
-                    <div class="timeline-images">
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                        <div class="timeline-placeholder"></div>
-                    </div>
                 </div>
             </div>
         </div>
@@ -420,36 +354,107 @@
             </div>
 
             <div class="contact-container">
-                <!--
-                <form id="contact-form" action="https://formspree.io/f/mzebprww" method="POST">
-                    <input type="hidden" name="_cc" value="karan.krishnan888@gmail.com,ck291@students.needham.k12.ma.us,ans291@students.needham.k12.ma.us,zw291@students.needham.k12.ma.us,szl291@students.needham.k12.ma.us,ik291@students.needham.k12.ma.us,hqd291@students.needham.k12.ma.us,ashaigor@gmail.com">
-
-                    <div class="form-group">
-                        <label class="form-label" for="c-name">Full Name</label>
-                        <input type="text" id="c-name" name="name" class="form-input" placeholder="Your Name" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="c-email">Email Address</label>
-                        <input type="email" id="c-email" name="email" class="form-input" placeholder="name@example.com" required>
-                    </div>
-
-                    <div class="form-group">
-                        <label class="form-label" for="c-message">Message</label>
-                        <textarea id="c-message" name="message" class="form-textarea" placeholder="How can we help or collaborate?" required></textarea>
-                    </div>
-
-                    <button type="submit" id="c-submit-btn" class="btn btn-primary" style="width: 100%;">
-                        Send Message <i class="fa-regular fa-paper-plane"></i>
-                    </button>
-                </form>
-                -->
-
                 <div style="text-align: center; padding: 20px;">
                     <p style="margin-bottom: 20px; color: var(--text-secondary);">For inquiries, please use the form below or contact us through social media.</p>
                     <a href="https://forms.gle/zNvXz1qALADUk1tk6" target="_blank" class="btn btn-primary" style="width: 100%; display: inline-block;">
                         Send Message <i class="fa-regular fa-envelope"></i>
                     </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="section" id="roadmap" style="background: #FFFFFF;">
+        <div class="container">
+            <div class="section-header">
+                <span class="section-subtitle">SEASON TIMELINE</span>
+                <h2 class="section-title">Development Roadmap</h2>
+                <p class="section-desc">
+                    Key milestones for NASA HERC 2026-2027 competition.
+                </p>
+            </div>
+
+            <div class="timeline">
+                <div class="timeline-progress-bar"></div>
+
+                <!-- Phase 01: August - September -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-gold">
+                        <div class="timeline-date"><span>PHASE 01</span><span>Aug – Sept</span></div>
+                        <h4 style="margin-bottom: 6px;">Season Kickoff & Proposal Submission</h4>
+                        <p class="timeline-desc">NASA HERC Handbook released. Team onboarding webinars held, proposal drafts completed, and final proposal package submitted to NASA. Subsystem teams assigned.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 02: October -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-blue">
+                        <div class="timeline-date"><span>PHASE 02</span><span>October</span></div>
+                        <h4 style="margin-bottom: 6px;">System Architecture & Control Schematics</h4>
+                        <p class="timeline-desc">Proposal selection announced by NASA. Kickoff webinar completed. Finalized initial architecture designs, circuit schematics, and control schemes.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 03: November -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-navy">
+                        <div class="timeline-date"><span>PHASE 03</span><span>November</span></div>
+                        <h4 style="margin-bottom: 6px;">CAD Modeling, DRR & Parts Procurement</h4>
+                        <p class="timeline-desc">Completed CAD modeling & code drafts. Submitted Design Review Report (DRR) & Presentation Slides. Issued hardware procurement orders for chassis & drivetrain.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 04: December -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-gold">
+                        <div class="timeline-date"><span>PHASE 04</span><span>December</span></div>
+                        <h4 style="margin-bottom: 6px;">Manufacturing & Drivetrain Construction</h4>
+                        <p class="timeline-desc">Hardware parts deadline met. Initiated RC control software & rover chassis fabrication. Constructed drivetrain tread assemblies, motor drives, and payload hardware.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 05: January -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-blue">
+                        <div class="timeline-date"><span>PHASE 05</span><span>January</span></div>
+                        <h4 style="margin-bottom: 6px;">Autonomy & Subsystem Testing</h4>
+                        <p class="timeline-desc">Integrated core autonomy & task execution code. Conducted extensive pilot driving & autonomous obstacle navigation tests. Prepared ORR & ORS drafts.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 06: February -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-navy">
+                        <div class="timeline-date"><span>PHASE 06</span><span>February</span></div>
+                        <h4 style="margin-bottom: 6px;">Full Rover Integration & Code Freeze</h4>
+                        <p class="timeline-desc">Executed full-rover field trials. Finalized travel rosters & team photos. Enforced software code freeze. Submitted ORR/ORS reports and photos to NASA.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 07: March -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-gold">
+                        <div class="timeline-date"><span>PHASE 07</span><span>March</span></div>
+                        <h4 style="margin-bottom: 6px;">NASA Presentations & Driver Practice</h4>
+                        <p class="timeline-desc">Delivered official NASA Operational Readiness Review presentations. Verified competition-ready rover baseline. Commenced intensive driver obstacle course practice.</p>
+                    </div>
+                </div>
+
+                <!-- Phase 08: April -->
+                <div class="timeline-item">
+                    <div class="timeline-dot"></div>
+                    <div class="timeline-card box-white">
+                        <div class="timeline-date"><span>PHASE 08</span><span>April</span></div>
+                        <h4 style="margin-bottom: 6px;">NASA HERC Finals in Huntsville, AL</h4>
+                        <p class="timeline-desc">Final system audit & travel packing completed. Rover freight shipped to Huntsville, AL. Competed in the NASA Human Exploration Rover Challenge Finals!</p>
+                    </div>
                 </div>
             </div>
         </div>
@@ -480,9 +485,9 @@
             <div>
                 <h4 class="footer-title">Engagement</h4>
                 <ul class="footer-links">
-                    <li><a href="/roadmap" data-target="roadmap">Roadmap</a></li>
                     <li><a href="/sponsors" data-target="sponsors">Sponsors</a></li>
                     <li><a href="/contact" data-target="contact">Contact</a></li>
+                    <li><a href="/roadmap" data-target="roadmap">Roadmap</a></li>
                 </ul>
             </div>
 
@@ -500,6 +505,7 @@
     </footer>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
     <script src="js/app.js"></script>

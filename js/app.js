@@ -4,33 +4,47 @@ document.addEventListener('DOMContentLoaded', () => {
     initCleanRouteNavigation();
     initStaggeredMenu();
     initParticleTextHeroTitle();
+    initSubsystemsCADAnimation();
+    initTimelineScrollAnimation();
     initTelemetrySimulation();
     initContactForm();
     initScrollUrlUpdater();
     initClickPops();
+
+    if (typeof ScrollTrigger !== 'undefined') {
+        setTimeout(() => { ScrollTrigger.refresh(); }, 300);
+    }
 });
 
-// route path mapping helper
+window.addEventListener('load', () => {
+    if (typeof ScrollTrigger !== 'undefined') {
+        ScrollTrigger.refresh();
+    }
+});
+
+// global state for programmatic smooth scrolling lock
+let isProgrammaticScroll = false;
+let programmaticScrollTimer = null;
+
+// route path mapping helper in exact DOM scroll order
 const routeToSectionMap = {
     '/': 'hero',
     '/about': 'about',
-    '/telemetry': 'telemetry',
     '/team': 'team',
     '/meet-team': 'meet-team',
-    '/roadmap': 'roadmap',
     '/sponsors': 'sponsors',
-    '/contact': 'contact'
+    '/contact': 'contact',
+    '/roadmap': 'roadmap'
 };
 
 const sectionToRouteMap = {
     'hero': '/',
     'about': '/about',
-    'telemetry': '/telemetry',
     'team': '/team',
     'meet-team': '/meet-team',
-    'roadmap': '/roadmap',
     'sponsors': '/sponsors',
-    'contact': '/contact'
+    'contact': '/contact',
+    'roadmap': '/roadmap'
 };
 
 // handle clean route clicks and initial page load route restoration without hashtags
@@ -41,12 +55,17 @@ function initCleanRouteNavigation() {
         sessionStorage.removeItem('redirect_route');
         const targetId = routeToSectionMap[targetPath];
         if (targetId) {
+            isProgrammaticScroll = true;
+            if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
             setTimeout(() => {
                 const elem = document.getElementById(targetId);
                 if (elem) {
                     elem.scrollIntoView({ behavior: 'smooth' });
                     history.replaceState(null, '', targetPath);
                 }
+                programmaticScrollTimer = setTimeout(() => {
+                    isProgrammaticScroll = false;
+                }, 850);
             }, 150);
         }
     }
@@ -72,12 +91,19 @@ function initCleanRouteNavigation() {
                 e.preventDefault();
                 routePath = sectionToRouteMap[targetId] || '/';
 
+                isProgrammaticScroll = true;
+                if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
+
                 targetElem.scrollIntoView({ behavior: 'smooth' });
                 history.pushState(null, '', routePath);
 
                 if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                     window.closeStaggeredMenu();
                 }
+
+                programmaticScrollTimer = setTimeout(() => {
+                    isProgrammaticScroll = false;
+                }, 850);
             }
         }
     });
@@ -87,7 +113,14 @@ function initCleanRouteNavigation() {
         const targetId = routeToSectionMap[path];
         if (targetId) {
             const elem = document.getElementById(targetId);
-            if (elem) elem.scrollIntoView({ behavior: 'smooth' });
+            if (elem) {
+                isProgrammaticScroll = true;
+                if (programmaticScrollTimer) clearTimeout(programmaticScrollTimer);
+                elem.scrollIntoView({ behavior: 'smooth' });
+                programmaticScrollTimer = setTimeout(() => {
+                    isProgrammaticScroll = false;
+                }, 850);
+            }
         }
     });
 }
@@ -352,7 +385,10 @@ class ParticleText {
     }
 
     render(now) {
-        if (!this.isVisible) return;
+        if (!this.isVisible) {
+            this.animationFrame = null;
+            return;
+        }
 
         this.ctx.clearRect(0, 0, this.width, this.height);
 
@@ -597,15 +633,14 @@ class ParticleText {
         this.canvas.addEventListener('touchend', this.handleTouchEnd, { passive: true });
 
         this.intersectionObserver = new IntersectionObserver(([entry]) => {
-            const wasVisible = this.isVisible;
             this.isVisible = entry.isIntersecting;
-            if (this.isVisible && !wasVisible) {
+            if (this.isVisible) {
                 this.ensureRenderLoop();
-            } else if (!this.isVisible && this.animationFrame !== null) {
+            } else if (this.animationFrame !== null) {
                 window.cancelAnimationFrame(this.animationFrame);
                 this.animationFrame = null;
             }
-        }, { threshold: 0.05 });
+        }, { threshold: 0 });
         this.intersectionObserver.observe(this.container);
 
         this.resizeObserver = new ResizeObserver(this.queueSample);
@@ -737,6 +772,75 @@ function initContactForm() {
     });
 }
 
+// Interactive Subsystems CAD Fade Out & Callout Transition
+function initSubsystemsCADAnimation() {
+    const track = document.getElementById('subsystems-track');
+    const img1 = document.getElementById('cad-img-1');
+    const img2 = document.getElementById('cad-img-2');
+    const img3 = document.getElementById('cad-img-3');
+
+    const cards = [
+        document.getElementById('subsystem-card-1'),
+        document.getElementById('subsystem-card-2'),
+        document.getElementById('subsystem-card-3')
+    ];
+
+    if (!track || !img1 || !img2 || !img3) return;
+
+    function setStage(stageIndex) {
+        cards.forEach((card, i) => {
+            if (card) card.classList.toggle('active-stage', i === stageIndex);
+        });
+    }
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Responsive Non-Zooming Fade Out: All layers rendered centered at natural full scale (1.0)
+        // Top layers fade out cleanly to reveal pre-rendered opaque layers behind them!
+        gsap.set(img1, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 5 });
+        gsap.set(img2, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 4 });
+        gsap.set(img3, { scale: 1.0, transformOrigin: '50% 50%', xPercent: 0, yPercent: 0, opacity: 1, zIndex: 3 });
+        setStage(0);
+
+        const tl = gsap.timeline({
+            scrollTrigger: {
+                trigger: track,
+                start: 'top top',
+                end: 'bottom bottom',
+                scrub: 0.3,
+                snap: {
+                    snapTo: [0, 0.5, 1.0],
+                    duration: { min: 0.25, max: 0.5 },
+                    delay: 0.05,
+                    ease: 'power2.inOut'
+                }
+            }
+        });
+
+        // STAGE 1: Chassis & Frame Overview -> Drivetrain Assembly (0.30)
+        tl.to(img1, {
+            opacity: 0,
+            duration: 0.2,
+            ease: 'power2.inOut',
+            onStart: function () { setStage(1); },
+            onReverseComplete: function () { setStage(0); }
+        }, 0.30);
+
+        // STAGE 2: Drivetrain Assembly -> Electronics & Payload (0.70)
+        tl.to(img2, {
+            opacity: 0,
+            duration: 0.2,
+            ease: 'power2.inOut',
+            onStart: function () { setStage(2); },
+            onReverseComplete: function () { setStage(1); }
+        }, 0.70);
+
+    } else {
+        setStage(0);
+    }
+}
+
 // animated light mode telemetry simulation feed
 function initTelemetrySimulation() {
     const rpmVal = document.getElementById('tele-rpm');
@@ -786,4 +890,117 @@ function initClickPops() {
         void btn.offsetWidth;
         btn.classList.add('btn-click-pop');
     });
+}
+
+// Project Echoes Style Timeline Scroll Animation (Vertical Progress Line & Node Activation)
+function initTimelineScrollAnimation() {
+    const timeline = document.querySelector('.timeline');
+    const progressBar = document.querySelector('.timeline-progress-bar');
+    const items = document.querySelectorAll('.timeline-item');
+
+    if (!timeline || !progressBar || !items.length) return;
+
+    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
+        gsap.registerPlugin(ScrollTrigger);
+
+        // Animate central progress line height smoothly as section is scrolled
+        gsap.to(progressBar, {
+            height: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: timeline,
+                start: 'top 75%',
+                end: 'bottom 85%',
+                scrub: 0.3
+            }
+        });
+
+        // Activate each node dot and timeline card when line reaches them
+        items.forEach(item => {
+            const card = item.querySelector('.timeline-card');
+            const dot = item.querySelector('.timeline-dot');
+
+            ScrollTrigger.create({
+                trigger: item,
+                start: 'top 78%',
+                onEnter: () => {
+                    if (card) card.classList.add('active');
+                    if (dot) dot.classList.add('active');
+                },
+                onLeaveBack: () => {
+                    if (card) card.classList.remove('active');
+                    if (dot) dot.classList.remove('active');
+                }
+            });
+        });
+    }
+}
+
+// Smooth & reliable scroll URL updater (Scroll Spy)
+function initScrollUrlUpdater() {
+    const sectionIds = ['hero', 'about', 'team', 'meet-team', 'sponsors', 'contact', 'roadmap'];
+    let lastActiveRoute = window.location.pathname.replace(/\/$/, '') || '/';
+
+    function updateActiveRouteOnScroll() {
+        if (isProgrammaticScroll) return;
+
+        const scrollY = window.scrollY || window.pageYOffset;
+        const windowHeight = window.innerHeight;
+        const documentHeight = document.documentElement.scrollHeight;
+
+        let currentSectionId = 'hero';
+
+        // 1. Top of page -> Hero
+        if (scrollY < 100) {
+            currentSectionId = 'hero';
+        }
+        // 2. Bottom of page -> Last section (roadmap)
+        else if (windowHeight + scrollY >= documentHeight - 80) {
+            currentSectionId = sectionIds[sectionIds.length - 1];
+        }
+        // 3. Middle sections -> Section covering viewport focal line (35% from top)
+        else {
+            const focalY = scrollY + (windowHeight * 0.35);
+            let closestSection = sectionIds[0];
+            let minDistance = Infinity;
+
+            for (const id of sectionIds) {
+                const elem = document.getElementById(id);
+                if (!elem) continue;
+                const rect = elem.getBoundingClientRect();
+                const elemTop = rect.top + scrollY;
+                const elemBottom = elemTop + rect.height;
+
+                if (focalY >= elemTop && focalY < elemBottom) {
+                    closestSection = id;
+                    break;
+                }
+
+                const dist = Math.abs(elemTop - focalY);
+                if (dist < minDistance) {
+                    minDistance = dist;
+                    closestSection = id;
+                }
+            }
+            currentSectionId = closestSection;
+        }
+
+        const newRoute = sectionToRouteMap[currentSectionId] || '/';
+
+        if (window.location.pathname !== newRoute && lastActiveRoute !== newRoute) {
+            lastActiveRoute = newRoute;
+            history.replaceState(null, '', newRoute);
+        }
+    }
+
+    let ticking = false;
+    window.addEventListener('scroll', () => {
+        if (!ticking) {
+            window.requestAnimationFrame(() => {
+                updateActiveRouteOnScroll();
+                ticking = false;
+            });
+            ticking = true;
+        }
+    }, { passive: true });
 }
