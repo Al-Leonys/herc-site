@@ -1232,6 +1232,40 @@ function initIntegratedGoogleForm() {
 
     form.addEventListener('submit', (e) => {
         e.preventDefault();
+
+        // check native HTML5 form constraints
+        if (!form.checkValidity()) {
+            form.reportValidity();
+            return;
+        }
+
+        // additional strict validation: trim fields to ensure not blank/whitespace-only and check email format
+        const nameInput = document.getElementById('entry-name');
+        const emailInput = document.getElementById('entry-email');
+        const companyInput = document.getElementById('entry-company');
+
+        if (nameInput && !nameInput.value.trim()) {
+            nameInput.focus();
+            form.reportValidity();
+            return;
+        }
+
+        if (emailInput) {
+            const emailVal = emailInput.value.trim();
+            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            if (!emailVal || !emailRegex.test(emailVal)) {
+                emailInput.focus();
+                form.reportValidity();
+                return;
+            }
+        }
+
+        if (companyInput && !companyInput.value.trim()) {
+            companyInput.focus();
+            form.reportValidity();
+            return;
+        }
+
         isFormSubmitting = true;
         if (submitBtn) {
             submitBtn.disabled = true;
