@@ -120,7 +120,6 @@
     <section class="section" id="about">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">THE PROGRAM</span>
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
                     <img src="assets/NASA_logo.svg" alt="NASA Logo" style="height: 60px;" fetchpriority="high" loading="eager">
                     <h2 class="section-title" style="margin-bottom: 0;">NASA HERC Challenge Overview</h2>
@@ -165,46 +164,51 @@
     </section>
 
     <!-- subsystems section -->
-    <section class="section subsystems-pinned-section" id="team" style="background: #FFFFFF;">
-        <div class="subsystems-scroll-track" id="subsystems-track">
-            <div class="subsystems-sticky-wrapper">
-                <div class="container subsystems-container">
-                    <div class="section-header subsystems-header">
-                        <span class="section-subtitle">TEAM DIVISIONS</span>
-                        <h2 class="section-title">Engineering Subsystems</h2>
-                        <p class="section-desc">
-                            Students lead design, fabricate, and test specialized rover systems.
-                        </p>
+    <section class="section subsystems-carousel-section" id="team" style="background: #FFFFFF;">
+        <div class="container subsystems-container">
+            <div class="section-header subsystems-header">
+                <h2 class="section-title">Engineering Subsystems</h2>
+                <p class="section-desc">
+                    Students lead design, fabricate, and test specialized rover systems.
+                </p>
+            </div>
+
+            <div class="subsystems-showcase-grid">
+                <!-- Left Column: Image Carousel -->
+                <div class="diagram-viewer-column">
+                    <div class="diagram-viewport" id="diagram-viewport">
+                        <img src="assets/sketch1.png" alt="Chassis & Frame CAD Overview" class="diagram-img carousel-slide active" data-slide="0">
+                        <img src="assets/sketch2.png" alt="Drivetrain CAD Assembly" class="diagram-img carousel-slide" data-slide="1">
+                        <img src="assets/sketch3.png" alt="Electronics & Task Payload Detail" class="diagram-img carousel-slide" data-slide="2">
+                    </div>
+                    <button type="button" class="carousel-arrow carousel-arrow-prev" id="subsystems-prev" aria-label="Previous subsystem">
+                        <i class="fa-solid fa-chevron-left"></i>
+                    </button>
+                    <button type="button" class="carousel-arrow carousel-arrow-next" id="subsystems-next" aria-label="Next subsystem">
+                        <i class="fa-solid fa-chevron-right"></i>
+                    </button>
+                    <div class="carousel-dots" id="subsystems-dots">
+                        <button type="button" class="carousel-dot active" data-slide="0" aria-label="Show Chassis & Frame"></button>
+                        <button type="button" class="carousel-dot" data-slide="1" aria-label="Show Drivetrain"></button>
+                        <button type="button" class="carousel-dot" data-slide="2" aria-label="Show Electronics & Task Completion"></button>
+                    </div>
+                </div>
+
+                <!-- Right Column: Compact Subsystem Callout Cards -->
+                <div class="subsystems-cards-column">
+                    <div class="glass-card subsystem-callout-card box-gold active-stage" id="subsystem-card-1">
+                        <h3 class="card-title" style="font-size: 1.25rem;">Chassis & Frame</h3>
+                        <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We use lightweight and strong materials like aluminium for the chassis. The chassis is mounted to each tread assembly by two shock absorbers, aiding in suspension.</p>
                     </div>
 
-                    <div class="subsystems-showcase-grid">
-                        <!-- Left Column: Large Borderless Diagram Viewer -->
-                        <div class="diagram-viewer-column">
-                            <div class="diagram-viewport" id="diagram-viewport">
-                                <canvas id="subsystems-canvas" class="diagram-canvas"></canvas>
-                            </div>
-                        </div>
+                    <div class="glass-card subsystem-callout-card box-blue" id="subsystem-card-2">
+                        <h3 class="card-title" style="font-size: 1.25rem;">Drivetrain</h3>
+                        <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">On each tread assembly, we use two sprockets, each driven by its own 12V 10:1 motor, to drive the treads. The bottom of the treads are tensioned by four roller wheels which each have their own shock absorbers.</p>
+                    </div>
 
-                        <!-- Right Column: Compact Subsystem Callout Cards -->
-                        <div class="subsystems-cards-column">
-                            <div class="glass-card subsystem-callout-card box-gold active-stage" id="subsystem-card-1">
-                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px;">CHASSIS DIVISION</span>
-                                <h3 class="card-title" style="font-size: 1.25rem;">Chassis & Frame</h3>
-                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We use lightweight and strong materials like aluminium for the chassis. The chassis is mounted to each tread assembly by two shock absorbers, aiding in suspension.</p>
-                            </div>
-
-                            <div class="glass-card subsystem-callout-card box-blue" id="subsystem-card-2">
-                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px; color: #ffffff;">DRIVETRAIN DIVISION</span>
-                                <h3 class="card-title" style="font-size: 1.25rem;">Drivetrain</h3>
-                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">On each tread assembly, we use two sprockets, each driven by its own 12V 10:1 motor, to drive the treads. The bottom of the treads are tensioned by four roller wheels which each have their own shock absorbers.</p>
-                            </div>
-
-                            <div class="glass-card subsystem-callout-card box-navy" id="subsystem-card-3">
-                                <span class="section-subtitle" style="font-size: 11px; margin-bottom: 4px; color: #ffffff;">ELECTRONICS DIVISION</span>
-                                <h3 class="card-title" style="font-size: 1.25rem;">Electronics & Task Completion</h3>
-                                <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We utilize an electronics system organized around a Raspberry Pi. When radio signals are sent by NASA, we receive them, decode them, and respond accordingly. To do so, we can utilize the gimbal-mounted camera to take pictures, or the ToF sensor to measure distance to a target.</p>
-                            </div>
-                        </div>
+                    <div class="glass-card subsystem-callout-card box-navy" id="subsystem-card-3">
+                        <h3 class="card-title" style="font-size: 1.25rem;">Electronics & Task Completion</h3>
+                        <p class="card-text" style="font-size: 0.88rem; line-height: 1.5;">We utilize an electronics system organized around a Raspberry Pi. When radio signals are sent by NASA, we receive them, decode them, and respond accordingly. To do so, we can utilize the gimbal-mounted camera to take pictures, or the ToF sensor to measure distance to a target.</p>
                     </div>
                 </div>
             </div>
@@ -214,7 +218,6 @@
     <section class="section" id="meet-team" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">OUR PEOPLE</span>
                 <h2 class="section-title">Meet the Team</h2>
                 <p class="section-desc">
                     Leaders and engineers driving innovation in our rover design.
@@ -300,11 +303,15 @@
     <section class="section" id="sponsors" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">SUPPORT OUR MISSION</span>
                 <h2 class="section-title">Sponsorship Tiers</h2>
                 <p class="section-desc">
-                    Support high school engineering students building NASA exploration technology.
+                    We are looking to raise at least $7,000 to fund our rover design, fabrication, and travel for the NASA HERC 2026-2027 season.
                 </p>
+            </div>
+
+            <div style="text-align: center; margin-bottom: 40px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 8px;">
+                <p style="color: var(--text-secondary); margin-bottom: 15px;">While we created these tiers for your convenience, all donation amounts are appreciated.</p>
+                <a href="/contact-form" data-target="contact-form" class="btn btn-primary">Make a Custom Donation</a>
             </div>
 
             <div class="sponsor-tier-grid">
@@ -343,11 +350,6 @@
                     <a href="/contact-form" data-target="contact-form" class="btn btn-sponsor" style="width: 100%;">Become Sponsor</a>
                 </div>
             </div>
-
-            <div style="text-align: center; margin-top: 40px; padding: 20px; background: rgba(255,255,255,0.5); border-radius: 8px;">
-                <p style="color: var(--text-secondary); margin-bottom: 15px;">While we created these tiers for your convenience, all donation amounts are appreciated.</p>
-                <a href="/contact-form" data-target="contact-form" class="btn btn-primary">Make a Custom Donation</a>
-            </div>
         </div>
     </section>
 
@@ -355,7 +357,6 @@
     <section class="section" id="contact" style="background: #FFFFFF;">
         <div class="container" style="text-align: center;">
             <div class="section-header">
-                <span class="section-subtitle">GET IN TOUCH</span>
                 <h2 class="section-title">Contact Needham Gravity</h2>
                 <p class="section-desc">
                     Have questions, sponsorship inquiries, or interest in supporting our engineering team? Reach out directly to mission control.
@@ -372,7 +373,6 @@
     <section class="section" id="roadmap" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
-                <span class="section-subtitle">SEASON TIMELINE</span>
                 <h2 class="section-title">Development Roadmap</h2>
                 <p class="section-desc">
                     Key milestones for NASA HERC 2026-2027 competition.
@@ -470,7 +470,6 @@
     <section class="section" id="contact-form" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header" style="margin-bottom: 40px;">
-                <span class="section-subtitle">GET IN TOUCH & SPONSOR</span>
                 <h2 class="section-title">Contact Mission Control</h2>
                 <p class="section-desc">
                     Send a message directly to the Needham Gravity engineering team, ask questions, or submit a proposed sponsorship inquiry.

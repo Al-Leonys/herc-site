@@ -809,10 +809,12 @@ async function submitContactFormBackup(form, formData) {
     }
 }
 
-// interactive subsystems frame-by-frame canvas scroll-driven animation & callout transition
+// interactive subsystems image carousel & callout transition
 function initSubsystemsCADAnimation() {
-    const track = document.getElementById('subsystems-track');
-    const canvas = document.getElementById('subsystems-canvas');
+    const slides = Array.from(document.querySelectorAll('#diagram-viewport .carousel-slide'));
+    const dots = Array.from(document.querySelectorAll('#subsystems-dots .carousel-dot'));
+    const prevBtn = document.getElementById('subsystems-prev');
+    const nextBtn = document.getElementById('subsystems-next');
 
     const cards = [
         document.getElementById('subsystem-card-1'),
@@ -820,55 +822,9 @@ function initSubsystemsCADAnimation() {
         document.getElementById('subsystem-card-3')
     ];
 
-    if (!track || !canvas) return;
+    if (!slides.length) return;
 
-    const ctx = canvas.getContext('2d');
-    const TOTAL_FRAMES = 260;
-    const images = new Array(TOTAL_FRAMES);
-    let currentFrameFloat = 0;
-    let isPreloaded = false;
-
-    function preloadRemainingFrames() {
-        if (isPreloaded) return;
-        isPreloaded = true;
-
-        for (let i = 1; i <= TOTAL_FRAMES; i++) {
-            if (!images[i - 1]) {
-                const img = new Image();
-                const frameNum = String(i).padStart(3, '0');
-                img.src = `assets/frames/frame_${frameNum}.webp`;
-                images[i - 1] = img;
-            }
-        }
-    }
-
-    // Defer animation loading until hero header and top assets are fully initialized
-    function startAnimationSetup() {
-        const firstImg = new Image();
-        firstImg.src = 'assets/frames/frame_001.webp';
-        firstImg.onload = () => {
-            images[0] = firstImg;
-            drawFrame(0);
-        };
-
-        if ('IntersectionObserver' in window) {
-            const observer = new IntersectionObserver((entries) => {
-                if (entries[0].isIntersecting) {
-                    preloadRemainingFrames();
-                    observer.disconnect();
-                }
-            }, { rootMargin: '600px 0px 600px 0px' });
-            observer.observe(track);
-        } else {
-            preloadRemainingFrames();
-        }
-    }
-
-    if (document.readyState === 'complete') {
-        setTimeout(startAnimationSetup, 100);
-    } else {
-        window.addEventListener('load', () => setTimeout(startAnimationSetup, 100));
-    }
+    let activeIndex = 0;
 
     function updateCardColumnHeight() {
         const cardsColumn = document.querySelector('.subsystems-cards-column');
@@ -885,113 +841,25 @@ function initSubsystemsCADAnimation() {
         }
     }
 
-    let currentStage = -1;
-    function setStage(stageIndex) {
-        if (currentStage === stageIndex) return;
-        currentStage = stageIndex;
+    function goToSlide(index) {
+        activeIndex = (index + slides.length) % slides.length;
+
+        slides.forEach((slide, i) => slide.classList.toggle('active', i === activeIndex));
+        dots.forEach((dot, i) => dot.classList.toggle('active', i === activeIndex));
         cards.forEach((card, i) => {
-            if (card) card.classList.toggle('active-stage', i === stageIndex);
+            if (card) card.classList.toggle('active-stage', i === activeIndex);
         });
+
         updateCardColumnHeight();
     }
 
-    function drawFrame(frameFloat) {
-        const frameIndex1 = Math.min(TOTAL_FRAMES - 1, Math.max(0, Math.floor(frameFloat)));
-        const frameIndex2 = Math.min(TOTAL_FRAMES - 1, frameIndex1 + 1);
-        const mix = frameFloat - frameIndex1;
+    if (prevBtn) prevBtn.addEventListener('click', () => goToSlide(activeIndex - 1));
+    if (nextBtn) nextBtn.addEventListener('click', () => goToSlide(activeIndex + 1));
+    dots.forEach((dot, i) => dot.addEventListener('click', () => goToSlide(i)));
 
-        const img1 = images[frameIndex1];
-        const img2 = images[frameIndex2];
+    window.addEventListener('resize', updateCardColumnHeight);
 
-        if (!img1 || !img1.complete) return;
-
-        const rect = canvas.getBoundingClientRect();
-        const dpr = window.devicePixelRatio || 1;
-        const displayWidth = Math.round(rect.width * dpr);
-        const displayHeight = Math.round(rect.height * dpr);
-
-        if (canvas.width !== displayWidth || canvas.height !== displayHeight) {
-            canvas.width = displayWidth || 960;
-            canvas.height = displayHeight || 540;
-        }
-
-        const hRatio = canvas.width / img1.width;
-        const vRatio = canvas.height / img1.height;
-        const ratio = Math.min(hRatio, vRatio);
-        const centerShiftX = (canvas.width - img1.width * ratio) / 2;
-        const centerShiftY = (canvas.height - img1.height * ratio) / 2;
-
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-
-        // 1. Render primary frame
-        ctx.globalAlpha = 1.0;
-        ctx.drawImage(
-            img1, 0, 0, img1.width, img1.height,
-            centerShiftX, centerShiftY, img1.width * ratio, img1.height * ratio
-        );
-
-        // 2. Optical Cross-Fade: blend next frame smoothly
-        if (mix > 0.01 && img2 && img2.complete && frameIndex1 !== frameIndex2) {
-            ctx.globalAlpha = mix;
-            ctx.drawImage(
-                img2, 0, 0, img2.width, img2.height,
-                centerShiftX, centerShiftY, img2.width * ratio, img2.height * ratio
-            );
-            ctx.globalAlpha = 1.0;
-        }
-    }
-
-    let targetFrame = 0;
-    const MAX_FRAME_SPEED = 3.5;
-
-    function renderLoop() {
-        if (Math.abs(targetFrame - currentFrameFloat) > 0.01) {
-            const diff = targetFrame - currentFrameFloat;
-            const step = Math.sign(diff) * Math.min(Math.abs(diff) * 0.22, MAX_FRAME_SPEED);
-            currentFrameFloat += step;
-
-            const roundedFrame = Math.round(currentFrameFloat);
-
-            // Transition timestamps (260 WebP frames total):
-            // Stage 0 (Chassis): 0s - 2.7s (frames 0 to 64)
-            // Stage 1 (Drivetrain): 2.7s - 6.4s (frames 65 to 153)
-            // Stage 2 (Electronics): 6.4s - 10.83s (frames 154 to 259)
-            if (roundedFrame < 65) {
-                setStage(0);
-            } else if (roundedFrame < 154) {
-                setStage(1);
-            } else {
-                setStage(2);
-            }
-
-            drawFrame(currentFrameFloat);
-        }
-        requestAnimationFrame(renderLoop);
-    }
-
-    requestAnimationFrame(renderLoop);
-
-    window.addEventListener('resize', () => {
-        updateCardColumnHeight();
-        drawFrame(currentFrameFloat);
-    });
-
-    setStage(0);
-
-    if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
-        gsap.registerPlugin(ScrollTrigger);
-
-        ScrollTrigger.create({
-            trigger: track,
-            start: 'top top',
-            end: 'bottom bottom',
-            scrub: 0.25,
-            onUpdate: (self) => {
-                preloadRemainingFrames();
-                targetFrame = self.progress * (TOTAL_FRAMES - 1);
-            }
-        });
-    }
+    goToSlide(0);
 }
 
 // animated light mode telemetry simulation feed
