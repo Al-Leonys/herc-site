@@ -152,8 +152,12 @@ function initCleanRouteNavigation() {
         const link = e.target.closest('a[data-target], a[href^="/"], a[href*="resources"]');
         if (!link) return;
 
+        const href = link.getAttribute('href') || '';
+        if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
+            return;
+        }
+
         const dataTarget = link.getAttribute('data-target');
-        const href = link.getAttribute('href');
 
         let targetId = dataTarget;
         let routePath = href;
