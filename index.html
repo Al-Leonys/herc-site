@@ -67,8 +67,8 @@
                         <ul class="sm-col-list">
                             <li><span class="sm-panel-itemWrap"><a href="/" data-target="hero" class="sm-menu-item"><span class="sm-panel-itemLabel">Home</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/about" data-target="about" class="sm-menu-item"><span class="sm-panel-itemLabel">Mission Overview</span></a></span></li>
-                            <li><span class="sm-panel-itemWrap"><a href="/team" data-target="team" class="sm-menu-item"><span class="sm-panel-itemLabel">Subsystems</span></a></span></li>
-                            <li><span class="sm-panel-itemWrap"><a href="/meet-team" data-target="meet-team" class="sm-menu-item"><span class="sm-panel-itemLabel">Meet the Team</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="/subsystems" data-target="subsystems" class="sm-menu-item"><span class="sm-panel-itemLabel">Subsystems</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="/team" data-target="team" class="sm-menu-item"><span class="sm-panel-itemLabel">Meet the Team</span></a></span></li>
                         </ul>
                     </div>
 
@@ -78,6 +78,7 @@
                             <li><span class="sm-panel-itemWrap"><a href="/sponsors" data-target="sponsors" class="sm-menu-item"><span class="sm-panel-itemLabel">Sponsorship Tiers</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/contact-form" data-target="contact-form" class="sm-menu-item"><span class="sm-panel-itemLabel">Contact Form</span></a></span></li>
                             <li><span class="sm-panel-itemWrap"><a href="/roadmap" data-target="roadmap" class="sm-menu-item"><span class="sm-panel-itemLabel">Development Roadmap</span></a></span></li>
+                            <li><span class="sm-panel-itemWrap"><a href="/resources" data-target="resources" class="sm-menu-item"><span class="sm-panel-itemLabel">Resources</span></a></span></li>
                         </ul>
                     </div>
 
@@ -164,7 +165,7 @@
     </section>
 
     <!-- subsystems section -->
-    <section class="section subsystems-carousel-section" id="team" style="background: #FFFFFF;">
+    <section class="section subsystems-carousel-section" id="subsystems" style="background: #FFFFFF;">
         <div class="container subsystems-container">
             <div class="section-header subsystems-header">
                 <h2 class="section-title">Engineering Subsystems</h2>
@@ -212,10 +213,16 @@
                     </div>
                 </div>
             </div>
+
+            <div class="subsystems-resources-cta" style="margin-top: 40px; display: flex; justify-content: center; text-align: center;">
+                <a href="/resources" data-target="resources" class="subsystems-resources-link">
+                    View Additional Resources <i class="fa-solid fa-arrow-right"></i>
+                </a>
+            </div>
         </div>
     </section>
 
-    <section class="section" id="meet-team" style="background: #FFFFFF;">
+    <section class="section" id="team" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Meet the Team</h2>
@@ -626,6 +633,66 @@
     </section>
     </main>
 
+    <!-- standalone resources page view -->
+    <main id="resources-page-view">
+        <!-- Hero Section with AeroShards Background Canvas -->
+        <section class="resources-hero-section">
+            <div id="aero-shards-root" class="aero-shards-bg-canvas"></div>
+
+            <div class="resources-hero-content">
+                <h1 class="resources-title">Engineering Resources & Documentation</h1>
+                <p class="resources-subtitle">
+                    Official institutional support letters and competition handbooks for the Needham Gravity rover team.
+                </p>
+
+                <div class="resources-search-bar">
+                    <i class="fa-solid fa-magnifying-glass" style="color: #64748B; margin-right: 12px;"></i>
+                    <input type="text" id="resource-search-input" placeholder="Search resources..." aria-label="Search resources">
+                    <button type="button" class="resources-search-btn">Search</button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Main Resources Showcase Section (Clean White Background, Full Width List, Discreet Dividers) -->
+        <section class="resource-library-section">
+            <div class="container" style="max-width: 900px; margin: 0 auto;">
+                <div class="resource-list-container" id="resource-cards-container">
+
+                    <!-- Resource Item 1: Support Letter -->
+                    <div class="resource-list-item" data-category="official letter support nasa school principal">
+                        <div class="resource-item-main">
+                            <h3 class="resource-item-title">NHS Principal Official Support Letter</h3>
+                            <p class="resource-item-desc">
+                                An Institutional Support Letter from our principal, Mr. Aaron Sicotte, expressing our school's acknowledgement and support of Needham Gravity and our efforts as a part of HERC.
+                            </p>
+                        </div>
+                        <div class="resource-item-action">
+                            <a href="assets/institution_support_letter.pdf" target="_blank" class="resource-action-link">
+                                Read Support Letter <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Resource Item 2: NASA HERC Handbook -->
+                    <div class="resource-list-item" data-category="nasa rules competition handbook">
+                        <div class="resource-item-main">
+                            <h3 class="resource-item-title">NASA HERC 2026-2027 Handbook</h3>
+                            <p class="resource-item-desc">
+                                Official NASA competition guidelines, obstacle dimensions, task completion point criteria, and safety inspector checklists.
+                            </p>
+                        </div>
+                        <div class="resource-item-action">
+                            <a href="https://www.nasa.gov/wp-content/uploads/2026/08/2027-herc-handbook-layout-aug6-508-1.pdf?emrc=6c4b79?emrc=6c4b79" target="_blank" rel="noopener" class="resource-action-link">
+                                View Official NASA Rulebook <i class="fa-solid fa-arrow-right"></i>
+                            </a>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+        </section>
+    </main>
+
     <footer class="site-footer">
         <div class="footer-container">
             <div class="footer-brand">
@@ -643,8 +710,8 @@
                 <ul class="footer-links">
                     <li><a href="/" data-target="hero">Home</a></li>
                     <li><a href="/about" data-target="about">Mission</a></li>
-                    <li><a href="/team" data-target="team">Subsystems</a></li>
-                    <li><a href="/meet-team" data-target="meet-team">Team</a></li>
+                    <li><a href="/subsystems" data-target="subsystems">Subsystems</a></li>
+                    <li><a href="/team" data-target="team">Team</a></li>
                 </ul>
             </div>
 
@@ -654,6 +721,7 @@
                     <li><a href="/sponsors" data-target="sponsors">Sponsors</a></li>
                     <li><a href="/contact-form" data-target="contact-form">Contact Form</a></li>
                     <li><a href="/roadmap" data-target="roadmap">Roadmap</a></li>
+                    <li><a href="/resources" data-target="resources">Resources</a></li>
                 </ul>
             </div>
 
@@ -674,6 +742,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.12.5/ScrollTrigger.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 
-    <script src="js/app.js"></script>
+    <script type="module" src="js/app.js"></script>
+    <script type="module" src="/src/main.jsx"></script>
 </body>
 </html>
