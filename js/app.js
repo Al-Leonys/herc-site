@@ -961,31 +961,18 @@ function initTimelineScrollAnimation() {
 
         gsap.set(progressBar, { height: '0%' });
 
-        ScrollTrigger.create({
-            trigger: timeline,
-            start: 'top 70%',
-            end: 'bottom 80%',
-            scrub: 0.1,
-            onUpdate: (self) => {
-                const progressPercent = Math.min(self.progress * 100, 100);
-                progressBar.style.height = `${progressPercent}%`;
-
-                const scrollY = window.scrollY || window.pageYOffset;
-                const winHeight = window.innerHeight;
-                const docHeight = document.documentElement.scrollHeight;
-                if (scrollY + winHeight >= docHeight - 50) {
-                    progressBar.style.height = '100%';
-                    items.forEach(item => {
-                        const card = item.querySelector('.timeline-card');
-                        const dot = item.querySelector('.timeline-dot');
-                        if (card) card.classList.add('active');
-                        if (dot) dot.classList.add('active');
-                    });
-                }
+        gsap.to(progressBar, {
+            height: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: timeline,
+                start: 'top 70%',
+                end: 'bottom 85%',
+                scrub: true,
+                invalidateOnRefresh: true
             }
         });
 
-        // activate each node dot and timeline card when line reaches them
         items.forEach(item => {
             const card = item.querySelector('.timeline-card');
             const dot = item.querySelector('.timeline-dot');
@@ -1003,6 +990,10 @@ function initTimelineScrollAnimation() {
                 }
             });
         });
+
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 250);
     }
 }
 
