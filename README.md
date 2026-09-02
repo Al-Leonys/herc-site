@@ -1,5 +1,8 @@
 Live Site: https://needhamgravity.pages.dev/
 
+
+TO RUN LOCALHOST:
+
 Local Setup
 
 ```bash
