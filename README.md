@@ -1,3 +1,15 @@
-github page: https://al-leonys.github.io/herc-site/
+Live Site: https://needhamgravity.pages.dev/
 
-Where we will prob host permanently: https://needhamgravity.pages.dev/
+Local Setup
+
+```bash
+npm install
+npm run dev
+```
+
+Dependencies install:
+
+```bash
+npm install vgpu ogl react react-dom
+npm install -D vite @vitejs/plugin-react
+```
