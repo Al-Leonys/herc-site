@@ -1,9 +1,6 @@
 Live Site: https://needhamgravity.pages.dev/
 
-
-TO RUN LOCALHOST:
-
-Local Setup
+Local Setup:
 
 ```bash
 npm install
