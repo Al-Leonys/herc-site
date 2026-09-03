@@ -128,19 +128,25 @@ function initCleanRouteNavigation() {
     const initialPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
     if (initialPath && initialPath !== '/') {
         sessionStorage.removeItem('redirect_route');
-        scrollToSectionForPath(initialPath, true);
+        const cleanPath = initialPath.replace(/\/$/, '') || '/';
 
-        setTimeout(() => {
+        if (routeToSectionMap[cleanPath]) {
             scrollToSectionForPath(initialPath, true);
-        }, 100);
 
-        setTimeout(() => {
-            scrollToSectionForPath(initialPath, false);
-        }, 400);
+            setTimeout(() => {
+                scrollToSectionForPath(initialPath, true);
+            }, 100);
 
-        window.addEventListener('load', () => {
-            scrollToSectionForPath(initialPath, false);
-        }, { once: true });
+            setTimeout(() => {
+                scrollToSectionForPath(initialPath, false);
+            }, 400);
+
+            window.addEventListener('load', () => {
+                scrollToSectionForPath(initialPath, false);
+            }, { once: true });
+        } else {
+            window.location.replace('/404.html');
+        }
     }
 
     window.addEventListener('popstate', () => {
