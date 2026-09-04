@@ -11,6 +11,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initIntegratedGoogleForm,
         initPhoneNumberFormatter,
         initAccordionGallery,
+        initResourceSearchFilter,
         initScrollUrlUpdater,
         initClickPops
     ];
@@ -42,23 +43,27 @@ let programmaticScrollTimer = null;
 const routeToSectionMap = {
     '/': 'hero',
     '/about': 'about',
+    '/subsystems': 'subsystems',
     '/team': 'team',
-    '/meet-team': 'meet-team',
     '/sponsors': 'sponsors',
     '/contact': 'contact',
     '/contact-form': 'contact-form',
-    '/roadmap': 'roadmap'
+    '/roadmap': 'roadmap',
+    '/resources': 'resources',
+    '/resources.html': 'resources',
+    '/meet-team': 'team'
 };
 
 const sectionToRouteMap = {
     'hero': '/',
     'about': '/about',
+    'subsystems': '/subsystems',
     'team': '/team',
-    'meet-team': '/meet-team',
     'sponsors': '/sponsors',
     'contact': '/contact',
     'contact-form': '/contact-form',
-    'roadmap': '/roadmap'
+    'roadmap': '/roadmap',
+    'resources': '/resources'
 };
 
 // handle clean route clicks and initial page load route restoration without hashtags
@@ -67,6 +72,7 @@ function scrollToSectionForPath(path, isInstant = false) {
     const cleanPath = path.replace(/\/$/, '') || '/';
 
     if (cleanPath === '/contact' || cleanPath === '/contact-form') {
+        document.body.classList.remove('is-resources-page');
         document.body.classList.add('is-contact-page');
         window.scrollTo({ top: 0, behavior: 'auto' });
         history.replaceState(null, '', '/contact-form');
@@ -74,7 +80,17 @@ function scrollToSectionForPath(path, isInstant = false) {
         return;
     }
 
+    if (cleanPath === '/resources' || cleanPath === '/resources.html') {
+        document.body.classList.remove('is-contact-page');
+        document.body.classList.add('is-resources-page');
+        window.scrollTo({ top: 0, behavior: 'auto' });
+        history.replaceState(null, '', '/resources');
+        initAeroShardsAnimation();
+        return;
+    }
+
     document.body.classList.remove('is-contact-page');
+    document.body.classList.remove('is-resources-page');
 
     if (cleanPath === '/') {
         window.scrollTo({ top: 0, behavior: isInstant ? 'auto' : 'smooth' });
@@ -112,19 +128,25 @@ function initCleanRouteNavigation() {
     const initialPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
     if (initialPath && initialPath !== '/') {
         sessionStorage.removeItem('redirect_route');
-        scrollToSectionForPath(initialPath, true);
+        const cleanPath = initialPath.replace(/\/$/, '') || '/';
 
-        setTimeout(() => {
+        if (routeToSectionMap[cleanPath]) {
             scrollToSectionForPath(initialPath, true);
-        }, 100);
 
-        setTimeout(() => {
-            scrollToSectionForPath(initialPath, false);
-        }, 400);
+            setTimeout(() => {
+                scrollToSectionForPath(initialPath, true);
+            }, 100);
 
-        window.addEventListener('load', () => {
-            scrollToSectionForPath(initialPath, false);
-        }, { once: true });
+            setTimeout(() => {
+                scrollToSectionForPath(initialPath, false);
+            }, 400);
+
+            window.addEventListener('load', () => {
+                scrollToSectionForPath(initialPath, false);
+            }, { once: true });
+        } else {
+            window.location.replace('/404.html');
+        }
     }
 
     window.addEventListener('popstate', () => {
@@ -133,11 +155,15 @@ function initCleanRouteNavigation() {
     });
 
     document.body.addEventListener('click', (e) => {
-        const link = e.target.closest('a[data-target], a[href^="/"]');
+        const link = e.target.closest('a[data-target], a[href^="/"], a[href*="resources"]');
         if (!link) return;
 
+        const href = link.getAttribute('href') || '';
+        if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
+            return;
+        }
+
         const dataTarget = link.getAttribute('data-target');
-        const href = link.getAttribute('href');
 
         let targetId = dataTarget;
         let routePath = href;
@@ -149,6 +175,7 @@ function initCleanRouteNavigation() {
 
         if (targetId === 'contact-form' || routePath === '/contact-form' || routePath === '/contact') {
             e.preventDefault();
+            document.body.classList.remove('is-resources-page');
             document.body.classList.add('is-contact-page');
             window.scrollTo({ top: 0, behavior: 'auto' });
             history.pushState(null, '', '/contact-form');
@@ -159,7 +186,21 @@ function initCleanRouteNavigation() {
             return;
         }
 
+        if (targetId === 'resources' || routePath === '/resources' || routePath === 'resources.html' || routePath === '/resources.html') {
+            e.preventDefault();
+            document.body.classList.remove('is-contact-page');
+            document.body.classList.add('is-resources-page');
+            window.scrollTo({ top: 0, behavior: 'auto' });
+            history.pushState(null, '', '/resources');
+            if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
+                window.closeStaggeredMenu();
+            }
+            initAeroShardsAnimation();
+            return;
+        }
+
         document.body.classList.remove('is-contact-page');
+        document.body.classList.remove('is-resources-page');
 
         if (targetId === 'hero' || routePath === '/') {
             e.preventDefault();
@@ -758,13 +799,13 @@ function initParticleTextHeroTitle() {
         text: 'NEEDHAM GRAVITY',
         particleSize: 2.2,
         density: 4,
-        color: '#f8fafc',
-        highlightColor: '#f3c319',
+        color: '#ffffff',
+        highlightColor: '#ffd700',
         scatter: 190,
         gatherDuration: 1600,
         stagger: 420,
-        pointerRepel: 42,
-        repelRadius: 120,
+        pointerRepel: 0,
+        repelRadius: 0,
         idleDrift: 0.8,
         trigger: 'mount',
         fontSize: 'clamp(3.5rem, 13vw, 9rem)',
@@ -926,31 +967,18 @@ function initTimelineScrollAnimation() {
 
         gsap.set(progressBar, { height: '0%' });
 
-        ScrollTrigger.create({
-            trigger: timeline,
-            start: 'top 70%',
-            end: 'bottom 80%',
-            scrub: 0.1,
-            onUpdate: (self) => {
-                const progressPercent = Math.min(self.progress * 100, 100);
-                progressBar.style.height = `${progressPercent}%`;
-
-                const scrollY = window.scrollY || window.pageYOffset;
-                const winHeight = window.innerHeight;
-                const docHeight = document.documentElement.scrollHeight;
-                if (scrollY + winHeight >= docHeight - 50) {
-                    progressBar.style.height = '100%';
-                    items.forEach(item => {
-                        const card = item.querySelector('.timeline-card');
-                        const dot = item.querySelector('.timeline-dot');
-                        if (card) card.classList.add('active');
-                        if (dot) dot.classList.add('active');
-                    });
-                }
+        gsap.to(progressBar, {
+            height: '100%',
+            ease: 'none',
+            scrollTrigger: {
+                trigger: timeline,
+                start: 'top 70%',
+                end: 'bottom 85%',
+                scrub: true,
+                invalidateOnRefresh: true
             }
         });
 
-        // activate each node dot and timeline card when line reaches them
         items.forEach(item => {
             const card = item.querySelector('.timeline-card');
             const dot = item.querySelector('.timeline-dot');
@@ -968,17 +996,21 @@ function initTimelineScrollAnimation() {
                 }
             });
         });
+
+        setTimeout(() => {
+            ScrollTrigger.refresh();
+        }, 250);
     }
 }
 
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
-    const sectionIds = ['hero', 'about', 'team', 'meet-team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
+    const sectionIds = ['hero', 'about', 'subsystems', 'team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
     let lastActiveRoute = window.location.pathname.replace(/\/$/, '') || '/';
 
     function updateActiveRouteOnScroll() {
         if (isProgrammaticScroll) return;
-        if (document.body.classList.contains('is-contact-page')) return;
+        if (document.body.classList.contains('is-contact-page') || document.body.classList.contains('is-resources-page')) return;
 
         const scrollY = window.scrollY || window.pageYOffset;
         const windowHeight = window.innerHeight;
@@ -1606,4 +1638,33 @@ function initAccordionGallery() {
 
     measure();
     window.addEventListener('resize', measure);
+}
+
+// AeroShards is rendered by Vite/React in #aero-shards-root (src/AeroShards.jsx)
+function initAeroShardsAnimation() {}
+
+
+// Real-time resource search filtering
+function initResourceSearchFilter() {
+    const searchInput = document.getElementById('resource-search-input');
+    const items = document.querySelectorAll('.resource-list-item');
+
+    if (searchInput) {
+        searchInput.addEventListener('input', (e) => {
+            const query = e.target.value.toLowerCase().trim();
+            items.forEach(item => {
+                const titleEl = item.querySelector('.resource-item-title');
+                const descEl = item.querySelector('.resource-item-desc');
+                const title = titleEl ? titleEl.textContent.toLowerCase() : '';
+                const desc = descEl ? descEl.textContent.toLowerCase() : '';
+                const category = (item.getAttribute('data-category') || '').toLowerCase();
+
+                if (!query || title.includes(query) || desc.includes(query) || category.includes(query)) {
+                    item.style.display = 'flex';
+                } else {
+                    item.style.display = 'none';
+                }
+            });
+        });
+    }
 }
