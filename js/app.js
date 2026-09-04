@@ -1,11 +1,27 @@
 // needham gravity app logic - echoes gsap staggered menu, three.js canvascii title, & ogl halftonereveal background
 
-// deployment sub-path (e.g. "/herc-site" on GitHub Pages project sites, "" at a domain root) derived from this script's own URL
+// deployment sub-path (e.g. "/herc-site" on GitHub Pages project sites, "" at a domain root)
 const BASE_PATH = (function() {
     try {
-        const src = document.currentScript && document.currentScript.src;
-        if (!src) return '';
-        return new URL(src).pathname.replace(/\/js\/app\.js$/, '');
+        const scriptSrc = document.currentScript && document.currentScript.src;
+        if (scriptSrc) {
+            const scriptPath = new URL(scriptSrc).pathname.replace(/\/js\/app\.js$/, '');
+            if (scriptPath) return scriptPath;
+        }
+
+        const pathname = window.location.pathname || '';
+        const cleanPath = pathname.replace(/\/(index|404)\.html$/, '').replace(/\/$/, '');
+
+        if (window.location.protocol === 'file:') {
+            return cleanPath;
+        }
+
+        if (window.location.hostname.endsWith('.github.io')) {
+            const segments = cleanPath.split('/').filter(Boolean);
+            return segments.length > 0 ? `/${segments[0]}` : '';
+        }
+
+        return '';
     } catch (e) {
         return '';
     }
@@ -21,6 +37,12 @@ function stripBase(pathname) {
         return pathname.slice(BASE_PATH.length) || '/';
     }
     return pathname;
+}
+
+function normalizeRoutePath(pathname) {
+    const baseStrippedPath = stripBase(pathname || '');
+    const cleanPath = baseStrippedPath.replace(/\/index\.html$/, '/').replace(/\/404\.html$/, '/404.html');
+    return cleanPath.replace(/\/$/, '') || '/';
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -92,7 +114,7 @@ const sectionToRouteMap = {
 // handle clean route clicks and initial page load route restoration without hashtags
 function scrollToSectionForPath(path, isInstant = false) {
     if (!path) return;
-    const cleanPath = stripBase(path).replace(/\/$/, '') || '/';
+    const cleanPath = normalizeRoutePath(path);
 
     if (cleanPath === '/contact' || cleanPath === '/contact-form') {
         document.body.classList.remove('is-resources-page');
@@ -148,10 +170,10 @@ function initCleanRouteNavigation() {
         history.scrollRestoration = 'manual';
     }
 
-    const initialPath = sessionStorage.getItem('redirect_route') || stripBase(window.location.pathname);
+    const initialPath = sessionStorage.getItem('redirect_route') || normalizeRoutePath(window.location.pathname);
     if (initialPath && initialPath !== '/') {
         sessionStorage.removeItem('redirect_route');
-        const cleanPath = initialPath.replace(/\/$/, '') || '/';
+        const cleanPath = normalizeRoutePath(initialPath);
 
         if (routeToSectionMap[cleanPath]) {
             scrollToSectionForPath(initialPath, true);
@@ -183,7 +205,7 @@ function initCleanRouteNavigation() {
     }
 
     window.addEventListener('popstate', () => {
-        const currentPath = stripBase(window.location.pathname);
+        const currentPath = normalizeRoutePath(window.location.pathname);
         scrollToSectionForPath(currentPath, true);
     });
 
@@ -191,7 +213,7 @@ function initCleanRouteNavigation() {
         const link = e.target.closest('a[data-target], a[href^="/"], a[href*="resources"]');
         if (!link) return;
 
-        const href = stripBase(link.getAttribute('href') || '');
+        const href = normalizeRoutePath(link.getAttribute('href') || '');
         if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
             return;
         }
@@ -1039,7 +1061,7 @@ function initTimelineScrollAnimation() {
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
     const sectionIds = ['hero', 'about', 'subsystems', 'team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
-    let lastActiveRoute = stripBase(window.location.pathname).replace(/\/$/, '') || '/';
+    let lastActiveRoute = normalizeRoutePath(window.location.pathname);
 
     function updateActiveRouteOnScroll() {
         if (isProgrammaticScroll) return;
@@ -1088,7 +1110,7 @@ function initScrollUrlUpdater() {
 
         const newRoute = sectionToRouteMap[currentSectionId] || '/';
 
-        if (stripBase(window.location.pathname) !== newRoute && lastActiveRoute !== newRoute) {
+        if (normalizeRoutePath(window.location.pathname) !== newRoute && lastActiveRoute !== newRoute) {
             lastActiveRoute = newRoute;
             history.replaceState(null, '', withBase(newRoute));
         }
