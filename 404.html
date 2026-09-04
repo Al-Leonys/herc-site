@@ -5,11 +5,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>404 - Page Not Found | Needham Gravity</title>
     <meta name="description" content="The requested page or route could not be located. Return to Needham Gravity Mission Control.">
-    <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicons/favicon-32x32.png">
-    <link rel="icon" type="image/png" sizes="16x16" href="/assets/favicons/favicon-16x16.png">
-    <link rel="apple-touch-icon" sizes="180x180" href="/assets/favicons/apple-touch-icon.png">
-    <link rel="icon" type="image/png" sizes="192x192" href="/assets/favicons/icon-192.png">
-    <link rel="shortcut icon" href="/assets/favicons/favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/favicons/favicon-32x32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/favicons/favicon-16x16.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/favicons/apple-touch-icon.png">
+    <link rel="icon" type="image/png" sizes="192x192" href="assets/favicons/icon-192.png">
+    <link rel="shortcut icon" href="assets/favicons/favicon.ico">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,7 +17,7 @@
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 
-    <link rel="stylesheet" href="/css/styles.css">
+    <link rel="stylesheet" id="ng-base-link" href="css/styles.css">
 
     <style>
         .error-page-container {
@@ -169,11 +169,17 @@
     <!-- automatic GitHub Pages client-side path router script -->
     <script>
         (function() {
+            // derive the deployment sub-path (e.g. "/herc-site") from the resolved stylesheet URL so this works both at a domain root and under a project sub-path
+            var linkEl = document.getElementById('ng-base-link');
+            var basePath = linkEl ? linkEl.pathname.replace(/\/css\/styles\.css$/, '') : '';
+            window.__NG_BASE_PATH__ = basePath;
+
             var path = window.location.pathname.replace(/\/$/, '');
+            var cleanPath = basePath && path.indexOf(basePath) === 0 ? (path.slice(basePath.length) || '/') : path;
             var validRoutes = ['/about', '/subsystems', '/team', '/meet-team', '/sponsors', '/contact', '/contact-form', '/roadmap', '/resources'];
-            if (validRoutes.indexOf(path) !== -1) {
-                sessionStorage.setItem('redirect_route', path);
-                window.location.replace('/');
+            if (validRoutes.indexOf(cleanPath) !== -1) {
+                sessionStorage.setItem('redirect_route', cleanPath);
+                window.location.replace(basePath + '/');
             }
         })();
     </script>
@@ -181,12 +187,12 @@
 <body>
 
     <div class="header-overlay-bar">
-        <a href="/" class="logo-link">
-            <img src="/assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
+        <a href="/" class="logo-link" id="ng-home-logo-link">
+            <img src="assets/logo.png" alt="Needham Gravity Logo" class="nav-logo-img">
             <span class="logo-title">NEEDHAM GRAVITY</span>
         </a>
 
-        <a href="/" class="btn btn-primary" style="padding: 9px 20px; font-size: 13px;">
+        <a href="/" class="btn btn-primary" id="ng-home-btn-link" style="padding: 9px 20px; font-size: 13px;">
             <i class="fa-solid fa-house"></i> Home
         </a>
     </div>
@@ -202,10 +208,10 @@
             </p>
 
             <div class="error-actions">
-                <a href="/" class="btn btn-primary">
+                <a href="/" class="btn btn-primary" id="ng-home-action-link">
                     <i class="fa-solid fa-arrow-left"></i> Return to Mission Control
                 </a>
-                <a href="/contact" class="btn btn-secondary">
+                <a href="/contact" class="btn btn-secondary" id="ng-contact-action-link">
                     <i class="fa-regular fa-envelope"></i> Contact Support
                 </a>
             </div>
@@ -333,6 +339,18 @@
 
             setInterval(animateToNextWord, cycleDelay);
         }
+
+        // fix root-relative Home/Contact links to respect the deployment sub-path
+        (function() {
+            var basePath = window.__NG_BASE_PATH__ || '';
+            if (!basePath) return;
+            ['ng-home-logo-link', 'ng-home-btn-link', 'ng-home-action-link'].forEach(function(id) {
+                var el = document.getElementById(id);
+                if (el) el.setAttribute('href', basePath + '/');
+            });
+            var contactLink = document.getElementById('ng-contact-action-link');
+            if (contactLink) contactLink.setAttribute('href', basePath + '/contact');
+        })();
     </script>
 
 </body>

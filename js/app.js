@@ -1,5 +1,28 @@
 // needham gravity app logic - echoes gsap staggered menu, three.js canvascii title, & ogl halftonereveal background
 
+// deployment sub-path (e.g. "/herc-site" on GitHub Pages project sites, "" at a domain root) derived from this script's own URL
+const BASE_PATH = (function() {
+    try {
+        const src = document.currentScript && document.currentScript.src;
+        if (!src) return '';
+        return new URL(src).pathname.replace(/\/js\/app\.js$/, '');
+    } catch (e) {
+        return '';
+    }
+})();
+
+function withBase(path) {
+    if (!BASE_PATH) return path;
+    return path === '/' ? `${BASE_PATH}/` : `${BASE_PATH}${path}`;
+}
+
+function stripBase(pathname) {
+    if (BASE_PATH && pathname.indexOf(BASE_PATH) === 0) {
+        return pathname.slice(BASE_PATH.length) || '/';
+    }
+    return pathname;
+}
+
 document.addEventListener('DOMContentLoaded', () => {
     const initializers = [
         initCleanRouteNavigation,
@@ -69,13 +92,13 @@ const sectionToRouteMap = {
 // handle clean route clicks and initial page load route restoration without hashtags
 function scrollToSectionForPath(path, isInstant = false) {
     if (!path) return;
-    const cleanPath = path.replace(/\/$/, '') || '/';
+    const cleanPath = stripBase(path).replace(/\/$/, '') || '/';
 
     if (cleanPath === '/contact' || cleanPath === '/contact-form') {
         document.body.classList.remove('is-resources-page');
         document.body.classList.add('is-contact-page');
         window.scrollTo({ top: 0, behavior: 'auto' });
-        history.replaceState(null, '', '/contact-form');
+        history.replaceState(null, '', withBase('/contact-form'));
         setTimeout(() => { initAccordionGallery(); }, 50);
         return;
     }
@@ -84,7 +107,7 @@ function scrollToSectionForPath(path, isInstant = false) {
         document.body.classList.remove('is-contact-page');
         document.body.classList.add('is-resources-page');
         window.scrollTo({ top: 0, behavior: 'auto' });
-        history.replaceState(null, '', '/resources');
+        history.replaceState(null, '', withBase('/resources'));
         initAeroShardsAnimation();
         return;
     }
@@ -94,7 +117,7 @@ function scrollToSectionForPath(path, isInstant = false) {
 
     if (cleanPath === '/') {
         window.scrollTo({ top: 0, behavior: isInstant ? 'auto' : 'smooth' });
-        history.replaceState(null, '', '/');
+        history.replaceState(null, '', withBase('/'));
         return;
     }
 
@@ -113,7 +136,7 @@ function scrollToSectionForPath(path, isInstant = false) {
         behavior: isInstant ? 'auto' : 'smooth'
     });
 
-    history.replaceState(null, '', cleanPath);
+    history.replaceState(null, '', withBase(cleanPath));
 
     programmaticScrollTimer = setTimeout(() => {
         isProgrammaticScroll = false;
@@ -125,7 +148,7 @@ function initCleanRouteNavigation() {
         history.scrollRestoration = 'manual';
     }
 
-    const initialPath = sessionStorage.getItem('redirect_route') || window.location.pathname;
+    const initialPath = sessionStorage.getItem('redirect_route') || stripBase(window.location.pathname);
     if (initialPath && initialPath !== '/') {
         sessionStorage.removeItem('redirect_route');
         const cleanPath = initialPath.replace(/\/$/, '') || '/';
@@ -145,12 +168,22 @@ function initCleanRouteNavigation() {
                 scrollToSectionForPath(initialPath, false);
             }, { once: true });
         } else {
-            window.location.replace('/404.html');
+            window.location.replace(withBase('/404.html'));
         }
     }
 
+    // fix root-relative nav links so they resolve under the deployment sub-path (e.g. GitHub Pages project sites)
+    if (BASE_PATH) {
+        document.querySelectorAll('a[href^="/"]').forEach((a) => {
+            const href = a.getAttribute('href');
+            if (href && href.indexOf(BASE_PATH) !== 0) {
+                a.setAttribute('href', withBase(href));
+            }
+        });
+    }
+
     window.addEventListener('popstate', () => {
-        const currentPath = window.location.pathname;
+        const currentPath = stripBase(window.location.pathname);
         scrollToSectionForPath(currentPath, true);
     });
 
@@ -158,7 +191,7 @@ function initCleanRouteNavigation() {
         const link = e.target.closest('a[data-target], a[href^="/"], a[href*="resources"]');
         if (!link) return;
 
-        const href = link.getAttribute('href') || '';
+        const href = stripBase(link.getAttribute('href') || '');
         if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
             return;
         }
@@ -178,7 +211,7 @@ function initCleanRouteNavigation() {
             document.body.classList.remove('is-resources-page');
             document.body.classList.add('is-contact-page');
             window.scrollTo({ top: 0, behavior: 'auto' });
-            history.pushState(null, '', '/contact-form');
+            history.pushState(null, '', withBase('/contact-form'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -191,7 +224,7 @@ function initCleanRouteNavigation() {
             document.body.classList.remove('is-contact-page');
             document.body.classList.add('is-resources-page');
             window.scrollTo({ top: 0, behavior: 'auto' });
-            history.pushState(null, '', '/resources');
+            history.pushState(null, '', withBase('/resources'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -205,7 +238,7 @@ function initCleanRouteNavigation() {
         if (targetId === 'hero' || routePath === '/') {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            history.pushState(null, '', '/');
+            history.pushState(null, '', withBase('/'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -227,7 +260,7 @@ function initCleanRouteNavigation() {
                     behavior: 'smooth'
                 });
 
-                history.pushState(null, '', routePath);
+                history.pushState(null, '', withBase(routePath));
 
                 if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                     window.closeStaggeredMenu();
@@ -1006,7 +1039,7 @@ function initTimelineScrollAnimation() {
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
     const sectionIds = ['hero', 'about', 'subsystems', 'team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
-    let lastActiveRoute = window.location.pathname.replace(/\/$/, '') || '/';
+    let lastActiveRoute = stripBase(window.location.pathname).replace(/\/$/, '') || '/';
 
     function updateActiveRouteOnScroll() {
         if (isProgrammaticScroll) return;
@@ -1055,9 +1088,9 @@ function initScrollUrlUpdater() {
 
         const newRoute = sectionToRouteMap[currentSectionId] || '/';
 
-        if (window.location.pathname !== newRoute && lastActiveRoute !== newRoute) {
+        if (stripBase(window.location.pathname) !== newRoute && lastActiveRoute !== newRoute) {
             lastActiveRoute = newRoute;
-            history.replaceState(null, '', newRoute);
+            history.replaceState(null, '', withBase(newRoute));
         }
     }
 
