@@ -108,7 +108,8 @@ const routeToSectionMap = {
     '/about': 'about',
     '/subsystems': 'subsystems',
     '/team': 'team',
-    '/sponsors': 'sponsors',
+    '/donors': 'donors',
+    '/sponsors': 'donors',
     '/contact': 'contact',
     '/contact-form': 'contact-form',
     '/roadmap': 'roadmap',
@@ -122,7 +123,7 @@ const sectionToRouteMap = {
     'about': '/about',
     'subsystems': '/subsystems',
     'team': '/team',
-    'sponsors': '/sponsors',
+    'donors': '/donors',
     'contact': '/contact',
     'contact-form': '/contact-form',
     'roadmap': '/roadmap',
@@ -1073,7 +1074,7 @@ function initTimelineScrollAnimation() {
 
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
-    const sectionIds = ['hero', 'about', 'subsystems', 'team', 'sponsors', 'contact', 'contact-form', 'roadmap'];
+    const sectionIds = ['hero', 'about', 'subsystems', 'team', 'donors', 'contact', 'contact-form', 'roadmap'];
     let lastActiveRoute = normalizeRoutePath(window.location.pathname);
 
     function updateActiveRouteOnScroll() {

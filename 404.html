@@ -176,7 +176,7 @@
 
             var path = window.location.pathname.replace(/\/$/, '');
             var cleanPath = basePath && path.indexOf(basePath) === 0 ? (path.slice(basePath.length) || '/') : path;
-            var validRoutes = ['/about', '/subsystems', '/team', '/meet-team', '/sponsors', '/contact', '/contact-form', '/roadmap', '/resources'];
+            var validRoutes = ['/about', '/subsystems', '/team', '/meet-team', '/donors', '/sponsors', '/contact', '/contact-form', '/roadmap', '/resources'];
             if (validRoutes.indexOf(cleanPath) !== -1) {
                 sessionStorage.setItem('redirect_route', cleanPath);
                 window.location.replace(basePath + '/');
