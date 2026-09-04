@@ -1,8 +1,12 @@
 // needham gravity app logic - echoes gsap staggered menu, three.js canvascii title, & ogl halftonereveal background
 
-// deployment sub-path (e.g. "/herc-site" on GitHub Pages project sites, "" at a domain root)
+// deployment sub-path (e.g. "/herc-site" on GitHub Pages project sites, "" at a domain root or local preview)
 const BASE_PATH = (function() {
     try {
+        if (window.location.protocol === 'file:') {
+            return '';
+        }
+
         const scriptSrc = document.currentScript && document.currentScript.src;
         if (scriptSrc) {
             const scriptPath = new URL(scriptSrc).pathname.replace(/\/js\/app\.js$/, '');
@@ -11,10 +15,6 @@ const BASE_PATH = (function() {
 
         const pathname = window.location.pathname || '';
         const cleanPath = pathname.replace(/\/(index|404)\.html$/, '').replace(/\/$/, '');
-
-        if (window.location.protocol === 'file:') {
-            return cleanPath;
-        }
 
         if (window.location.hostname.endsWith('.github.io')) {
             const segments = cleanPath.split('/').filter(Boolean);
@@ -33,16 +33,34 @@ function withBase(path) {
 }
 
 function stripBase(pathname) {
-    if (BASE_PATH && pathname.indexOf(BASE_PATH) === 0) {
+    if (BASE_PATH && pathname && pathname.indexOf(BASE_PATH) === 0) {
         return pathname.slice(BASE_PATH.length) || '/';
     }
-    return pathname;
+    return pathname || '/';
 }
 
 function normalizeRoutePath(pathname) {
     const baseStrippedPath = stripBase(pathname || '');
-    const cleanPath = baseStrippedPath.replace(/\/index\.html$/, '/').replace(/\/404\.html$/, '/404.html');
+    const cleanPath = baseStrippedPath.replace(/\/index\.html$/, '/').replace(/\/404\.html$/, '/');
     return cleanPath.replace(/\/$/, '') || '/';
+}
+
+function safeHistoryPush(url) {
+    if (window.location.protocol === 'file:') return;
+    try {
+        history.pushState(null, '', url);
+    } catch (err) {
+        console.warn('[Router] pushState failed:', err);
+    }
+}
+
+function safeHistoryReplace(url) {
+    if (window.location.protocol === 'file:') return;
+    try {
+        history.replaceState(null, '', url);
+    } catch (err) {
+        console.warn('[Router] replaceState failed:', err);
+    }
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -120,7 +138,7 @@ function scrollToSectionForPath(path, isInstant = false) {
         document.body.classList.remove('is-resources-page');
         document.body.classList.add('is-contact-page');
         window.scrollTo({ top: 0, behavior: 'auto' });
-        history.replaceState(null, '', withBase('/contact-form'));
+        safeHistoryReplace(withBase('/contact-form'));
         setTimeout(() => { initAccordionGallery(); }, 50);
         return;
     }
@@ -129,7 +147,7 @@ function scrollToSectionForPath(path, isInstant = false) {
         document.body.classList.remove('is-contact-page');
         document.body.classList.add('is-resources-page');
         window.scrollTo({ top: 0, behavior: 'auto' });
-        history.replaceState(null, '', withBase('/resources'));
+        safeHistoryReplace(withBase('/resources'));
         initAeroShardsAnimation();
         return;
     }
@@ -139,7 +157,7 @@ function scrollToSectionForPath(path, isInstant = false) {
 
     if (cleanPath === '/') {
         window.scrollTo({ top: 0, behavior: isInstant ? 'auto' : 'smooth' });
-        history.replaceState(null, '', withBase('/'));
+        safeHistoryReplace(withBase('/'));
         return;
     }
 
@@ -158,7 +176,7 @@ function scrollToSectionForPath(path, isInstant = false) {
         behavior: isInstant ? 'auto' : 'smooth'
     });
 
-    history.replaceState(null, '', withBase(cleanPath));
+    safeHistoryReplace(withBase(cleanPath));
 
     programmaticScrollTimer = setTimeout(() => {
         isProgrammaticScroll = false;
@@ -170,27 +188,22 @@ function initCleanRouteNavigation() {
         history.scrollRestoration = 'manual';
     }
 
-    const initialPath = sessionStorage.getItem('redirect_route') || normalizeRoutePath(window.location.pathname);
-    if (initialPath && initialPath !== '/') {
+    // Check if coming from a 404 client-side redirect
+    const redirectRoute = sessionStorage.getItem('redirect_route');
+    if (redirectRoute) {
         sessionStorage.removeItem('redirect_route');
-        const cleanPath = normalizeRoutePath(initialPath);
-
-        if (routeToSectionMap[cleanPath]) {
-            scrollToSectionForPath(initialPath, true);
-
-            setTimeout(() => {
-                scrollToSectionForPath(initialPath, true);
-            }, 100);
-
-            setTimeout(() => {
-                scrollToSectionForPath(initialPath, false);
-            }, 400);
-
-            window.addEventListener('load', () => {
-                scrollToSectionForPath(initialPath, false);
-            }, { once: true });
-        } else {
-            window.location.replace(withBase('/404.html'));
+        const cleanPath = normalizeRoutePath(redirectRoute);
+        if (cleanPath && cleanPath !== '/' && routeToSectionMap[cleanPath]) {
+            scrollToSectionForPath(cleanPath, true);
+            setTimeout(() => { scrollToSectionForPath(cleanPath, true); }, 100);
+            setTimeout(() => { scrollToSectionForPath(cleanPath, false); }, 400);
+        }
+    } else {
+        const currentRoute = normalizeRoutePath(window.location.pathname);
+        if (currentRoute && currentRoute !== '/' && routeToSectionMap[currentRoute]) {
+            scrollToSectionForPath(currentRoute, true);
+            setTimeout(() => { scrollToSectionForPath(currentRoute, true); }, 100);
+            setTimeout(() => { scrollToSectionForPath(currentRoute, false); }, 400);
         }
     }
 
@@ -233,7 +246,7 @@ function initCleanRouteNavigation() {
             document.body.classList.remove('is-resources-page');
             document.body.classList.add('is-contact-page');
             window.scrollTo({ top: 0, behavior: 'auto' });
-            history.pushState(null, '', withBase('/contact-form'));
+            safeHistoryPush(withBase('/contact-form'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -246,7 +259,7 @@ function initCleanRouteNavigation() {
             document.body.classList.remove('is-contact-page');
             document.body.classList.add('is-resources-page');
             window.scrollTo({ top: 0, behavior: 'auto' });
-            history.pushState(null, '', withBase('/resources'));
+            safeHistoryPush(withBase('/resources'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -260,7 +273,7 @@ function initCleanRouteNavigation() {
         if (targetId === 'hero' || routePath === '/') {
             e.preventDefault();
             window.scrollTo({ top: 0, behavior: 'smooth' });
-            history.pushState(null, '', withBase('/'));
+            safeHistoryPush(withBase('/'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
             }
@@ -282,7 +295,7 @@ function initCleanRouteNavigation() {
                     behavior: 'smooth'
                 });
 
-                history.pushState(null, '', withBase(routePath));
+                safeHistoryPush(withBase(routePath));
 
                 if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                     window.closeStaggeredMenu();
@@ -1112,7 +1125,7 @@ function initScrollUrlUpdater() {
 
         if (normalizeRoutePath(window.location.pathname) !== newRoute && lastActiveRoute !== newRoute) {
             lastActiveRoute = newRoute;
-            history.replaceState(null, '', withBase(newRoute));
+            safeHistoryReplace(withBase(newRoute));
         }
     }
 

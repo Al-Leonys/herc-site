@@ -46,7 +46,7 @@ const halftoneRoot = document.getElementById('halftone-bg-container');
 if (halftoneRoot) {
   ReactDOM.createRoot(halftoneRoot).render(
     <HalftoneReveal
-      src="/assets/hero-bg.jpg"
+      src="assets/hero-bg.jpg"
       inkColor="#1868DB"
       paperColor="#050E1B"
       mode="mono"
