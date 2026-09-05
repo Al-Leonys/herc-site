@@ -808,14 +808,17 @@ class ParticleText {
         this.handleClick = this.handleClick.bind(this);
         this.queueSample = this.queueSample.bind(this);
 
-        this.canvas.addEventListener('pointerenter', this.handlePointerEnter);
-        this.canvas.addEventListener('pointermove', this.handlePointerMove);
-        this.canvas.addEventListener('pointerleave', this.handlePointerLeave);
+        const heroEl = this.container.closest('.hero-section') || this.canvas;
+        this.interactiveEl = heroEl;
+
+        this.interactiveEl.addEventListener('pointerenter', this.handlePointerEnter);
+        this.interactiveEl.addEventListener('pointermove', this.handlePointerMove);
+        this.interactiveEl.addEventListener('pointerleave', this.handlePointerLeave);
         this.canvas.addEventListener('click', this.handleClick);
 
-        this.canvas.addEventListener('touchstart', this.handleTouchMove, { passive: true });
-        this.canvas.addEventListener('touchmove', this.handleTouchMove, { passive: true });
-        this.canvas.addEventListener('touchend', this.handleTouchEnd, { passive: true });
+        this.interactiveEl.addEventListener('touchstart', this.handleTouchMove, { passive: true });
+        this.interactiveEl.addEventListener('touchmove', this.handleTouchMove, { passive: true });
+        this.interactiveEl.addEventListener('touchend', this.handleTouchEnd, { passive: true });
 
         this.intersectionObserver = new IntersectionObserver(([entry]) => {
             this.isVisible = entry.isIntersecting;
@@ -838,14 +841,15 @@ class ParticleText {
         this.isVisible = false;
         if (this.intersectionObserver) this.intersectionObserver.disconnect();
         if (this.resizeObserver) this.resizeObserver.disconnect();
-        this.canvas.removeEventListener('pointerenter', this.handlePointerEnter);
-        this.canvas.removeEventListener('pointermove', this.handlePointerMove);
-        this.canvas.removeEventListener('pointerleave', this.handlePointerLeave);
+        if (this.interactiveEl) {
+            this.interactiveEl.removeEventListener('pointerenter', this.handlePointerEnter);
+            this.interactiveEl.removeEventListener('pointermove', this.handlePointerMove);
+            this.interactiveEl.removeEventListener('pointerleave', this.handlePointerLeave);
+            this.interactiveEl.removeEventListener('touchstart', this.handleTouchMove);
+            this.interactiveEl.removeEventListener('touchmove', this.handleTouchMove);
+            this.interactiveEl.removeEventListener('touchend', this.handleTouchEnd);
+        }
         this.canvas.removeEventListener('click', this.handleClick);
-
-        this.canvas.removeEventListener('touchstart', this.handleTouchMove);
-        this.canvas.removeEventListener('touchmove', this.handleTouchMove);
-        this.canvas.removeEventListener('touchend', this.handleTouchEnd);
 
         if (this.animationFrame !== null) window.cancelAnimationFrame(this.animationFrame);
         if (this.resizeFrame !== null) window.cancelAnimationFrame(this.resizeFrame);
@@ -873,8 +877,8 @@ function initParticleTextHeroTitle() {
         scatter: 190,
         gatherDuration: 1600,
         stagger: 420,
-        pointerRepel: 0,
-        repelRadius: 0,
+        pointerRepel: 45,
+        repelRadius: 130,
         idleDrift: 0.8,
         trigger: 'mount',
         fontSize: 'clamp(3.5rem, 13vw, 9rem)',

@@ -429,14 +429,14 @@ ul {
     height: 260px;
     margin: 0 auto 10px auto;
     overflow: hidden;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 .particle-text-hero-title canvas {
     display: block !important;
     width: 100%;
     height: 100%;
-    pointer-events: none;
+    pointer-events: auto;
 }
 
 @media (max-width: 768px) {
@@ -1530,11 +1530,16 @@ ul {
     padding-top: 0;
     padding-bottom: 0;
     background: #FFFFFF !important;
+    width: 100%;
+    max-width: 100vw;
+    overflow-x: hidden;
+    box-sizing: border-box;
 }
 
 body.is-contact-page,
 body.is-resources-page {
     background: #FFFFFF !important;
+    overflow-x: hidden;
 }
 
 body.is-contact-page #main-landing-view,
@@ -2113,13 +2118,17 @@ body.is-resources-page #resources-page-view {
     overflow: hidden;
     padding: 120px 24px 60px 24px;
     color: #0F172A;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .aero-shards-bg-canvas {
     position: absolute;
     top: 0;
-    left: 0;
+    left: 50%;
+    transform: translateX(-50%);
     width: 100%;
+    min-width: 1200px;
     height: 100%;
     z-index: 1;
     pointer-events: auto;
@@ -2130,26 +2139,34 @@ body.is-resources-page #resources-page-view {
     position: relative;
     z-index: 3;
     max-width: 800px;
+    width: 100%;
     text-align: center;
     margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .resources-title {
     font-family: var(--font-heading);
-    font-size: clamp(32px, 5vw, 48px);
+    font-size: clamp(28px, 5vw, 48px);
     font-weight: 800;
     line-height: 1.15;
     letter-spacing: -0.02em;
     margin-bottom: 16px;
     color: #0F172A;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .resources-subtitle {
-    font-size: clamp(15px, 2vw, 17px);
+    font-size: clamp(14px, 2vw, 17px);
     color: #475569;
     max-width: 680px;
+    width: 100%;
     margin: 0 auto 32px auto;
     line-height: 1.6;
+    box-sizing: border-box;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .resources-search-bar {
@@ -2160,12 +2177,15 @@ body.is-resources-page #resources-page-view {
     border-radius: 12px;
     padding: 6px 10px 6px 18px;
     max-width: 560px;
+    width: 100%;
     margin: 0 auto;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+    box-sizing: border-box;
 }
 
 .resources-search-bar input {
     flex: 1;
+    min-width: 0;
     border: none;
     outline: none;
     background: transparent;
@@ -2179,6 +2199,7 @@ body.is-resources-page #resources-page-view {
 }
 
 .resources-search-btn {
+    flex-shrink: 0;
     background: #1868DB;
     color: #FFFFFF;
     border: none;
@@ -2197,12 +2218,23 @@ body.is-resources-page #resources-page-view {
 /* Full Width Resource Items & Discreet Dividers */
 .resource-library-section {
     background: #FFFFFF !important;
-    padding: 20px 0 100px 0;
+    padding: 20px 24px 100px 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+.resource-library-section .container {
+    max-width: 900px;
+    width: 100%;
+    margin: 0 auto;
+    box-sizing: border-box;
 }
 
 .resource-list-container {
     display: flex;
     flex-direction: column;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .resource-list-item {
@@ -2212,6 +2244,8 @@ body.is-resources-page #resources-page-view {
     gap: 32px;
     padding: 36px 0;
     border-bottom: 1px solid #E2E8F0;
+    width: 100%;
+    box-sizing: border-box;
 }
 
 .resource-list-item:first-child {
@@ -2220,6 +2254,7 @@ body.is-resources-page #resources-page-view {
 
 .resource-item-main {
     flex: 1;
+    min-width: 0;
 }
 
 .resource-item-title {
@@ -2229,6 +2264,8 @@ body.is-resources-page #resources-page-view {
     color: #0F172A;
     margin-bottom: 10px;
     line-height: 1.3;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .resource-item-desc {
@@ -2236,6 +2273,8 @@ body.is-resources-page #resources-page-view {
     color: #475569;
     line-height: 1.65;
     margin: 0;
+    overflow-wrap: break-word;
+    word-break: break-word;
 }
 
 .resource-item-action {
@@ -2270,9 +2309,29 @@ body.is-resources-page #resources-page-view {
     transform: translateX(4px);
 }
 
-@media (max-width: 640px) {
+@media (max-width: 768px) {
+    .resources-hero-section {
+        padding: 100px 16px 40px 16px;
+        min-height: 320px;
+    }
+
+    .resources-search-bar {
+        padding: 6px 8px 6px 14px;
+    }
+
+    .resource-library-section {
+        padding: 20px 16px 60px 16px;
+    }
+
     .resource-list-item {
         flex-direction: column;
         gap: 16px;
+        padding: 24px 0;
+    }
+
+    .resource-action-link {
+        white-space: normal;
+        overflow-wrap: break-word;
+        word-break: break-word;
     }
 }
