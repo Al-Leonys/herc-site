@@ -74,6 +74,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initIntegratedGoogleForm,
         initPhoneNumberFormatter,
         initAccordionGallery,
+        initExpandableTeamCards,
         initResourceSearchFilter,
         initScrollUrlUpdater,
         initClickPops
@@ -250,6 +251,10 @@ function initCleanRouteNavigation() {
             safeHistoryPush(withBase('/contact-form'));
             if (window.isMenuOpen && typeof window.closeStaggeredMenu === 'function') {
                 window.closeStaggeredMenu();
+            }
+            const presetAmount = link.getAttribute('data-preset-amount');
+            if (presetAmount && typeof window.setDonationPreset === 'function') {
+                window.setDonationPreset(presetAmount);
             }
             setTimeout(() => { initAccordionGallery(); }, 50);
             return;
@@ -1076,6 +1081,19 @@ function initTimelineScrollAnimation() {
     }
 }
 
+// expandable team cards for touch / click interaction
+function initExpandableTeamCards() {
+    document.querySelectorAll('.member-card').forEach(card => {
+        card.addEventListener('click', (e) => {
+            const wasExpanded = card.classList.contains('is-expanded');
+            document.querySelectorAll('.member-card').forEach(c => c.classList.remove('is-expanded'));
+            if (!wasExpanded) {
+                card.classList.add('is-expanded');
+            }
+        });
+    });
+}
+
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
     const sectionIds = ['hero', 'about', 'subsystems', 'team', 'donors', 'contact', 'contact-form', 'roadmap'];
@@ -1187,20 +1205,103 @@ function initIntegratedGoogleForm() {
         });
     }
 
+    const perksDisplay = document.getElementById('donation-perks-display');
+
+    function updateDonationPerks() {
+        if (!donationInput || !perksDisplay) return;
+        const val = donationInput.value.replace(/[^0-9.]/g, '');
+        if (!val || isNaN(val)) {
+            perksDisplay.style.display = 'none';
+            perksDisplay.innerHTML = '';
+            return;
+        }
+
+        const amount = parseFloat(val);
+        if (amount <= 0) {
+            perksDisplay.style.display = 'none';
+            perksDisplay.innerHTML = '';
+            return;
+        }
+
+        perksDisplay.style.display = 'block';
+
+        if (amount < 500) {
+            perksDisplay.innerHTML = `
+                <div class="perks-thank-you">
+                    <i class="fa-solid fa-heart" style="color: #0F4FAD; margin-right: 8px;"></i>
+                    <strong>Thank you for your donation!</strong>
+                </div>
+            `;
+        } else if (amount >= 3000) {
+            perksDisplay.innerHTML = `
+                <div class="perks-header">This amount gets you:</div>
+                <ul class="perks-list">
+                    <li><strong>Prime logo placement on rover</strong></li>
+                    <li><strong>Featured website & media placement</strong></li>
+                    <li><strong>Dedicated rover demonstration</strong></li>
+                    <li><strong>Large logo on team apparel and documentation</strong></li>
+                </ul>
+            `;
+        } else if (amount >= 1250) {
+            perksDisplay.innerHTML = `
+                <div class="perks-header">This amount gets you:</div>
+                <ul class="perks-list">
+                    <li><strong>Medium logo on rover chassis</strong></li>
+                    <li><strong>Website logo & hyperlink</strong></li>
+                    <li><strong>Logo on apparel & documentation</strong></li>
+                </ul>
+            `;
+        } else {
+            // 500 to 1249 (Silver)
+            perksDisplay.innerHTML = `
+                <div class="perks-header">This amount gets you:</div>
+                <ul class="perks-list">
+                    <li><strong>Small logo on rover chassis</strong></li>
+                    <li><strong>Social media acknowledgment</strong></li>
+                    <li><strong>Logo on team apparel</strong></li>
+                </ul>
+            `;
+        }
+    }
+
+    let perksDebounceTimer = null;
+    function debouncedUpdateDonationPerks() {
+        if (perksDebounceTimer) clearTimeout(perksDebounceTimer);
+        perksDebounceTimer = setTimeout(() => {
+            updateDonationPerks();
+        }, 300);
+    }
+
+    window.setDonationPreset = function(amount) {
+        if (!donationInput) return;
+        donationInput.value = amount;
+        if (presetBtns.length) {
+            presetBtns.forEach(b => {
+                if (b.getAttribute('data-amount') === amount) {
+                    b.classList.add('active');
+                } else {
+                    b.classList.remove('active');
+                }
+            });
+        }
+        if (perksDebounceTimer) clearTimeout(perksDebounceTimer);
+        updateDonationPerks();
+    };
+
     if (presetBtns.length && donationInput) {
         presetBtns.forEach(btn => {
             btn.addEventListener('click', () => {
                 const amount = btn.getAttribute('data-amount');
-                donationInput.value = amount;
-
-                presetBtns.forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
+                window.setDonationPreset(amount);
             });
         });
 
         donationInput.addEventListener('input', () => {
             presetBtns.forEach(b => b.classList.remove('active'));
+            debouncedUpdateDonationPerks();
         });
+
+        updateDonationPerks();
     }
 
     form.addEventListener('submit', (e) => {
