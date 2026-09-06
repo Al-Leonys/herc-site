@@ -1,7 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom/client';
 import AeroShards from './AeroShards';
-import HalftoneReveal from './HalftoneReveal';
 
 const aeroRoot = document.getElementById('aero-shards-root');
 if (aeroRoot) {
@@ -42,26 +41,3 @@ if (aeroRoot) {
   );
 }
 
-const halftoneRoot = document.getElementById('halftone-bg-container');
-if (halftoneRoot) {
-  ReactDOM.createRoot(halftoneRoot).render(
-    <HalftoneReveal
-      src="assets/hero-bg.jpg"
-      inkColor="#1868DB"
-      paperColor="#050E1B"
-      mode="mono"
-      dotDensity={71}
-      angle={45}
-      revealRadius={0.4}
-      dotSize={1}
-      shape="circle"
-      contrast={1.15}
-      invert={false}
-      edge={0.8}
-      follow={0.37}
-      idleReveal={0}
-      trigger="hover"
-      style={{ position: 'absolute', inset: 0, width: '100%', height: '100%' }}
-    />
-  );
-}
