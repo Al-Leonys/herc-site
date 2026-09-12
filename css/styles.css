@@ -996,8 +996,11 @@ html {
     left: 50%;
     top: 0;
     bottom: 0;
-    width: 3px;
-    background: rgba(10, 28, 54, 0.08);
+    width: 44px;
+    background-image: url('../assets/trail-track.svg');
+    background-repeat: repeat-y;
+    background-position: top center;
+    background-size: 44px 160px;
     transform: translateX(-50%);
 }
 
@@ -1005,12 +1008,16 @@ html {
     position: absolute;
     left: 50%;
     top: 0;
-    width: 4px;
-    background: linear-gradient(180deg, #F3C319 0%, #0066CC 50%, #10B981 100%);
+    width: 44px;
+    background-image: url('../assets/trail-progress.svg');
+    background-repeat: repeat-y;
+    background-position: top center;
+    background-size: 44px 160px;
     transform: translateX(-50%);
     height: 0%;
     z-index: 2;
-    box-shadow: 0 0 10px rgba(0, 102, 204, 0.4);
+    overflow: hidden;
+    filter: drop-shadow(0 0 6px rgba(139, 95, 52, 0.35));
     will-change: height;
 }
 
@@ -1038,8 +1045,9 @@ html {
     width: 16px;
     height: 16px;
     border-radius: 50%;
-    background: #FFFFFF;
-    border: 3px solid rgba(10, 28, 54, 0.2);
+    background: radial-gradient(circle at 35% 30%, #FDF6E9 0%, #D8C4A0 55%, #A9855F 100%);
+    border: 2.5px solid #8C6A45;
+    box-shadow: 0 2px 3px rgba(60, 40, 20, 0.35), inset 0 1px 1px rgba(255, 255, 255, 0.5);
     z-index: 3;
     transition: all 0.4s cubic-bezier(0.25, 1, 0.5, 1);
 }
@@ -1053,9 +1061,9 @@ html {
 }
 
 .timeline-dot.active {
-    background: #F3C319;
+    background: radial-gradient(circle at 35% 30%, #FFE9A0 0%, #F3C319 55%, #C99A0E 100%);
     border-color: #0A1C36;
-    box-shadow: none;
+    box-shadow: 0 0 0 4px rgba(243, 195, 25, 0.25), 0 2px 6px rgba(60, 40, 20, 0.4);
     transform: scale(1.2);
 }
 
@@ -1720,6 +1728,8 @@ html {
     .timeline-progress-bar {
         left: 20px !important;
         transform: none !important;
+        width: 38px !important;
+        background-size: 38px 160px !important;
     }
 
     .timeline-item {
@@ -2118,15 +2128,25 @@ body.is-resources-page #resources-page-view {
 }
 
 /* contact email + social fallback row */
-.contact-fallback-row {
+.contact-fallback-title {
     margin-top: 48px;
     padding-top: 36px;
     border-top: 1px solid rgba(10, 28, 54, 0.1);
+    font-family: var(--font-heading);
+    font-size: clamp(16px, 1.8vw, 19px);
+    font-weight: 700;
+    color: #0A1C36;
+    line-height: 1.4;
+    text-align: center;
+}
+
+.contact-fallback-row {
+    margin-top: 20px;
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
     align-items: flex-start;
-    gap: 40px;
+    gap: 24px;
 }
 
 .contact-email-fallback,
@@ -2135,16 +2155,6 @@ body.is-resources-page #resources-page-view {
     flex-direction: column;
     align-items: center;
     text-align: center;
-}
-
-.contact-email-title,
-.contact-social-title {
-    font-family: var(--font-heading);
-    font-size: clamp(16px, 1.8vw, 19px);
-    font-weight: 700;
-    color: #0A1C36;
-    margin-bottom: 14px;
-    line-height: 1.4;
 }
 
 .contact-email-link,
