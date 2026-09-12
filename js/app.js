@@ -109,6 +109,8 @@ const routeToSectionMap = {
     '/about': 'about',
     '/subsystems': 'subsystems',
     '/team': 'team',
+    '/mentors': 'mentors',
+    '/advisors': 'mentors',
     '/donors': 'donors',
     '/sponsors': 'donors',
     '/contact': 'contact',
@@ -124,6 +126,7 @@ const sectionToRouteMap = {
     'about': '/about',
     'subsystems': '/subsystems',
     'team': '/team',
+    'mentors': '/mentors',
     'donors': '/donors',
     'contact': '/contact',
     'contact-form': '/contact-form',
@@ -1096,7 +1099,7 @@ function initExpandableTeamCards() {
 
 // smooth & reliable scroll url updater (scroll spy)
 function initScrollUrlUpdater() {
-    const sectionIds = ['hero', 'about', 'subsystems', 'team', 'donors', 'contact', 'contact-form', 'roadmap'];
+    const sectionIds = ['hero', 'about', 'subsystems', 'team', 'mentors', 'donors', 'contact', 'contact-form', 'roadmap'];
     let lastActiveRoute = normalizeRoutePath(window.location.pathname);
 
     function updateActiveRouteOnScroll() {
