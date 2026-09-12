@@ -996,23 +996,25 @@ html {
     left: 50%;
     top: 0;
     bottom: 0;
-    width: 44px;
-    background-image: url('../assets/trail-track.svg');
+    width: 90px;
+    background-image: url('../assets/trail.svg');
     background-repeat: repeat-y;
     background-position: top center;
-    background-size: 44px 160px;
+    background-size: 90px 667px;
     transform: translateX(-50%);
+    opacity: 0.4;
+    filter: grayscale(40%);
 }
 
 .timeline-progress-bar {
     position: absolute;
     left: 50%;
     top: 0;
-    width: 44px;
-    background-image: url('../assets/trail-progress.svg');
+    width: 90px;
+    background-image: url('../assets/trail.svg');
     background-repeat: repeat-y;
     background-position: top center;
-    background-size: 44px 160px;
+    background-size: 90px 667px;
     transform: translateX(-50%);
     height: 0%;
     z-index: 2;
@@ -1728,8 +1730,8 @@ html {
     .timeline-progress-bar {
         left: 20px !important;
         transform: none !important;
-        width: 38px !important;
-        background-size: 38px 160px !important;
+        width: 72px !important;
+        background-size: 72px 534px !important;
     }
 
     .timeline-item {
