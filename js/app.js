@@ -1048,6 +1048,21 @@ function initTimelineScrollAnimation() {
 
         gsap.set(progressBar, { height: '0%' });
 
+        // work out how far down the timeline (0-1) each flag sits, so a flag/card
+        // only lights up at the exact moment the dirt trail reaches it
+        const getThresholds = () => {
+            const timelineHeight = timeline.offsetHeight || 1;
+            return Array.from(items).map(item => {
+                const dot = item.querySelector('.timeline-dot');
+                const dotCenter = dot
+                    ? item.offsetTop + dot.offsetTop + dot.offsetHeight / 2
+                    : item.offsetTop;
+                return dotCenter / timelineHeight;
+            });
+        };
+
+        let thresholds = getThresholds();
+
         gsap.to(progressBar, {
             height: '100%',
             ease: 'none',
@@ -1056,26 +1071,20 @@ function initTimelineScrollAnimation() {
                 start: 'top 90%',
                 end: 'bottom 60%',
                 scrub: true,
-                invalidateOnRefresh: true
-            }
-        });
-
-        items.forEach(item => {
-            const card = item.querySelector('.timeline-card');
-            const dot = item.querySelector('.timeline-dot');
-
-            ScrollTrigger.create({
-                trigger: item,
-                start: 'top 75%',
-                onEnter: () => {
-                    if (card) card.classList.add('active');
-                    if (dot) dot.classList.add('active');
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    items.forEach((item, i) => {
+                        const card = item.querySelector('.timeline-card');
+                        const dot = item.querySelector('.timeline-dot');
+                        const isActive = self.progress >= thresholds[i];
+                        if (card) card.classList.toggle('active', isActive);
+                        if (dot) dot.classList.toggle('active', isActive);
+                    });
                 },
-                onLeaveBack: () => {
-                    if (card) card.classList.remove('active');
-                    if (dot) dot.classList.remove('active');
+                onRefresh: () => {
+                    thresholds = getThresholds();
                 }
-            });
+            }
         });
 
         setTimeout(() => {
