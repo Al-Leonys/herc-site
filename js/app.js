@@ -1078,11 +1078,11 @@ function initSectionOverlapReveal() {
 
     // most sections should freeze right at their true end (their bottom edge
     // has scrolled all the way up to fill the viewport - the last possible
-    // moment before they'd start scrolling away). The "team" section is a
+    // moment before they'd start scrolling away). The "roadmap" section is a
     // special case: it contains its own scroll-driven trail animation that
     // needs extra scroll room to finish, so it freezes a bit later to give
     // that animation time to complete first.
-    const CUSTOM_TRIGGER_FRACTION = { team: 0.4 };
+    const CUSTOM_TRIGGER_FRACTION = { roadmap: 0.4 };
     const DEFAULT_TRIGGER_FRACTION = 1;
 
     const transitions = dividers.map((divider) => {
@@ -1112,6 +1112,16 @@ function initSectionOverlapReveal() {
     }).filter(Boolean);
 
     if (!transitions.length) return;
+
+    // map each section to the transition that brings it into view, so a
+    // section's own outgoing transition can wait for that reveal to finish
+    // first. Without this, a short section can satisfy its outgoing trigger
+    // condition before the incoming one has released it, leaving two
+    // transitions active (and fighting over the same layer) at once.
+    const incomingTransitionForSection = new Map();
+    transitions.forEach((t) => {
+        incomingTransitionForSection.set(t.nextSection, t);
+    });
 
     function freeze(t) {
         const rect = t.prevSection.getBoundingClientRect();
@@ -1170,6 +1180,12 @@ function initSectionOverlapReveal() {
             if (!t.active) {
                 if (t.prevSection.offsetParent === null) {
                     // section belongs to a routed view that isn't shown right now
+                    return;
+                }
+                // don't let this section start its own outgoing transition
+                // until the transition that revealed it has fully released it
+                const incoming = incomingTransitionForSection.get(t.prevSection);
+                if (incoming && incoming.active) {
                     return;
                 }
                 const rect = t.prevSection.getBoundingClientRect();
