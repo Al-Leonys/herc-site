@@ -78,7 +78,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initResourceSearchFilter,
         initScrollUrlUpdater,
         initClickPops,
-        initDividerRiseAnimation
+        initSectionOverlapReveal
     ];
 
     initializers.forEach(fn => {
@@ -1036,37 +1036,62 @@ function initClickPops() {
     });
 }
 
-// scroll-linked "rising tide" animation for the wavy section dividers: each
-// divider starts lower and slightly faded, then rises up into its resting
-// position (like a wave cresting) as the end of the preceding section scrolls
-// into view, so the next section feels like it's being pulled up onto the shore.
-function initDividerRiseAnimation() {
-    const dividers = document.querySelectorAll('.section-splash-divider');
-    if (!dividers.length) return;
-
+// scroll-linked "stacked sections" reveal: once the user scrolls to the very
+// end of a section, that section freezes exactly where it is (pinned in
+// place, not moving at all) while the NEXT section - together with its
+// leading wave divider - rises up from below and slides directly over it,
+// covering it completely before normal scrolling resumes. Each section down
+// the page stacks above the ones before it so this keeps working all the
+// way down.
+function initSectionOverlapReveal() {
     if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-
-    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-    if (prefersReducedMotion) return;
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
     gsap.registerPlugin(ScrollTrigger);
 
-    dividers.forEach((divider) => {
-        gsap.fromTo(divider,
-            { yPercent: 65, opacity: 0.35 },
-            {
-                yPercent: 0,
-                opacity: 1,
-                ease: 'none',
-                scrollTrigger: {
-                    trigger: divider,
-                    start: 'top bottom',
-                    end: 'top 55%',
-                    scrub: 0.4,
-                    invalidateOnRefresh: true
-                }
+    // assign each top-level section within a routed view an increasing
+    // stacking order, so a later section is always able to render above
+    // (and fully cover) the ones that came before it
+    ['#main-landing-view', '#resources-page-view'].forEach((viewSelector) => {
+        const view = document.querySelector(viewSelector);
+        if (!view) return;
+
+        const sections = Array.from(view.children).filter(el => el.tagName === 'SECTION');
+        sections.forEach((section, i) => {
+            section.style.position = 'relative';
+            section.style.zIndex = String(i + 1);
+            if (!section.style.background) {
+                section.style.background = '#FFFFFF';
             }
-        );
+        });
+    });
+
+    document.querySelectorAll('.section-splash-divider').forEach((divider) => {
+        const prevSection = divider.previousElementSibling;
+        const nextSection = divider.nextElementSibling;
+
+        if (!prevSection || !nextSection ||
+            prevSection.tagName !== 'SECTION' || nextSection.tagName !== 'SECTION') {
+            return;
+        }
+
+        // the divider is the leading edge of the incoming section, so it
+        // rises together with it - keep it in the same stacking layer
+        divider.style.position = 'relative';
+        divider.style.zIndex = nextSection.style.zIndex;
+
+        // pin the outgoing section in place the moment its bottom edge
+        // reaches the bottom of the viewport (i.e. the user has scrolled to
+        // the end of it), then hold it still for one viewport's worth of
+        // scrolling while the divider + next section slide up over it
+        ScrollTrigger.create({
+            trigger: prevSection,
+            start: 'bottom bottom',
+            end: () => '+=' + window.innerHeight,
+            pin: true,
+            pinSpacing: true,
+            invalidateOnRefresh: true
+        });
     });
 
     setTimeout(() => { ScrollTrigger.refresh(); }, 300);
