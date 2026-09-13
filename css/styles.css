@@ -54,7 +54,7 @@
 
 body {
     font-family: var(--font-sans);
-    background-color: var(--bg-main);
+    background-color: #FFFFFF;
     color: var(--text-primary);
     line-height: 1.6;
     overflow-x: clip;
