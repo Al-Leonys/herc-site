@@ -1105,7 +1105,6 @@ function initSectionOverlapReveal() {
             nextSection,
             triggerFraction: CUSTOM_TRIGGER_FRACTION[prevSection.id] ?? DEFAULT_TRIGGER_FRACTION,
             active: false,
-            completed: false,
             freezeScrollY: 0,
             placeholder: null
         };
@@ -1160,48 +1159,47 @@ function initSectionOverlapReveal() {
         t.active = false;
     }
 
-    // how far back above its trigger point the user has to scroll before a
-    // transition is cancelled (if mid-flight) or allowed to replay (if done)
-    const REPLAY_BUFFER = 24;
-
+    // Rather than a one-shot "played once" flag, freeze state is recomputed
+    // from live scroll position every frame - this is what makes scrolling
+    // up mirror scrolling down instead of only replaying near the trigger.
+    // The unfreeze-on-scroll-up test compares against freezeScrollY (the
+    // scroll position at the instant this transition froze): since the
+    // frozen section sits at a fixed screen position while scrollY keeps
+    // moving, any scroll upward past that exact point means, had it never
+    // frozen, its natural (in-flow) position would already be back below
+    // the trigger threshold - so releasing it there exactly retraces the
+    // downward animation in reverse, at the same scroll position it first
+    // fired at.
     function update() {
         const viewportH = window.innerHeight;
 
         transitions.forEach((t) => {
-            // scrolled back up well above where this last triggered - reset
-            // it completely so it behaves correctly if scrolled into again
-            if ((t.active || t.completed) && window.scrollY < t.freezeScrollY - REPLAY_BUFFER) {
-                if (t.active) unfreeze(t);
-                t.completed = false;
-            }
-
-            if (t.completed) return;
-
-            if (!t.active) {
-                if (t.prevSection.offsetParent === null) {
-                    // section belongs to a routed view that isn't shown right now
-                    return;
-                }
-                // don't let this section start its own outgoing transition
-                // until the transition that revealed it has fully released it
-                const incoming = incomingTransitionForSection.get(t.prevSection);
-                if (incoming && incoming.active) {
-                    return;
-                }
-                const rect = t.prevSection.getBoundingClientRect();
-                if (rect.bottom <= t.triggerFraction * viewportH) {
-                    freeze(t);
-                }
-            }
-
             if (t.active) {
-                // release once the incoming section (scrolling up normally,
-                // no help from us) has fully covered the frozen one
+                // release once the incoming section has fully covered the
+                // frozen one (scrolling down), or once scrolled back up
+                // past the exact point this transition started (scrolling up)
                 const nextRect = t.nextSection.getBoundingClientRect();
-                if (nextRect.top <= 0) {
+                const covered = nextRect.top <= 0;
+                if (covered || window.scrollY < t.freezeScrollY) {
                     unfreeze(t);
-                    t.completed = true;
                 }
+                return;
+            }
+
+            if (t.prevSection.offsetParent === null) {
+                // section belongs to a routed view that isn't shown right now
+                return;
+            }
+            // don't let this section start its own outgoing transition
+            // until the transition that revealed it has fully released it
+            const incoming = incomingTransitionForSection.get(t.prevSection);
+            if (incoming && incoming.active) {
+                return;
+            }
+            const rect = t.prevSection.getBoundingClientRect();
+            const nextRect = t.nextSection.getBoundingClientRect();
+            if (rect.bottom <= t.triggerFraction * viewportH && nextRect.top > 0) {
+                freeze(t);
             }
         });
     }
@@ -1239,6 +1237,16 @@ function alignFlagsToTrailCurve() {
     const TRAIL_AMPLITUDE = 34; // how far the path swings from center, in viewBox units
     const TRAIL_CENTER_X = TRAIL_VIEWBOX_WIDTH / 2; // 85
 
+    // the flag pole in flag.svg is NOT centered in its own viewBox (the pole sits
+    // at x=5 of a 26-wide viewBox, with the banner extending to the right of it),
+    // but .timeline-dot is centered on the curve as a whole box. Left uncorrected,
+    // the planted pole tip ends up offset to the side of the trail instead of on
+    // it. This is how far right (as a fraction of the dot's rendered width) the
+    // box needs to shift so the pole itself - not the box's midpoint - lands on
+    // the curve.
+    const POLE_X_FRACTION = 5 / 26;
+    const POLE_OFFSET_FRACTION = 0.5 - POLE_X_FRACTION;
+
     const bgSize = getComputedStyle(trailBox).backgroundSize.split(' ').map(parseFloat);
     const renderedWidth = bgSize[0] || trailBox.offsetWidth;
     const renderedTileHeight = bgSize[1] || (renderedWidth / TRAIL_VIEWBOX_WIDTH) * TRAIL_VIEWBOX_HEIGHT;
@@ -1260,9 +1268,10 @@ function alignFlagsToTrailCurve() {
 
         const curveXInViewBox = TRAIL_CENTER_X + TRAIL_AMPLITUDE * Math.sin((2 * Math.PI * originalY) / TRAIL_VIEWBOX_HEIGHT);
         const curveXRendered = trailLeftRelativeToTimeline + curveXInViewBox * scale;
+        const poleOffset = POLE_OFFSET_FRACTION * dotRect.width;
 
         const itemRect = item.getBoundingClientRect();
-        const leftRelativeToItem = (timelineRect.left + curveXRendered) - itemRect.left;
+        const leftRelativeToItem = (timelineRect.left + curveXRendered + poleOffset) - itemRect.left;
 
         dot.style.left = `${leftRelativeToItem}px`;
     });
