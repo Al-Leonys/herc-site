@@ -69,7 +69,6 @@ document.addEventListener('DOMContentLoaded', () => {
         initStaggeredMenu,
         initParticleTextHeroTitle,
         initSubsystemsCADAnimation,
-        initWaveSectionTransitions,
         initTimelineScrollAnimation,
         initTelemetrySimulation,
         initIntegratedGoogleForm,
@@ -1079,59 +1078,6 @@ function alignFlagsToTrailCurve() {
         const leftRelativeToItem = (timelineRect.left + curveXRendered) - itemRect.left;
 
         dot.style.left = `${leftRelativeToItem}px`;
-    });
-}
-
-// water/wave transitions between sections: CSS handles the constant gentle
-// "floating in space" idle motion (see wave-idle-float keyframes). This adds
-// a scroll-linked surge on top of it — the waves (and the section rising
-// after them) plunge down while scrolling down and surge up while scrolling
-// up, like the drop/climb of a roller coaster, then settle back to idle.
-function initWaveSectionTransitions() {
-    const dividers = document.querySelectorAll('.section-splash-divider');
-    if (!dividers.length) return;
-    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
-    if (window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
-
-    gsap.registerPlugin(ScrollTrigger);
-
-    const dividerList = Array.from(dividers);
-    const riseTargets = dividerList
-        .map(d => d.nextElementSibling)
-        .filter(el => el && el.classList.contains('wave-rise'));
-
-    let settleTimer = null;
-
-    ScrollTrigger.create({
-        trigger: document.documentElement,
-        start: 0,
-        end: 'max',
-        onUpdate: (self) => {
-            const velocity = self.getVelocity(); // px/sec, positive = scrolling down
-            const surge = gsap.utils.clamp(-70, 70, velocity / 18);
-            const skew = gsap.utils.clamp(-6, 6, velocity / 260);
-
-            gsap.to(dividerList, {
-                y: surge,
-                skewY: skew,
-                duration: 0.5,
-                ease: 'power2.out',
-                overwrite: 'auto'
-            });
-
-            gsap.to(riseTargets, {
-                y: surge * 0.3,
-                duration: 0.5,
-                ease: 'power2.out',
-                overwrite: 'auto'
-            });
-
-            clearTimeout(settleTimer);
-            settleTimer = setTimeout(() => {
-                gsap.to(dividerList, { y: 0, skewY: 0, duration: 0.9, ease: 'elastic.out(1, 0.6)' });
-                gsap.to(riseTargets, { y: 0, duration: 0.9, ease: 'elastic.out(1, 0.6)' });
-            }, 120);
-        }
     });
 }
 
