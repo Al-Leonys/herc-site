@@ -1035,6 +1035,52 @@ function initClickPops() {
     });
 }
 
+// snap each flag onto the winding dirt trail. The trail graphic is a repeating
+// SVG that curves side to side (a sine wave: 34px amplitude, one full wave every
+// 1260 units of its own coordinate space), so a flag centered on a straight line
+// down the middle drifts off the path. This computes, for each flag, exactly
+// where the trail curves to at that height and moves the flag there.
+function alignFlagsToTrailCurve() {
+    const timeline = document.querySelector('.timeline');
+    const trailBox = document.querySelector('.timeline-progress-bar');
+    const dots = document.querySelectorAll('.timeline-dot');
+
+    if (!timeline || !trailBox || !dots.length) return;
+
+    const TRAIL_VIEWBOX_WIDTH = 170;
+    const TRAIL_VIEWBOX_HEIGHT = 1260;
+    const TRAIL_AMPLITUDE = 34; // how far the path swings from center, in viewBox units
+    const TRAIL_CENTER_X = TRAIL_VIEWBOX_WIDTH / 2; // 85
+
+    const bgSize = getComputedStyle(trailBox).backgroundSize.split(' ').map(parseFloat);
+    const renderedWidth = bgSize[0] || trailBox.offsetWidth;
+    const renderedTileHeight = bgSize[1] || (renderedWidth / TRAIL_VIEWBOX_WIDTH) * TRAIL_VIEWBOX_HEIGHT;
+    const scale = renderedWidth / TRAIL_VIEWBOX_WIDTH;
+
+    const timelineRect = timeline.getBoundingClientRect();
+    const trailRect = trailBox.getBoundingClientRect();
+    const trailLeftRelativeToTimeline = trailRect.left - timelineRect.left;
+
+    dots.forEach(dot => {
+        const item = dot.closest('.timeline-item');
+        if (!item) return;
+
+        const dotRect = dot.getBoundingClientRect();
+        // use the base of the flag pole (the "planted" point) as the anchor on the trail
+        const poleBaseY = dotRect.bottom - timelineRect.top;
+        const tileY = ((poleBaseY % renderedTileHeight) + renderedTileHeight) % renderedTileHeight;
+        const originalY = tileY / scale;
+
+        const curveXInViewBox = TRAIL_CENTER_X + TRAIL_AMPLITUDE * Math.sin((2 * Math.PI * originalY) / TRAIL_VIEWBOX_HEIGHT);
+        const curveXRendered = trailLeftRelativeToTimeline + curveXInViewBox * scale;
+
+        const itemRect = item.getBoundingClientRect();
+        const leftRelativeToItem = (timelineRect.left + curveXRendered) - itemRect.left;
+
+        dot.style.left = `${leftRelativeToItem}px`;
+    });
+}
+
 // project echoes style timeline scroll animation (vertical progress line & node activation)
 function initTimelineScrollAnimation() {
     const timeline = document.querySelector('.timeline');
@@ -1042,6 +1088,18 @@ function initTimelineScrollAnimation() {
     const items = document.querySelectorAll('.timeline-item');
 
     if (!timeline || !progressBar || !items.length) return;
+
+    alignFlagsToTrailCurve();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(alignFlagsToTrailCurve, 150);
+    });
+    window.addEventListener('load', alignFlagsToTrailCurve);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(alignFlagsToTrailCurve);
+    }
 
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
@@ -1083,6 +1141,7 @@ function initTimelineScrollAnimation() {
                 },
                 onRefresh: () => {
                     thresholds = getThresholds();
+                    alignFlagsToTrailCurve();
                 }
             }
         });

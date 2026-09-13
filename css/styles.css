@@ -1739,16 +1739,9 @@ html {
     }
 
     .timeline-dot {
-        left: 39px !important;
         right: auto !important;
         width: 42px !important;
         height: 55px !important;
-    }
-
-    .timeline-item:nth-child(odd) .timeline-dot,
-    .timeline-item:nth-child(even) .timeline-dot {
-        left: 39px !important;
-        right: auto !important;
     }
 
     .timeline-card {
