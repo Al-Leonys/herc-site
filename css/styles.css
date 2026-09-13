@@ -2689,11 +2689,14 @@ body.is-resources-page #resources-page-view {
         word-break: break-word;
     }
 }
-/* splash-style section divider: two morphing blue/gold blobs between sections */
+/* scroll-driven water/wave transition between sections: the wave only ripples
+   as the user scrolls it into view, and the following section rises up
+   through it (world-cup-style colorful curtain reveal) */
 .section-splash-divider {
     position: relative;
     width: 100%;
-    height: clamp(46px, 8vw, 110px);
+    height: clamp(40px, 7vw, 90px);
+    margin-bottom: -1px;
     overflow: hidden;
     line-height: 0;
     pointer-events: none;
@@ -2707,14 +2710,23 @@ body.is-resources-page #resources-page-view {
     height: 100%;
 }
 
-.section-splash-divider .splash-gold,
-.section-splash-divider .splash-blue {
+.section-splash-divider .splash-wave {
     will-change: d;
 }
 
+.wave-rise {
+    position: relative;
+    z-index: 3;
+    will-change: transform, clip-path;
+}
+
 @media (prefers-reduced-motion: reduce) {
-    .section-splash-divider .splash-gold animate,
-    .section-splash-divider .splash-blue animate {
-        display: none;
+    .section-splash-divider .splash-wave {
+        d: path("M0,75 C360,75 1080,75 1440,75 L1440,100 L0,100 Z");
+    }
+
+    .wave-rise {
+        transform: none !important;
+        clip-path: none !important;
     }
 }

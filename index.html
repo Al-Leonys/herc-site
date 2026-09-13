@@ -118,27 +118,30 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-1" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-1" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-1)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-1)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
-    <section class="section" id="about">
+    <section class="section wave-rise" id="about">
         <div class="container">
             <div class="section-header">
                 <div style="display: flex; align-items: center; justify-content: center; gap: 20px; margin-bottom: 20px;">
@@ -183,28 +186,31 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-2" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-2" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-2)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-2)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
     <!-- subsystems section -->
-    <section class="section subsystems-carousel-section" id="subsystems" style="background: #FFFFFF;">
+    <section class="section subsystems-carousel-section wave-rise" id="subsystems" style="background: #FFFFFF;">
         <div class="container subsystems-container">
             <div class="section-header subsystems-header">
                 <h2 class="section-title">Engineering Subsystems</h2>
@@ -260,27 +266,30 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-3" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-3" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-3)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-3)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
-    <section class="section" id="team" style="background: #FFFFFF;">
+    <section class="section wave-rise" id="team" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Meet the Team</h2>
@@ -404,28 +413,31 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-4" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-4" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-4" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-4)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-4)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
     <!-- Dedicated Mentor Section -->
-    <section class="section" id="mentors" style="background: #FFFFFF;">
+    <section class="section wave-rise" id="mentors" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Advisors & Mentors</h2>
@@ -501,27 +513,30 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-5" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-5" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-5" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-5)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-5)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
-    <section class="section" id="donors" style="background: #FFFFFF;">
+    <section class="section wave-rise" id="donors" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Donation Tiers</h2>
@@ -573,28 +588,31 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-6" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-6" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-6" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-6)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-6)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
     <!-- contact section on main landing view -->
-    <section class="section" id="contact" style="background: #FFFFFF;">
+    <section class="section wave-rise" id="contact" style="background: #FFFFFF;">
         <div class="container" style="text-align: center;">
             <div class="section-header">
                 <h2 class="section-title">Contact Needham Gravity</h2>
@@ -625,27 +643,30 @@
             </div>
         </div>
     </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-7" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-7" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-7" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-7)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-7)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
-    <section class="section" id="roadmap" style="background: #FFFFFF;">
+    <section class="section wave-rise" id="roadmap" style="background: #FFFFFF;">
         <div class="container">
             <div class="section-header">
                 <h2 class="section-title">Development Roadmap</h2>
@@ -938,28 +959,31 @@
                 </div>
             </div>
         </section>
-    <div class="section-splash-divider" aria-hidden="true">
+    <div class="section-splash-divider" id="wave-divider-8" aria-hidden="true">
         <svg viewBox="0 0 1440 100" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
-            <path class="splash-gold" fill="#F3C319" d="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="9s" repeatCount="indefinite"
-                    values="M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z;
-                            M0,60 C240,20 480,90 720,50 C960,10 1200,90 1440,55 L1440,100 L0,100 Z;
-                            M0,30 C240,70 480,20 720,60 C960,15 1200,75 1440,35 L1440,100 L0,100 Z;
-                            M0,40 C240,80 480,0 720,40 C960,80 1200,0 1440,40 L1440,100 L0,100 Z" />
-            </path>
-            <path class="splash-blue" fill="#1868DB" opacity="0.92" d="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z">
-                <animate attributeName="d" dur="7s" repeatCount="indefinite"
-                    values="M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z;
-                            M0,35 C240,75 480,10 720,65 C960,20 1200,80 1440,30 L1440,100 L0,100 Z;
-                            M0,65 C240,25 480,70 720,20 C960,60 1200,10 1440,60 L1440,100 L0,100 Z;
-                            M0,55 C240,15 480,85 720,45 C960,85 1200,15 1440,50 L1440,100 L0,100 Z" />
-            </path>
+            <defs>
+                <linearGradient id="waveGradA-8" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#1868DB" />
+                    <stop offset="45%" stop-color="#0088A3" />
+                    <stop offset="75%" stop-color="#F3C319" />
+                    <stop offset="100%" stop-color="#1868DB" />
+                </linearGradient>
+                <linearGradient id="waveGradB-8" x1="0%" y1="0%" x2="100%" y2="0%">
+                    <stop offset="0%" stop-color="#F3C319" />
+                    <stop offset="50%" stop-color="#1868DB" />
+                    <stop offset="100%" stop-color="#0088A3" />
+                </linearGradient>
+            </defs>
+            <path class="splash-wave splash-wave-back" fill="url(#waveGradB-8)" opacity="0.75"
+                d="M0,72 C240,62 480,82 720,67 C960,52 1200,77 1440,62 L1440,100 L0,100 Z"></path>
+            <path class="splash-wave splash-wave-front" fill="url(#waveGradA-8)"
+                d="M0,78 C240,68 480,88 720,73 C960,58 1200,83 1440,68 L1440,100 L0,100 Z"></path>
         </svg>
     </div>
 
 
         <!-- Main Resources Showcase Section (Clean White Background, Full Width List, Discreet Dividers) -->
-        <section class="resource-library-section">
+        <section class="resource-library-section wave-rise">
             <div class="container" style="max-width: 900px; margin: 0 auto;">
                 <div class="resource-list-container" id="resource-cards-container">
 
