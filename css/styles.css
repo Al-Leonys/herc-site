@@ -2700,7 +2700,7 @@ body.is-resources-page #resources-page-view {
     pointer-events: none;
     user-select: none;
     z-index: 2;
-    background: #FFFFFF;
+    background: transparent;
     will-change: transform, opacity;
 }
 
