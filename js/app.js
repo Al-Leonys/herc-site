@@ -1210,8 +1210,23 @@ function initSectionOverlapReveal() {
     // releases the freeze immediately, so scrolling up is left to behave
     // like plain, ordinary scrolling - no reverse animation, just a normal
     // reflow back into place.
+    // tracks scroll direction frame to frame. The freeze/cover effect is
+    // only ever armed while actively scrolling DOWN - without this, scrolling
+    // back up through the same boundary re-satisfies the exact same trigger
+    // condition (prevSection's bottom and nextSection's top are still right
+    // at that threshold on the way back), so the effect would fire again,
+    // freeze for an instant, then immediately release - a flicker that looks
+    // like content getting yanked around. Gating it to downward scroll only
+    // means scrolling up never (re)triggers anything: every section already
+    // in view just stays in plain, ordinary document flow and scrolls back
+    // up at the same uniform speed as the rest of the page.
+    let lastScrollY = window.scrollY;
+
     function update() {
         const viewportH = window.innerHeight;
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY >= lastScrollY;
+        lastScrollY = currentScrollY;
 
         transitions.forEach((t) => {
             if (t.active) {
@@ -1223,6 +1238,11 @@ function initSectionOverlapReveal() {
                 if (covered || window.scrollY < t.freezeScrollY) {
                     unfreeze(t);
                 }
+                return;
+            }
+
+            if (!scrollingDown) {
+                // never arm the effect while scrolling up
                 return;
             }
 
