@@ -1036,15 +1036,24 @@ function initClickPops() {
     });
 }
 
-// scroll-linked "stacked sections" reveal: once the user scrolls almost to
-// the end of a section, that section freezes exactly where it currently sits
-// on screen (it does not move at all) while the NEXT section - together with
-// its leading wave divider - rises up from below and slides directly over
-// it, fully covering it, before normal scrolling resumes. Implemented by
-// hand (position: fixed + a same-size placeholder) rather than with GSAP's
-// ScrollTrigger pin, because pinning a section that contains its OWN
-// scroll-driven animation (like the team timeline trail) freezes that
-// animation's bounding box mid-scroll and stops it from ever finishing.
+// scroll-linked "stacked sections" reveal: once the user scrolls to the very
+// end of a section, that section freezes exactly where it currently sits on
+// screen (it does not move at all, at all) while the NEXT section - together
+// with its leading wave divider - keeps scrolling up normally and, because it
+// sits at a higher stacking layer, visually slides directly over the frozen
+// section, fully covering it, before scrolling continues as usual.
+//
+// Deliberately does NOT apply any manual transform/tween to the incoming
+// section - it only freezes the outgoing one (position: fixed + a same-size
+// placeholder so nothing jumps) and lets ordinary scrolling carry the next
+// section up and over it. Two earlier versions tried to also animate the
+// incoming section's position by hand, which caused it to be yanked back
+// down the instant the transition activated (since by then it had often
+// already scrolled naturally into view) - that was the source of both the
+// "blank white flash" and the jump/repeat glitches. Also avoids GSAP's
+// ScrollTrigger pin entirely, because pinning a section that contains its own
+// scroll-driven animation (the team timeline trail) freezes that animation's
+// bounding box mid-scroll and stops it from ever finishing.
 function initSectionOverlapReveal() {
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
@@ -1067,6 +1076,15 @@ function initSectionOverlapReveal() {
         });
     });
 
+    // most sections should freeze right at their true end (their bottom edge
+    // has scrolled all the way up to fill the viewport - the last possible
+    // moment before they'd start scrolling away). The "team" section is a
+    // special case: it contains its own scroll-driven trail animation that
+    // needs extra scroll room to finish, so it freezes a bit later to give
+    // that animation time to complete first.
+    const CUSTOM_TRIGGER_FRACTION = { team: 0.4 };
+    const DEFAULT_TRIGGER_FRACTION = 1;
+
     const transitions = dividers.map((divider) => {
         const prevSection = divider.previousElementSibling;
         const nextSection = divider.nextElementSibling;
@@ -1077,16 +1095,15 @@ function initSectionOverlapReveal() {
         }
 
         // the divider is the leading edge of the incoming section - it
-        // rises together with it, so it shares the same stacking layer
+        // scrolls up together with it, so it shares the same stacking layer
         divider.style.position = 'relative';
         divider.style.zIndex = nextSection.style.zIndex;
-        divider.style.willChange = 'transform';
-        nextSection.style.willChange = 'transform';
 
         return {
             divider,
             prevSection,
             nextSection,
+            triggerFraction: CUSTOM_TRIGGER_FRACTION[prevSection.id] ?? DEFAULT_TRIGGER_FRACTION,
             active: false,
             completed: false,
             freezeScrollY: 0,
@@ -1105,6 +1122,8 @@ function initSectionOverlapReveal() {
         placeholder.style.width = '100%';
         t.prevSection.parentNode.insertBefore(placeholder, t.prevSection);
 
+        // pin it to exactly where it's already rendered right now, so
+        // switching from normal flow to fixed positioning is invisible
         t.prevSection.style.position = 'fixed';
         t.prevSection.style.top = `${rect.top}px`;
         t.prevSection.style.left = '0';
@@ -1128,63 +1147,44 @@ function initSectionOverlapReveal() {
             t.placeholder = null;
         }
 
-        t.divider.style.transform = '';
-        t.nextSection.style.transform = '';
         t.active = false;
     }
 
-    // small buffer (px) so trackpad/momentum jitter right at a boundary
-    // doesn't repeatedly flip a transition between states
-    const CANCEL_BUFFER = 24;
     // how far back above its trigger point the user has to scroll before a
-    // finished transition is allowed to play again
+    // transition is cancelled (if mid-flight) or allowed to replay (if done)
     const REPLAY_BUFFER = 24;
 
     function update() {
         const viewportH = window.innerHeight;
-        const riseDistance = viewportH;
 
         transitions.forEach((t) => {
-            if (t.completed) {
-                // only let it replay once the user has scrolled back well
-                // above the point where it originally fired
-                if (window.scrollY < t.freezeScrollY - REPLAY_BUFFER) {
-                    t.completed = false;
-                } else {
-                    return;
-                }
+            // scrolled back up well above where this last triggered - reset
+            // it completely so it behaves correctly if scrolled into again
+            if ((t.active || t.completed) && window.scrollY < t.freezeScrollY - REPLAY_BUFFER) {
+                if (t.active) unfreeze(t);
+                t.completed = false;
             }
 
-            if (t.prevSection.offsetParent === null && !t.active) {
-                // section belongs to a routed view that isn't currently shown
-                return;
-            }
+            if (t.completed) return;
 
             if (!t.active) {
-                // only start once the section has scrolled completely past -
-                // i.e. it has genuinely reached its very end, not just
-                // "mostly" scrolled through
+                if (t.prevSection.offsetParent === null) {
+                    // section belongs to a routed view that isn't shown right now
+                    return;
+                }
                 const rect = t.prevSection.getBoundingClientRect();
-                if (rect.bottom <= 0) {
+                if (rect.bottom <= t.triggerFraction * viewportH) {
                     freeze(t);
                 }
             }
 
             if (t.active) {
-                const scrolled = window.scrollY - t.freezeScrollY;
-                const progress = Math.min(Math.max(scrolled / riseDistance, 0), 1);
-                const y = (1 - progress) * viewportH;
-
-                t.divider.style.transform = `translateY(${y}px)`;
-                t.nextSection.style.transform = `translateY(${y}px)`;
-
-                if (scrolled >= riseDistance) {
+                // release once the incoming section (scrolling up normally,
+                // no help from us) has fully covered the frozen one
+                const nextRect = t.nextSection.getBoundingClientRect();
+                if (nextRect.top <= 0) {
                     unfreeze(t);
                     t.completed = true;
-                } else if (scrolled < -CANCEL_BUFFER) {
-                    // user scrolled back up meaningfully - cancel and let it
-                    // trigger fresh again later rather than leaving it stuck
-                    unfreeze(t);
                 }
             }
         });
