@@ -1036,28 +1036,29 @@ function initClickPops() {
     });
 }
 
-// scroll-linked "stacked sections" reveal: once the user scrolls to the very
-// end of a section, that section freezes exactly where it is (pinned in
-// place, not moving at all) while the NEXT section - together with its
-// leading wave divider - rises up from below and slides directly over it,
-// covering it completely before normal scrolling resumes. Each section down
-// the page stacks above the ones before it so this keeps working all the
-// way down.
+// scroll-linked "stacked sections" reveal: once the user scrolls almost to
+// the end of a section, that section freezes exactly where it currently sits
+// on screen (it does not move at all) while the NEXT section - together with
+// its leading wave divider - rises up from below and slides directly over
+// it, fully covering it, before normal scrolling resumes. Implemented by
+// hand (position: fixed + a same-size placeholder) rather than with GSAP's
+// ScrollTrigger pin, because pinning a section that contains its OWN
+// scroll-driven animation (like the team timeline trail) freezes that
+// animation's bounding box mid-scroll and stops it from ever finishing.
 function initSectionOverlapReveal() {
-    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
     if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
 
-    gsap.registerPlugin(ScrollTrigger);
+    const dividers = Array.from(document.querySelectorAll('.section-splash-divider'));
+    if (!dividers.length) return;
 
-    // assign each top-level section within a routed view an increasing
-    // stacking order, so a later section is always able to render above
-    // (and fully cover) the ones that came before it
+    // give every top-level section within a routed view an increasing
+    // stacking order, so a later section can always render above (and fully
+    // cover) the ones that came before it
     ['#main-landing-view', '#resources-page-view'].forEach((viewSelector) => {
         const view = document.querySelector(viewSelector);
         if (!view) return;
 
-        const sections = Array.from(view.children).filter(el => el.tagName === 'SECTION');
-        sections.forEach((section, i) => {
+        Array.from(view.children).filter(el => el.tagName === 'SECTION').forEach((section, i) => {
             section.style.position = 'relative';
             section.style.zIndex = String(i + 1);
             if (!section.style.background) {
@@ -1066,35 +1067,124 @@ function initSectionOverlapReveal() {
         });
     });
 
-    document.querySelectorAll('.section-splash-divider').forEach((divider) => {
+    const transitions = dividers.map((divider) => {
         const prevSection = divider.previousElementSibling;
         const nextSection = divider.nextElementSibling;
 
         if (!prevSection || !nextSection ||
             prevSection.tagName !== 'SECTION' || nextSection.tagName !== 'SECTION') {
-            return;
+            return null;
         }
 
-        // the divider is the leading edge of the incoming section, so it
-        // rises together with it - keep it in the same stacking layer
+        // the divider is the leading edge of the incoming section - it
+        // rises together with it, so it shares the same stacking layer
         divider.style.position = 'relative';
         divider.style.zIndex = nextSection.style.zIndex;
+        divider.style.willChange = 'transform';
+        nextSection.style.willChange = 'transform';
 
-        // pin the outgoing section in place the moment its bottom edge
-        // reaches the bottom of the viewport (i.e. the user has scrolled to
-        // the end of it), then hold it still for one viewport's worth of
-        // scrolling while the divider + next section slide up over it
-        ScrollTrigger.create({
-            trigger: prevSection,
-            start: 'bottom bottom',
-            end: () => '+=' + window.innerHeight,
-            pin: true,
-            pinSpacing: true,
-            invalidateOnRefresh: true
+        return {
+            divider,
+            prevSection,
+            nextSection,
+            active: false,
+            freezeScrollY: 0,
+            placeholder: null
+        };
+    }).filter(Boolean);
+
+    if (!transitions.length) return;
+
+    function freeze(t) {
+        const rect = t.prevSection.getBoundingClientRect();
+
+        const placeholder = document.createElement('div');
+        placeholder.setAttribute('aria-hidden', 'true');
+        placeholder.style.height = `${t.prevSection.offsetHeight}px`;
+        placeholder.style.width = '100%';
+        t.prevSection.parentNode.insertBefore(placeholder, t.prevSection);
+
+        t.prevSection.style.position = 'fixed';
+        t.prevSection.style.top = `${rect.top}px`;
+        t.prevSection.style.left = '0';
+        t.prevSection.style.width = '100%';
+        t.prevSection.style.margin = '0';
+
+        t.placeholder = placeholder;
+        t.freezeScrollY = window.scrollY;
+        t.active = true;
+    }
+
+    function unfreeze(t) {
+        t.prevSection.style.position = 'relative';
+        t.prevSection.style.top = '';
+        t.prevSection.style.left = '';
+        t.prevSection.style.width = '';
+        t.prevSection.style.margin = '';
+
+        if (t.placeholder) {
+            t.placeholder.remove();
+            t.placeholder = null;
+        }
+
+        t.divider.style.transform = '';
+        t.nextSection.style.transform = '';
+        t.active = false;
+    }
+
+    function update() {
+        const viewportH = window.innerHeight;
+        const riseDistance = viewportH;
+        // start the reveal once only half a viewport of the previous section
+        // remains on screen - late enough that any of the section's own
+        // scroll-driven content (e.g. the team timeline trail) has already
+        // finished animating, but early enough that there's still visible
+        // content for the incoming section to slide over
+        const triggerOffset = viewportH * 0.5;
+
+        transitions.forEach((t) => {
+            if (t.prevSection.offsetParent === null && !t.active) {
+                // section belongs to a routed view that isn't currently shown
+                return;
+            }
+
+            if (!t.active) {
+                const rect = t.prevSection.getBoundingClientRect();
+                const distanceIntoTransition = triggerOffset - rect.bottom;
+                if (distanceIntoTransition > 0) {
+                    freeze(t);
+                }
+            }
+
+            if (t.active) {
+                const scrolled = window.scrollY - t.freezeScrollY;
+                const progress = Math.min(Math.max(scrolled / riseDistance, 0), 1);
+                const y = (1 - progress) * viewportH;
+
+                t.divider.style.transform = `translateY(${y}px)`;
+                t.nextSection.style.transform = `translateY(${y}px)`;
+
+                if (scrolled >= riseDistance || scrolled < 0) {
+                    unfreeze(t);
+                }
+            }
         });
-    });
+    }
 
-    setTimeout(() => { ScrollTrigger.refresh(); }, 300);
+    let ticking = false;
+    const onScroll = () => {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+        }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
 }
 
 // snap each flag onto the winding dirt trail. The trail graphic is a repeating
