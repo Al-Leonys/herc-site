@@ -2689,9 +2689,9 @@ body.is-resources-page #resources-page-view {
         word-break: break-word;
     }
 }
-/* scroll-driven water/wave transition between sections: the wave only ripples
-   as the user scrolls it into view, and the following section rises up
-   through it (world-cup-style colorful curtain reveal) */
+/* water-in-space transition between sections: gentle idle bobbing always on,
+   plus a scroll-linked surge (falling when scrolling down, rising when
+   scrolling up) applied via JS in app.js */
 .section-splash-divider {
     position: relative;
     width: 100%;
@@ -2702,31 +2702,41 @@ body.is-resources-page #resources-page-view {
     pointer-events: none;
     user-select: none;
     z-index: 2;
+    background: #FFFFFF;
 }
 
 .section-splash-divider svg {
     display: block;
     width: 100%;
     height: 100%;
+    animation: wave-idle-float 7s ease-in-out infinite;
+    transform-origin: center bottom;
 }
 
-.section-splash-divider .splash-wave {
-    will-change: d;
+.section-splash-divider .splash-wave-back {
+    animation: wave-idle-float 9s ease-in-out infinite reverse;
+    transform-box: fill-box;
+    transform-origin: center;
+}
+
+@keyframes wave-idle-float {
+    0%, 100% { transform: translateY(0); }
+    50%      { transform: translateY(-7px); }
 }
 
 .wave-rise {
     position: relative;
     z-index: 3;
-    will-change: transform, clip-path;
+    will-change: transform;
 }
 
 @media (prefers-reduced-motion: reduce) {
-    .section-splash-divider .splash-wave {
-        d: path("M0,75 C360,75 1080,75 1440,75 L1440,100 L0,100 Z");
+    .section-splash-divider svg,
+    .section-splash-divider .splash-wave-back {
+        animation: none;
     }
 
     .wave-rise {
         transform: none !important;
-        clip-path: none !important;
     }
 }
