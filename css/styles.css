@@ -1051,10 +1051,12 @@ html {
     background-size: contain;
     background-position: bottom center;
     z-index: 3;
-    transition: opacity 0.4s ease;
+    opacity: 0.25;
+    transition: opacity 0.5s cubic-bezier(0.25, 1, 0.5, 1), transform 0.5s cubic-bezier(0.25, 1, 0.5, 1);
 }
 
 .timeline-dot.active {
+    opacity: 1;
     background-image: url('../assets/flag-active.svg');
 }
 
