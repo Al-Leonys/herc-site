@@ -1053,8 +1053,8 @@ function initTimelineScrollAnimation() {
             ease: 'none',
             scrollTrigger: {
                 trigger: timeline,
-                start: 'top 70%',
-                end: 'bottom 85%',
+                start: 'top 90%',
+                end: 'bottom 60%',
                 scrub: true,
                 invalidateOnRefresh: true
             }

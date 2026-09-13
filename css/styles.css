@@ -1041,9 +1041,10 @@ html {
 
 .timeline-dot {
     position: absolute;
-    top: 8px;
-    width: 26px;
-    height: 34px;
+    top: 50%;
+    transform: translateY(-50%);
+    width: 38px;
+    height: 50px;
     background-image: url('../assets/flag.svg');
     background-repeat: no-repeat;
     background-size: contain;
@@ -1053,11 +1054,11 @@ html {
 }
 
 .timeline-item:nth-child(odd) .timeline-dot {
-    right: -21px;
+    right: -31px;
 }
 
 .timeline-item:nth-child(even) .timeline-dot {
-    left: -5px;
+    left: -7px;
 }
 
 .timeline-dot.active {
@@ -1745,13 +1746,15 @@ html {
     }
 
     .timeline-dot {
-        left: 46px !important;
+        left: 44px !important;
         right: auto !important;
+        width: 34px !important;
+        height: 44px !important;
     }
 
     .timeline-item:nth-child(odd) .timeline-dot,
     .timeline-item:nth-child(even) .timeline-dot {
-        left: 46px !important;
+        left: 44px !important;
         right: auto !important;
     }
 
