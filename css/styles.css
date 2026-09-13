@@ -1041,27 +1041,27 @@ html {
 
 .timeline-dot {
     position: absolute;
-    top: 24px;
-    width: 16px;
-    height: 16px;
-    border-radius: 50%;
-    background: #D8C4A0;
-    border: 2px solid #8C6A45;
+    top: 8px;
+    width: 26px;
+    height: 34px;
+    background-image: url('../assets/flag.svg');
+    background-repeat: no-repeat;
+    background-size: contain;
+    background-position: bottom left;
     z-index: 3;
-    transition: background-color 0.4s ease, border-color 0.4s ease;
+    transition: opacity 0.4s ease;
 }
 
 .timeline-item:nth-child(odd) .timeline-dot {
-    right: -8px;
+    right: -21px;
 }
 
 .timeline-item:nth-child(even) .timeline-dot {
-    left: -8px;
+    left: -5px;
 }
 
 .timeline-dot.active {
-    background: #F3C319;
-    border-color: #0A1C36;
+    background-image: url('../assets/flag-active.svg');
 }
 
 .timeline-card {
@@ -1745,13 +1745,13 @@ html {
     }
 
     .timeline-dot {
-        left: 43px !important;
+        left: 46px !important;
         right: auto !important;
     }
 
     .timeline-item:nth-child(odd) .timeline-dot,
     .timeline-item:nth-child(even) .timeline-dot {
-        left: 43px !important;
+        left: 46px !important;
         right: auto !important;
     }
 
