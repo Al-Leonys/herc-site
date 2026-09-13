@@ -1104,9 +1104,20 @@ function initSectionOverlapReveal() {
             prevSection,
             nextSection,
             triggerFraction: CUSTOM_TRIGGER_FRACTION[prevSection.id] ?? DEFAULT_TRIGGER_FRACTION,
-            active: false,
+            // 'idle' | 'forward' (nextSection covering prevSection, scrolling down)
+            // | 'reverse' (prevSection covering nextSection, scrolling up)
+            mode: 'idle',
             freezeScrollY: 0,
-            placeholder: null
+            placeholder: null,
+            // becomes true the first time this transition has fully played
+            // forward - the reverse (scroll-up) mirror is only ever armed
+            // after that, so it can never misfire on initial page load
+            everCovered: false,
+            // previous-frame readings, used to edge-detect the exact instant
+            // a boundary is crossed rather than re-triggering every frame
+            lastNextTop: null,
+            lastPrevBottom: null,
+            prevOriginalZIndex: prevSection.style.zIndex
         };
     }).filter(Boolean);
 
@@ -1118,89 +1129,150 @@ function initSectionOverlapReveal() {
     // condition before the incoming one has released it, leaving two
     // transitions active (and fighting over the same layer) at once.
     const incomingTransitionForSection = new Map();
+    const outgoingTransitionForSection = new Map();
     transitions.forEach((t) => {
         incomingTransitionForSection.set(t.nextSection, t);
+        outgoingTransitionForSection.set(t.prevSection, t);
     });
 
-    function freeze(t) {
-        const rect = t.prevSection.getBoundingClientRect();
+    // freezes `section` in place (position: fixed at its current screen
+    // position) with a same-size placeholder so nothing jumps, and returns
+    // the placeholder so the caller can remove it again on release
+    function freezeSection(section) {
+        const rect = section.getBoundingClientRect();
 
         const placeholder = document.createElement('div');
         placeholder.setAttribute('aria-hidden', 'true');
-        placeholder.style.height = `${t.prevSection.offsetHeight}px`;
+        placeholder.style.height = `${section.offsetHeight}px`;
         placeholder.style.width = '100%';
-        t.prevSection.parentNode.insertBefore(placeholder, t.prevSection);
+        section.parentNode.insertBefore(placeholder, section);
 
-        // pin it to exactly where it's already rendered right now, so
-        // switching from normal flow to fixed positioning is invisible
-        t.prevSection.style.position = 'fixed';
-        t.prevSection.style.top = `${rect.top}px`;
-        t.prevSection.style.left = '0';
-        t.prevSection.style.width = '100%';
-        t.prevSection.style.margin = '0';
+        section.style.position = 'fixed';
+        section.style.top = `${rect.top}px`;
+        section.style.left = '0';
+        section.style.width = '100%';
+        section.style.margin = '0';
 
-        t.placeholder = placeholder;
+        return placeholder;
+    }
+
+    function unfreezeSection(section, placeholder) {
+        section.style.position = 'relative';
+        section.style.top = '';
+        section.style.left = '';
+        section.style.width = '';
+        section.style.margin = '';
+
+        if (placeholder) placeholder.remove();
+    }
+
+    function freezeForward(t) {
+        t.placeholder = freezeSection(t.prevSection);
         t.freezeScrollY = window.scrollY;
-        t.active = true;
+        t.mode = 'forward';
     }
 
-    function unfreeze(t) {
-        t.prevSection.style.position = 'relative';
-        t.prevSection.style.top = '';
-        t.prevSection.style.left = '';
-        t.prevSection.style.width = '';
-        t.prevSection.style.margin = '';
-
-        if (t.placeholder) {
-            t.placeholder.remove();
-            t.placeholder = null;
-        }
-
-        t.active = false;
+    function unfreezeForward(t) {
+        unfreezeSection(t.prevSection, t.placeholder);
+        t.placeholder = null;
+        t.mode = 'idle';
     }
 
-    // Rather than a one-shot "played once" flag, freeze state is recomputed
-    // from live scroll position every frame - this is what makes scrolling
-    // up mirror scrolling down instead of only replaying near the trigger.
-    // The unfreeze-on-scroll-up test compares against freezeScrollY (the
-    // scroll position at the instant this transition froze): since the
-    // frozen section sits at a fixed screen position while scrollY keeps
-    // moving, any scroll upward past that exact point means, had it never
-    // frozen, its natural (in-flow) position would already be back below
-    // the trigger threshold - so releasing it there exactly retraces the
-    // downward animation in reverse, at the same scroll position it first
-    // fired at.
+    // reverse mirrors forward exactly, but with the roles swapped: the
+    // NEXT section (currently in view) freezes in place, while the PREV
+    // section (the "upcoming" one as the user scrolls up) is temporarily
+    // raised above it in stacking order and, moving with ordinary scroll,
+    // slides down over the frozen section - the same cover effect as
+    // scrolling down, just running in reverse with the opposite section on top
+    function freezeReverse(t) {
+        t.placeholder = freezeSection(t.nextSection);
+        t.prevSection.style.zIndex = String(Number(t.nextSection.style.zIndex) + 1);
+        t.freezeScrollY = window.scrollY;
+        t.mode = 'reverse';
+    }
+
+    function unfreezeReverse(t) {
+        unfreezeSection(t.nextSection, t.placeholder);
+        t.placeholder = null;
+        t.prevSection.style.zIndex = t.prevOriginalZIndex;
+        t.mode = 'idle';
+    }
+
+    // Freeze/release state is recomputed from live scroll position every
+    // frame using edge-detection (comparing this frame's reading against
+    // last frame's) rather than a one-shot "played once" flag, so scrolling
+    // up retraces the same visual effect in reverse, at the same scroll
+    // positions it first fired at, no matter how long ago the forward pass
+    // happened.
     function update() {
         const viewportH = window.innerHeight;
 
         transitions.forEach((t) => {
-            if (t.active) {
+            if (t.prevSection.offsetParent === null && t.nextSection.offsetParent === null) {
+                // section pair belongs to a routed view that isn't shown right now
+                return;
+            }
+
+            if (t.mode === 'forward') {
                 // release once the incoming section has fully covered the
                 // frozen one (scrolling down), or once scrolled back up
                 // past the exact point this transition started (scrolling up)
                 const nextRect = t.nextSection.getBoundingClientRect();
                 const covered = nextRect.top <= 0;
+                if (covered) t.everCovered = true;
                 if (covered || window.scrollY < t.freezeScrollY) {
-                    unfreeze(t);
+                    unfreezeForward(t);
                 }
                 return;
             }
 
-            if (t.prevSection.offsetParent === null) {
-                // section belongs to a routed view that isn't shown right now
+            if (t.mode === 'reverse') {
+                // release once the prev section has scrolled back down past
+                // its own trigger line (mirrors the forward trigger point),
+                // or once scrolling resumed downward past where this fired
+                const rect = t.prevSection.getBoundingClientRect();
+                const releasedByScrollBack = rect.bottom > t.triggerFraction * viewportH;
+                if (releasedByScrollBack || window.scrollY > t.freezeScrollY) {
+                    unfreezeReverse(t);
+                }
                 return;
             }
-            // don't let this section start its own outgoing transition
-            // until the transition that revealed it has fully released it
-            const incoming = incomingTransitionForSection.get(t.prevSection);
-            if (incoming && incoming.active) {
-                return;
-            }
+
+            // idle: check both a forward (scroll-down) and reverse
+            // (scroll-up) trigger. Only one transition may be active for a
+            // given section chain link at a time, gated against its
+            // neighbors so two links never fight over the same layer.
             const rect = t.prevSection.getBoundingClientRect();
             const nextRect = t.nextSection.getBoundingClientRect();
-            if (rect.bottom <= t.triggerFraction * viewportH && nextRect.top > 0) {
-                freeze(t);
+
+            const incoming = incomingTransitionForSection.get(t.prevSection);
+            const outgoing = outgoingTransitionForSection.get(t.nextSection);
+
+            // forward trigger: prevSection's bottom has risen to the trigger
+            // line while nextSection hasn't covered the viewport yet
+            if (!(incoming && incoming.mode !== 'idle') &&
+                rect.bottom <= t.triggerFraction * viewportH && nextRect.top > 0) {
+                freezeForward(t);
+                t.lastNextTop = nextRect.top;
+                t.lastPrevBottom = rect.bottom;
+                return;
             }
+
+            // reverse trigger: only armed after this link has played
+            // forward at least once. Detected as nextSection's top edge
+            // crossing back below the viewport top (from <=0 to >0) -
+            // the exact mirror image of the forward release condition.
+            if (t.everCovered &&
+                !(outgoing && outgoing.mode !== 'idle') &&
+                t.lastNextTop !== null && t.lastNextTop <= 0 && nextRect.top > 0) {
+                freezeReverse(t);
+                t.lastNextTop = nextRect.top;
+                t.lastPrevBottom = rect.bottom;
+                return;
+            }
+
+            t.lastNextTop = nextRect.top;
+            t.lastPrevBottom = rect.bottom;
         });
     }
 
