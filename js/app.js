@@ -1088,6 +1088,7 @@ function initSectionOverlapReveal() {
             prevSection,
             nextSection,
             active: false,
+            completed: false,
             freezeScrollY: 0,
             placeholder: null
         };
@@ -1132,26 +1133,39 @@ function initSectionOverlapReveal() {
         t.active = false;
     }
 
+    // small buffer (px) so trackpad/momentum jitter right at a boundary
+    // doesn't repeatedly flip a transition between states
+    const CANCEL_BUFFER = 24;
+    // how far back above its trigger point the user has to scroll before a
+    // finished transition is allowed to play again
+    const REPLAY_BUFFER = 24;
+
     function update() {
         const viewportH = window.innerHeight;
         const riseDistance = viewportH;
-        // start the reveal once only half a viewport of the previous section
-        // remains on screen - late enough that any of the section's own
-        // scroll-driven content (e.g. the team timeline trail) has already
-        // finished animating, but early enough that there's still visible
-        // content for the incoming section to slide over
-        const triggerOffset = viewportH * 0.5;
 
         transitions.forEach((t) => {
+            if (t.completed) {
+                // only let it replay once the user has scrolled back well
+                // above the point where it originally fired
+                if (window.scrollY < t.freezeScrollY - REPLAY_BUFFER) {
+                    t.completed = false;
+                } else {
+                    return;
+                }
+            }
+
             if (t.prevSection.offsetParent === null && !t.active) {
                 // section belongs to a routed view that isn't currently shown
                 return;
             }
 
             if (!t.active) {
+                // only start once the section has scrolled completely past -
+                // i.e. it has genuinely reached its very end, not just
+                // "mostly" scrolled through
                 const rect = t.prevSection.getBoundingClientRect();
-                const distanceIntoTransition = triggerOffset - rect.bottom;
-                if (distanceIntoTransition > 0) {
+                if (rect.bottom <= 0) {
                     freeze(t);
                 }
             }
@@ -1164,7 +1178,12 @@ function initSectionOverlapReveal() {
                 t.divider.style.transform = `translateY(${y}px)`;
                 t.nextSection.style.transform = `translateY(${y}px)`;
 
-                if (scrolled >= riseDistance || scrolled < 0) {
+                if (scrolled >= riseDistance) {
+                    unfreeze(t);
+                    t.completed = true;
+                } else if (scrolled < -CANCEL_BUFFER) {
+                    // user scrolled back up meaningfully - cancel and let it
+                    // trigger fresh again later rather than leaving it stuck
                     unfreeze(t);
                 }
             }
