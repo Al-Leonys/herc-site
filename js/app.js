@@ -77,7 +77,8 @@ document.addEventListener('DOMContentLoaded', () => {
         initExpandableTeamCards,
         initResourceSearchFilter,
         initScrollUrlUpdater,
-        initClickPops
+        initClickPops,
+        initDividerRiseAnimation
     ];
 
     initializers.forEach(fn => {
@@ -1033,6 +1034,42 @@ function initClickPops() {
         void btn.offsetWidth;
         btn.classList.add('btn-click-pop');
     });
+}
+
+// scroll-linked "rising tide" animation for the wavy section dividers: each
+// divider starts lower and slightly faded, then rises up into its resting
+// position (like a wave cresting) as the end of the preceding section scrolls
+// into view, so the next section feels like it's being pulled up onto the shore.
+function initDividerRiseAnimation() {
+    const dividers = document.querySelectorAll('.section-splash-divider');
+    if (!dividers.length) return;
+
+    if (typeof gsap === 'undefined' || typeof ScrollTrigger === 'undefined') return;
+
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    if (prefersReducedMotion) return;
+
+    gsap.registerPlugin(ScrollTrigger);
+
+    dividers.forEach((divider) => {
+        gsap.fromTo(divider,
+            { yPercent: 65, opacity: 0.35 },
+            {
+                yPercent: 0,
+                opacity: 1,
+                ease: 'none',
+                scrollTrigger: {
+                    trigger: divider,
+                    start: 'top bottom',
+                    end: 'top 55%',
+                    scrub: 0.4,
+                    invalidateOnRefresh: true
+                }
+            }
+        );
+    });
+
+    setTimeout(() => { ScrollTrigger.refresh(); }, 300);
 }
 
 // snap each flag onto the winding dirt trail. The trail graphic is a repeating

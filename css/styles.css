@@ -2701,6 +2701,7 @@ body.is-resources-page #resources-page-view {
     user-select: none;
     z-index: 2;
     background: #FFFFFF;
+    will-change: transform, opacity;
 }
 
 .section-splash-divider svg {
