@@ -2604,6 +2604,15 @@ body.is-resources-page #resources-page-view {
     box-sizing: border-box;
 }
 
+.resource-list-item.resource-popup-trigger {
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.resource-list-item.resource-popup-trigger:hover {
+    background-color: #F8FAFC;
+}
+
 .resource-list-item:first-child {
     border-top: 1px solid #E2E8F0;
 }
