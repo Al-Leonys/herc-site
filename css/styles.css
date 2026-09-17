@@ -2674,6 +2674,14 @@ body.is-resources-page #resources-page-view {
     transform: translateX(4px);
 }
 
+.resource-icon-btn {
+    width: 48px;
+    height: 48px;
+    padding: 0;
+    border-radius: 50%;
+    font-size: 17px;
+}
+
 @media (max-width: 768px) {
     .resources-hero-section {
         padding: 100px 16px 40px 16px;
@@ -2839,11 +2847,7 @@ body.is-resources-page #resources-page-view {
     border-color: #94A3B8;
 }
 
-.pdf-modal-action-btn.pdf-modal-close:hover {
-    background: #FEE2E2;
-    color: #DC2626;
-    border-color: #FCA5A5;
-}
+
 
 .pdf-modal-body {
     position: relative;
