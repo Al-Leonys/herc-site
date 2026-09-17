@@ -76,6 +76,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initAccordionGallery,
         initExpandableTeamCards,
         initResourceSearchFilter,
+        initPdfModal,
         initScrollUrlUpdater,
         initClickPops,
         initSectionOverlapReveal
@@ -233,7 +234,7 @@ function initCleanRouteNavigation() {
         if (!link) return;
 
         const href = normalizeRoutePath(link.getAttribute('href') || '');
-        if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
+        if (link.classList.contains('resource-popup-trigger') || link.closest('.resource-popup-trigger') || link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
             return;
         }
 
@@ -2168,4 +2169,67 @@ function initResourceSearchFilter() {
             });
         });
     }
+}
+
+// PDF Popup Embed Modal Controller
+function initPdfModal() {
+    const modal = document.getElementById('pdf-popup-modal');
+    if (!modal) return;
+
+    const iframe = document.getElementById('pdf-modal-iframe');
+    const titleEl = document.getElementById('pdf-modal-title');
+    const newTabBtn = document.getElementById('pdf-modal-newtab-btn');
+    const closeBtn = modal.querySelector('.pdf-modal-close');
+
+    function openPdf(url, title) {
+        if (!url) return;
+        if (titleEl) titleEl.textContent = title || 'Document Viewer';
+        if (newTabBtn) newTabBtn.setAttribute('href', url);
+        if (iframe) iframe.src = url;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePdf() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (iframe) {
+            iframe.src = 'about:blank';
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.resource-popup-trigger');
+        if (!trigger) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const url = trigger.getAttribute('data-pdf') || trigger.getAttribute('href');
+        const title = trigger.getAttribute('data-title') ||
+                      trigger.closest('.resource-list-item')?.querySelector('.resource-item-title')?.textContent ||
+                      'Document Viewer';
+        openPdf(url, title.trim());
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closePdf();
+        });
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closePdf();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closePdf();
+        }
+    });
 }
