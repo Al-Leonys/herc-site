@@ -76,8 +76,10 @@ document.addEventListener('DOMContentLoaded', () => {
         initAccordionGallery,
         initExpandableTeamCards,
         initResourceSearchFilter,
+        initPdfModal,
         initScrollUrlUpdater,
-        initClickPops
+        initClickPops,
+        initSectionOverlapReveal
     ];
 
     initializers.forEach(fn => {
@@ -232,7 +234,7 @@ function initCleanRouteNavigation() {
         if (!link) return;
 
         const href = normalizeRoutePath(link.getAttribute('href') || '');
-        if (link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
+        if (link.classList.contains('resource-popup-trigger') || link.closest('.resource-popup-trigger') || link.getAttribute('target') === '_blank' || link.hasAttribute('download') || href.includes('.pdf') || href.endsWith('.pdf')) {
             return;
         }
 
@@ -1035,6 +1037,307 @@ function initClickPops() {
     });
 }
 
+// scroll-linked "stacked sections" reveal: once the user scrolls to the very
+// end of a section, that section freezes exactly where it currently sits on
+// screen (it does not move at all, at all) while the NEXT section - together
+// with its leading wave divider - keeps scrolling up normally and, because it
+// sits at a higher stacking layer, visually slides directly over the frozen
+// section, fully covering it, before scrolling continues as usual.
+//
+// Deliberately does NOT apply any manual transform/tween to the incoming
+// section - it only freezes the outgoing one (position: fixed + a same-size
+// placeholder so nothing jumps) and lets ordinary scrolling carry the next
+// section up and over it. Two earlier versions tried to also animate the
+// incoming section's position by hand, which caused it to be yanked back
+// down the instant the transition activated (since by then it had often
+// already scrolled naturally into view) - that was the source of both the
+// "blank white flash" and the jump/repeat glitches. Also avoids GSAP's
+// ScrollTrigger pin entirely, because pinning a section that contains its own
+// scroll-driven animation (the team timeline trail) freezes that animation's
+// bounding box mid-scroll and stops it from ever finishing.
+//
+// Scrolling back UP is deliberately kept as plain, ordinary scrolling: the
+// frozen section is released the instant the scroll position moves back
+// above the point it froze at, so it simply reflows back into place with no
+// extra animation layered on top - no reverse-cover effect, nothing "replayed
+// backwards". That keeps upward scrolling glitch-free.
+//
+// Some adjacent sections have had their in-between wave divider removed so
+// they read as one merged block (e.g. Meet the Team + Advisors & Mentors,
+// Donation Tiers + Contact). Those merged sections must freeze and release
+// TOGETHER, as a single unit, or the seam between them would visibly keep
+// scrolling while the rest of the block froze. So sections are first grouped
+// into "logical sections" - runs of <section> elements with no divider
+// between them - and every freeze/unfreeze operates on the whole group at
+// once, even though each element is still frozen individually (fixed at its
+// own current position) since they're already visually adjacent in flow.
+function initSectionOverlapReveal() {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+
+    const dividers = Array.from(document.querySelectorAll('.section-splash-divider'));
+    if (!dividers.length) return;
+
+    // most sections should freeze right at their true end (their bottom edge
+    // has scrolled all the way up to fill the viewport - the last possible
+    // moment before they'd start scrolling away). The "roadmap" section is a
+    // special case: it contains its own scroll-driven trail animation that
+    // needs extra scroll room to finish, so it freezes a bit later to give
+    // that animation time to complete first.
+    const CUSTOM_TRIGGER_FRACTION = { roadmap: 0.4 };
+    const DEFAULT_TRIGGER_FRACTION = 1;
+
+    // maps every section element to the group (array of section elements)
+    // it belongs to - a group is a run of sections with no divider between
+    // them, so they all share one stacking layer and freeze/release as one
+    const sectionGroup = new Map();
+
+    ['#main-landing-view', '#resources-page-view'].forEach((viewSelector) => {
+        const view = document.querySelector(viewSelector);
+        if (!view) return;
+
+        const groups = [];
+        Array.from(view.children).forEach((el) => {
+            if (el.tagName !== 'SECTION') return;
+            const prev = el.previousElementSibling;
+            if (prev && prev.tagName === 'SECTION') {
+                // no divider between this section and the previous one -
+                // same merged group
+                groups[groups.length - 1].push(el);
+            } else {
+                groups.push([el]);
+            }
+        });
+
+        // give every group an increasing stacking order, so a later group
+        // can always render above (and fully cover) the ones before it
+        groups.forEach((group, i) => {
+            group.forEach((section) => {
+                section.style.position = 'relative';
+                section.style.zIndex = String(i + 1);
+                if (!section.style.background) {
+                    section.style.background = '#FFFFFF';
+                }
+                sectionGroup.set(section, group);
+            });
+        });
+    });
+
+    const transitions = dividers.map((divider) => {
+        const prevSection = divider.previousElementSibling;
+        const nextSection = divider.nextElementSibling;
+
+        if (!prevSection || !nextSection ||
+            prevSection.tagName !== 'SECTION' || nextSection.tagName !== 'SECTION') {
+            return null;
+        }
+
+        // the divider is the leading edge of the incoming section - it
+        // scrolls up together with it, so it shares the same stacking layer
+        divider.style.position = 'relative';
+        divider.style.zIndex = nextSection.style.zIndex;
+
+        return {
+            divider,
+            prevSection,
+            nextSection,
+            // the whole merged group prevSection belongs to - frozen/released
+            // together so a merged block never splits apart mid-transition
+            prevGroup: sectionGroup.get(prevSection) || [prevSection],
+            triggerFraction: CUSTOM_TRIGGER_FRACTION[prevSection.id] ?? DEFAULT_TRIGGER_FRACTION,
+            active: false,
+            freezeScrollY: 0,
+            placeholders: null
+        };
+    }).filter(Boolean);
+
+    if (!transitions.length) return;
+
+    // map each section to the transition that brings it into view, so a
+    // section's own outgoing transition can wait for that reveal to finish
+    // first. Without this, a short section can satisfy its outgoing trigger
+    // condition before the incoming one has released it, leaving two
+    // transitions active (and fighting over the same layer) at once.
+    const incomingTransitionForSection = new Map();
+    transitions.forEach((t) => {
+        incomingTransitionForSection.set(t.nextSection, t);
+    });
+
+    function freeze(t) {
+        // freeze every section in the outgoing group at its own current
+        // position - they're already adjacent in normal flow, so freezing
+        // each individually keeps the whole merged block visually intact
+        t.placeholders = t.prevGroup.map((section) => {
+            const rect = section.getBoundingClientRect();
+
+            const placeholder = document.createElement('div');
+            placeholder.setAttribute('aria-hidden', 'true');
+            placeholder.style.height = `${section.offsetHeight}px`;
+            placeholder.style.width = '100%';
+            section.parentNode.insertBefore(placeholder, section);
+
+            // pin it to exactly where it's already rendered right now, so
+            // switching from normal flow to fixed positioning is invisible
+            section.style.position = 'fixed';
+            section.style.top = `${rect.top}px`;
+            section.style.left = '0';
+            section.style.width = '100%';
+            section.style.margin = '0';
+
+            return { section, placeholder };
+        });
+
+        t.freezeScrollY = window.scrollY;
+        t.active = true;
+    }
+
+    function unfreeze(t) {
+        (t.placeholders || []).forEach(({ section, placeholder }) => {
+            section.style.position = 'relative';
+            section.style.top = '';
+            section.style.left = '';
+            section.style.width = '';
+            section.style.margin = '';
+            placeholder.remove();
+        });
+
+        t.placeholders = null;
+        t.active = false;
+    }
+
+    // Rather than a one-shot "played once" flag, freeze state is recomputed
+    // from live scroll position every frame. The release-on-scroll-up test
+    // compares against freezeScrollY (the scroll position at the instant
+    // this transition froze): any scroll back upward past that exact point
+    // releases the freeze immediately, so scrolling up is left to behave
+    // like plain, ordinary scrolling - no reverse animation, just a normal
+    // reflow back into place.
+    // tracks scroll direction frame to frame. The freeze/cover effect is
+    // only ever armed while actively scrolling DOWN - without this, scrolling
+    // back up through the same boundary re-satisfies the exact same trigger
+    // condition (prevSection's bottom and nextSection's top are still right
+    // at that threshold on the way back), so the effect would fire again,
+    // freeze for an instant, then immediately release - a flicker that looks
+    // like content getting yanked around. Gating it to downward scroll only
+    // means scrolling up never (re)triggers anything: every section already
+    // in view just stays in plain, ordinary document flow and scrolls back
+    // up at the same uniform speed as the rest of the page.
+    let lastScrollY = window.scrollY;
+
+    function update() {
+        const viewportH = window.innerHeight;
+        const currentScrollY = window.scrollY;
+        const scrollingDown = currentScrollY >= lastScrollY;
+        lastScrollY = currentScrollY;
+
+        transitions.forEach((t) => {
+            if (t.active) {
+                // release once the incoming section has fully covered the
+                // frozen group (scrolling down), or once scrolled back up
+                // past the exact point this transition started (scrolling up)
+                const nextRect = t.nextSection.getBoundingClientRect();
+                const covered = nextRect.top <= 0;
+                if (covered || window.scrollY < t.freezeScrollY) {
+                    unfreeze(t);
+                }
+                return;
+            }
+
+            if (!scrollingDown) {
+                // never arm the effect while scrolling up
+                return;
+            }
+
+            if (t.prevSection.offsetParent === null) {
+                // section belongs to a routed view that isn't shown right now
+                return;
+            }
+            // don't let this section start its own outgoing transition
+            // until the transition that revealed it has fully released it
+            const incoming = incomingTransitionForSection.get(t.prevSection);
+            if (incoming && incoming.active) {
+                return;
+            }
+            const rect = t.prevSection.getBoundingClientRect();
+            const nextRect = t.nextSection.getBoundingClientRect();
+            if (rect.bottom <= t.triggerFraction * viewportH && nextRect.top > 0) {
+                freeze(t);
+            }
+        });
+    }
+
+    let ticking = false;
+    const onScroll = () => {
+        if (!ticking) {
+            ticking = true;
+            requestAnimationFrame(() => {
+                update();
+                ticking = false;
+            });
+        }
+    };
+
+    window.addEventListener('scroll', onScroll, { passive: true });
+    window.addEventListener('resize', onScroll);
+    update();
+}
+
+// snap each flag onto the winding dirt trail. The trail graphic is a repeating
+// SVG that curves side to side (a sine wave: 34px amplitude, one full wave every
+// 1260 units of its own coordinate space), so a flag centered on a straight line
+// down the middle drifts off the path. This computes, for each flag, exactly
+// where the trail curves to at that height and moves the flag there.
+function alignFlagsToTrailCurve() {
+    const timeline = document.querySelector('.timeline');
+    const trailBox = document.querySelector('.timeline-progress-bar');
+    const dots = document.querySelectorAll('.timeline-dot');
+
+    if (!timeline || !trailBox || !dots.length) return;
+
+    const TRAIL_VIEWBOX_WIDTH = 170;
+    const TRAIL_VIEWBOX_HEIGHT = 1260;
+    const TRAIL_AMPLITUDE = 34; // how far the path swings from center, in viewBox units
+    const TRAIL_CENTER_X = TRAIL_VIEWBOX_WIDTH / 2; // 85
+
+    // the flag pole in flag.svg is NOT centered in its own viewBox (the pole sits
+    // at x=5 of a 26-wide viewBox, with the banner extending to the right of it),
+    // but .timeline-dot is centered on the curve as a whole box. Left uncorrected,
+    // the planted pole tip ends up offset to the side of the trail instead of on
+    // it. This is how far right (as a fraction of the dot's rendered width) the
+    // box needs to shift so the pole itself - not the box's midpoint - lands on
+    // the curve.
+    const POLE_X_FRACTION = 5 / 26;
+    const POLE_OFFSET_FRACTION = 0.5 - POLE_X_FRACTION;
+
+    const bgSize = getComputedStyle(trailBox).backgroundSize.split(' ').map(parseFloat);
+    const renderedWidth = bgSize[0] || trailBox.offsetWidth;
+    const renderedTileHeight = bgSize[1] || (renderedWidth / TRAIL_VIEWBOX_WIDTH) * TRAIL_VIEWBOX_HEIGHT;
+    const scale = renderedWidth / TRAIL_VIEWBOX_WIDTH;
+
+    const timelineRect = timeline.getBoundingClientRect();
+    const trailRect = trailBox.getBoundingClientRect();
+    const trailLeftRelativeToTimeline = trailRect.left - timelineRect.left;
+
+    dots.forEach(dot => {
+        const item = dot.closest('.timeline-item');
+        if (!item) return;
+
+        const dotRect = dot.getBoundingClientRect();
+        // use the base of the flag pole (the "planted" point) as the anchor on the trail
+        const poleBaseY = dotRect.bottom - timelineRect.top;
+        const tileY = ((poleBaseY % renderedTileHeight) + renderedTileHeight) % renderedTileHeight;
+        const originalY = tileY / scale;
+
+        const curveXInViewBox = TRAIL_CENTER_X + TRAIL_AMPLITUDE * Math.sin((2 * Math.PI * originalY) / TRAIL_VIEWBOX_HEIGHT);
+        const curveXRendered = trailLeftRelativeToTimeline + curveXInViewBox * scale;
+        const poleOffset = POLE_OFFSET_FRACTION * dotRect.width;
+
+        const itemRect = item.getBoundingClientRect();
+        const leftRelativeToItem = (timelineRect.left + curveXRendered + poleOffset) - itemRect.left;
+
+        dot.style.left = `${leftRelativeToItem}px`;
+    });
+}
+
 // project echoes style timeline scroll animation (vertical progress line & node activation)
 function initTimelineScrollAnimation() {
     const timeline = document.querySelector('.timeline');
@@ -1043,39 +1346,61 @@ function initTimelineScrollAnimation() {
 
     if (!timeline || !progressBar || !items.length) return;
 
+    alignFlagsToTrailCurve();
+
+    let resizeTimer;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimer);
+        resizeTimer = setTimeout(alignFlagsToTrailCurve, 150);
+    });
+    window.addEventListener('load', alignFlagsToTrailCurve);
+    if (document.fonts && document.fonts.ready) {
+        document.fonts.ready.then(alignFlagsToTrailCurve);
+    }
+
     if (typeof gsap !== 'undefined' && typeof ScrollTrigger !== 'undefined') {
         gsap.registerPlugin(ScrollTrigger);
 
         gsap.set(progressBar, { height: '0%' });
+
+        // work out how far down the timeline (0-1) each flag sits, so a flag/card
+        // only lights up at the exact moment the dirt trail reaches it
+        const getThresholds = () => {
+            const timelineHeight = timeline.offsetHeight || 1;
+            return Array.from(items).map(item => {
+                const dot = item.querySelector('.timeline-dot');
+                const dotCenter = dot
+                    ? item.offsetTop + dot.offsetTop + dot.offsetHeight / 2
+                    : item.offsetTop;
+                return dotCenter / timelineHeight;
+            });
+        };
+
+        let thresholds = getThresholds();
 
         gsap.to(progressBar, {
             height: '100%',
             ease: 'none',
             scrollTrigger: {
                 trigger: timeline,
-                start: 'top 70%',
-                end: 'bottom 85%',
+                start: 'top 90%',
+                end: 'bottom 60%',
                 scrub: true,
-                invalidateOnRefresh: true
-            }
-        });
-
-        items.forEach(item => {
-            const card = item.querySelector('.timeline-card');
-            const dot = item.querySelector('.timeline-dot');
-
-            ScrollTrigger.create({
-                trigger: item,
-                start: 'top 75%',
-                onEnter: () => {
-                    if (card) card.classList.add('active');
-                    if (dot) dot.classList.add('active');
+                invalidateOnRefresh: true,
+                onUpdate: (self) => {
+                    items.forEach((item, i) => {
+                        const card = item.querySelector('.timeline-card');
+                        const dot = item.querySelector('.timeline-dot');
+                        const isActive = self.progress >= thresholds[i];
+                        if (card) card.classList.toggle('active', isActive);
+                        if (dot) dot.classList.toggle('active', isActive);
+                    });
                 },
-                onLeaveBack: () => {
-                    if (card) card.classList.remove('active');
-                    if (dot) dot.classList.remove('active');
+                onRefresh: () => {
+                    thresholds = getThresholds();
+                    alignFlagsToTrailCurve();
                 }
-            });
+            }
         });
 
         setTimeout(() => {
@@ -1844,4 +2169,67 @@ function initResourceSearchFilter() {
             });
         });
     }
+}
+
+// PDF Popup Embed Modal Controller
+function initPdfModal() {
+    const modal = document.getElementById('pdf-popup-modal');
+    if (!modal) return;
+
+    const iframe = document.getElementById('pdf-modal-iframe');
+    const titleEl = document.getElementById('pdf-modal-title');
+    const newTabBtn = document.getElementById('pdf-modal-newtab-btn');
+    const closeBtn = modal.querySelector('.pdf-modal-close');
+
+    function openPdf(url, title) {
+        if (!url) return;
+        if (titleEl) titleEl.textContent = title || 'Document Viewer';
+        if (newTabBtn) newTabBtn.setAttribute('href', url);
+        if (iframe) iframe.src = url;
+        modal.classList.add('is-open');
+        modal.setAttribute('aria-hidden', 'false');
+        document.body.style.overflow = 'hidden';
+    }
+
+    function closePdf() {
+        modal.classList.remove('is-open');
+        modal.setAttribute('aria-hidden', 'true');
+        document.body.style.overflow = '';
+        if (iframe) {
+            iframe.src = 'about:blank';
+        }
+    }
+
+    document.addEventListener('click', (e) => {
+        const trigger = e.target.closest('.resource-popup-trigger');
+        if (!trigger) return;
+
+        e.preventDefault();
+        e.stopPropagation();
+
+        const url = trigger.getAttribute('data-pdf') || trigger.getAttribute('href');
+        const title = trigger.getAttribute('data-title') ||
+                      trigger.closest('.resource-list-item')?.querySelector('.resource-item-title')?.textContent ||
+                      'Document Viewer';
+        openPdf(url, title.trim());
+    });
+
+    if (closeBtn) {
+        closeBtn.addEventListener('click', (e) => {
+            e.preventDefault();
+            closePdf();
+        });
+    }
+
+    modal.addEventListener('click', (e) => {
+        if (e.target === modal) {
+            closePdf();
+        }
+    });
+
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal.classList.contains('is-open')) {
+            closePdf();
+        }
+    });
 }
