@@ -241,6 +241,14 @@ html {
     object-fit: contain;
 }
 
+.sponsor-logo-img[src*="arrow-mark"] {
+    height: 57.2px;
+}
+
+.sponsor-logo-img[src*="OneNorthStar"] {
+    filter: invert(1);
+}
+
 .sm-toggle {
     pointer-events: auto;
     position: relative;
