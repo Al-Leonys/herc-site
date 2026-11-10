@@ -170,6 +170,7 @@ html {
 }
 
 .logo-btn {
+    pointer-events: auto;
     background: #FFFFFF;
     border: 1px solid var(--border-hover);
     border-radius: var(--radius-full);
@@ -205,6 +206,8 @@ html {
 }
 
 .logo-btn-group {
+    pointer-events: auto;
+    text-decoration: none;
     display: flex;
     align-items: center;
     gap: 14px;
